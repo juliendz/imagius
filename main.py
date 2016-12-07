@@ -4,7 +4,6 @@
 """
 Application entry module
 author: Julien Dcruz
-website: zetcode.com
 last edited: 7th December 2016
 """
 
