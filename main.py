@@ -15,7 +15,7 @@ from maindwindow import MainWindow
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     w = MainWindow()
-    w.setWindowTitle('Imagus')
+    w.setWindowTitle('qPicasa')
     w.showMaximized()
 
     sys.exit(app.exec_())
