@@ -9,7 +9,7 @@ last edited: 7th December 2016
 
 import sys
 from PyQt5.QtWidgets import QApplication
-from maindwindow import MainWindow
+from main_window import MainWindow
 
 
 if __name__ == '__main__':
