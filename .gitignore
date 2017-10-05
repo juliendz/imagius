@@ -1,3 +1,5 @@
 ui/*.py
 __pycache__/*
 ui/__pycache__/*
+*.db
+*.log
