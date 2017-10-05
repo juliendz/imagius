@@ -10,9 +10,11 @@ last edited: 7th December 2016
 import sys
 from PyQt5.QtWidgets import QApplication
 from main_window import MainWindow
+from log import LOGGER
 
 
 if __name__ == '__main__':
+    LOGGER.info('qPicasa starting up....')
     app = QApplication(sys.argv)
     w = MainWindow()
     w.setWindowTitle('qPicasa')

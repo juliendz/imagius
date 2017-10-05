@@ -10,7 +10,7 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QDialog, QFileDialog
 from PyQt5.QtCore import QDir, QStandardPaths
 from ui import ui_foldermanager
-from foldermanager import FolderManager
+import foldermanager
 
 
 class FolderManagerWindow(QDialog, ui_foldermanager.Ui_FolderManagerWindow):
@@ -31,8 +31,7 @@ class FolderManagerWindow(QDialog, ui_foldermanager.Ui_FolderManagerWindow):
         """
         <TODO>
         """
-        folder_mgr = FolderManager()
-        watched_folders = folder_mgr.get_watched_folders()
+        watched_folders = foldermanager.get_watched_folders()
         self.model.setColumnCount(1)
         self.model.setRowCount(len(watched_folders))
         for idx, folder in enumerate(watched_folders):
@@ -48,8 +47,7 @@ class FolderManagerWindow(QDialog, ui_foldermanager.Ui_FolderManagerWindow):
         """
         folder_path = QFileDialog.getExistingDirectory(self)
         folder_name = os.path.basename((folder_path))
-        folder_mgr = FolderManager()
-        folder_mgr.add_watched_folder(folder_path, folder_name)
+        foldermanager.add_watched_folder(folder_path, folder_name)
 
 
     def edit_folder(self):
@@ -58,6 +56,9 @@ class FolderManagerWindow(QDialog, ui_foldermanager.Ui_FolderManagerWindow):
             new_folder_path = QFileDialog.getExistingDirectory(self)
             selected_index = selected[0]
             print(selected_index.data())
+
+    def delete_folder(self):
+        pass
 
 
     def accept(self):
