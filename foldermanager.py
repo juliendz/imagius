@@ -31,3 +31,19 @@ def add_watched_folder(folder_path, folder_name):
     db.connect()
     db.run_insert_query(query, params)
     db.disconnect()
+
+
+def edit_watched_folder(fid, new_folder_path, new_folder_name):
+    query = "UPDATE dir SET fullpath = ?, name = ?  WHERE id = ?"
+    params = (new_folder_path, new_folder_name, fid)
+    db.connect()
+    db.run_query(query, params)
+    db.disconnect()
+
+
+def delete_watched_folder(fid):
+    query = "DELETE FROM dir WHERE id = ?"
+    params = (fid,)
+    db.connect()
+    db.run_query(query, params)
+    db.disconnect()
