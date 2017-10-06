@@ -23,7 +23,7 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
 
         self.action_FolderManager.triggered.connect(self.action_FolderManager_Clicked)
 
-        #self.folder_mgr.init_watch_thread()
+        self.folder_mgr.init_watch_thread()
 
 
     def action_FolderManager_Clicked(self):
