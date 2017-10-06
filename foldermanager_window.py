@@ -16,10 +16,11 @@ import foldermanager
 
 
 class FolderManagerWindow(QDialog, ui_foldermanager.Ui_FolderManagerWindow):
-    def __init__(self, parent=None):
+    def __init__(self, folder_mgr, parent=None):
         super(FolderManagerWindow, self).__init__(parent)
         self.setupUi(self)
 
+        self.folder_mgr = folder_mgr
         self.model = QStandardItemModel()
 
         self.btn_AddFolder.clicked.connect(self.add_folder)
@@ -33,7 +34,7 @@ class FolderManagerWindow(QDialog, ui_foldermanager.Ui_FolderManagerWindow):
         """
         <TODO>
         """
-        watched_folders = foldermanager.get_watched_folders()
+        watched_folders = self.folder_mgr.get_watched_folders()
         self.model.setColumnCount(1)
         self.model.setRowCount(len(watched_folders))
         for idx, folder in enumerate(watched_folders):
@@ -49,7 +50,10 @@ class FolderManagerWindow(QDialog, ui_foldermanager.Ui_FolderManagerWindow):
         """
         folder_path = QFileDialog.getExistingDirectory(self)
         folder_name = os.path.basename((folder_path))
-        foldermanager.add_watched_folder(folder_path, folder_name)
+        folder_id = self.folder_mgr.add_watched_folder(folder_path, folder_name)
+        LOGGER.info('Added watched folder (fid:%s)' % folder_id)
+
+        self.populate_folder_tree()
 
 
     def edit_folder(self):
@@ -60,7 +64,8 @@ class FolderManagerWindow(QDialog, ui_foldermanager.Ui_FolderManagerWindow):
 
             new_folder_path = QFileDialog.getExistingDirectory(self)
             new_folder_name = os.path.basename((new_folder_path))
-            foldermanager.edit_watched_folder(folder_id, new_folder_path, new_folder_name)
+            self.folder_mgr.edit_watched_folder(folder_id, new_folder_path, new_folder_name)
+            LOGGER.info('Edited watched folder (fid:%s)' % folder_id)
 
             self.populate_folder_tree()
 
@@ -72,8 +77,8 @@ class FolderManagerWindow(QDialog, ui_foldermanager.Ui_FolderManagerWindow):
         if len(selected) > 0:
             selected_index = selected[0]
             folder_id = selected_index.data(QtCore.Qt.UserRole + 1)
-            foldermanager.delete_watched_folder(folder_id)
-            LOGGER.info('Deleting folder (fid:%s)' % folder_id)
+            self.folder_mgr.delete_watched_folder(folder_id)
+            LOGGER.info('Deleted watched folder (fid:%s)' % folder_id)
 
             self.populate_folder_tree()
         else:
