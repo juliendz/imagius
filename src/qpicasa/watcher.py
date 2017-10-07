@@ -5,8 +5,8 @@ author: Julien Dcruz
 
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QDirIterator, qDebug
 from PyQt5.QtCore import QDir
-from log import LOGGER
-from foldermanager_db import FolderManagerDB
+from .log import LOGGER
+from .foldermanager_db import FolderManagerDB
 
 
 class Watcher(QObject):

@@ -24,7 +24,6 @@ class ImageManager():
         try:
             with Image.open(abspath) as image:
                 image.thumbnail(thumb_size)
-                #im.save("/home/julien/Pictures/Warrior Women/Jaimie-Alexander-thumb.jpg", im.format)
                 image.save(thumb_bytes, image.format)
         except IOError as err:
             print(err)

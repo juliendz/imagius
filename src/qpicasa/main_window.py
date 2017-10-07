@@ -8,12 +8,12 @@ import sys
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
-from foldermanager import FolderManager
-from ui import ui_mainwindow
-from foldermanager_window import FolderManagerWindow
+from .foldermanager import FolderManager
+from .ui.ui_mainwindow import Ui_MainWindow
+from .foldermanager_window import FolderManagerWindow
 
 
-class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
+class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         self.w = None
         self.folder_mgr = FolderManager()

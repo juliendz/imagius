@@ -1,8 +1,10 @@
+#!/usr/bin/env python3
+
 """
 Folder Manager module
 author: Julien Dcruz
 """
-from db import dbmgr
+from .db import dbmgr
 
 
 class FolderManagerDB():

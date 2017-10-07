@@ -9,8 +9,8 @@ last edited: 7th December 2016
 
 import sys
 from PyQt5.QtWidgets import QApplication
-from main_window import MainWindow
-from log import LOGGER
+from qpicasa.main_window import MainWindow
+from qpicasa.log import LOGGER
 
 
 if __name__ == '__main__':

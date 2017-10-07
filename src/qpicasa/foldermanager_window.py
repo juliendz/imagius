@@ -10,12 +10,11 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QDialog, QFileDialog, QMessageBox
 from PyQt5 import QtCore
 from PyQt5.QtCore import QDir, QStandardPaths
-from ui import ui_foldermanager
-from log import LOGGER
-import foldermanager
+from .ui.ui_foldermanager import Ui_FolderManagerWindow
+from .log import LOGGER
 
 
-class FolderManagerWindow(QDialog, ui_foldermanager.Ui_FolderManagerWindow):
+class FolderManagerWindow(QDialog, Ui_FolderManagerWindow):
     def __init__(self, folder_mgr, parent=None):
         super(FolderManagerWindow, self).__init__(parent)
         self.setupUi(self)
