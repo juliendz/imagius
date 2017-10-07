@@ -5,8 +5,8 @@ author: Julien Dcruz
 
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QDirIterator, qDebug
 from PyQt5.QtCore import QDir
-import foldermanager
 from log import LOGGER
+from foldermanager_db import FolderManagerDB
 
 
 class Watcher(QObject):
@@ -15,9 +15,10 @@ class Watcher(QObject):
     """
     watch_all_done = pyqtSignal()
 
-    def __init__(self, folder_mgr):
+    def __init__(self):
         super(Watcher, self).__init__()
-        self.folder_mgr = folder_mgr
+        self._folder_mgr_db = FolderManagerDB()
+        self._img_ext_filter = ["*.jpg", "*.jpeg", "*.png"]
 
     @pyqtSlot()
     def watch_all(self):
@@ -28,24 +29,27 @@ class Watcher(QObject):
         self.watch_all_done.emit()
 
     def scan_folders(self):
-        watched_folders = self.folder_mgr.get_watched_folders()
+        watched_folders = self._folder_mgr_db.get_watched_dirs()
         for idx, folder in enumerate(watched_folders):
-            fpath = folder['fullpath']
-            #Add folder to db and pass id to scan_folder
-            self.scan_folder(fpath)
+            dpath = folder['abspath']
+            dname = folder['name']
+            sdid = self._folder_mgr_db.get_scan_dir(dpath)
+            if not sdid:
+                sdid = self._folder_mgr_db.add_scan_dir(dpath, dname)
+            self.scan_folder(dpath, sdid)
         LOGGER.info("Folder scan completed.")
 
-    def scan_folder(self, fpath):
+    def scan_folder(self, abspath, sdid):
         """
         <TODO>
         """
-        dirIter = QDirIterator(fpath, QDir.AllEntries | QDir.NoDotAndDotDot,
+        dirIter = QDirIterator(abspath, self._img_ext_filter, QDir.AllEntries | QDir.NoDotAndDotDot,
                                    QDirIterator.FollowSymlinks)
         while dirIter.hasNext():
             dirIter.next()
             file_info = dirIter.fileInfo()
             if file_info.isDir():
                 LOGGER.info("Found Directory: %s" % dirIter.filePath())
-                self.scan_folder(dirIter.filePath())
+                #self.scan_folder(dirIter.filePath())
             else:
                 LOGGER.info("Found image file: %s" % dirIter.filePath())

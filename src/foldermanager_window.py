@@ -34,7 +34,7 @@ class FolderManagerWindow(QDialog, ui_foldermanager.Ui_FolderManagerWindow):
         """
         <TODO>
         """
-        watched_folders = self.folder_mgr.get_watched_folders()
+        watched_folders = self.folder_mgr.get_watched_dirs()
         self.model.setColumnCount(1)
         self.model.setRowCount(len(watched_folders))
         for idx, folder in enumerate(watched_folders):

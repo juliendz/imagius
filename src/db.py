@@ -8,7 +8,7 @@ Contributors: ...
 
 
 import sqlite3
-import logging
+from log import LOGGER
 
 
 def dict_factory(cursor, row):
@@ -27,19 +27,12 @@ class dbmgr(object):
 
     def __init__(self, db_path):
         self.dbpath = db_path
-        #self.logger = logging.getLogger("log")
-
 
     def connect(self):
-        try:
-            self.conn = sqlite3.connect(self.dbpath)
-        except sqlite3.OperationalError as err:
-            print(err)
-        
+        self.conn = sqlite3.connect(self.dbpath)
         
     def disconnect(self):
         self.conn.close()
-
 
     def run_insert_query(self, query, params):
         """
@@ -52,13 +45,11 @@ class dbmgr(object):
             cursor.execute(query, params)
             self.conn.commit()
         except sqlite3.OperationalError as msg:
-            pass
-            #self.logger.error(msg)
+            LOGGER.error('[DB]: %s' % msg)
         except sqlite3.IntegrityError as msg:
-            pass
-            #self.logger.error('insert into database')
+            LOGGER.debug('[DB]: %s : %s : %s' % (msg, query, params))
+            LOGGER.error('[DB]: %s : %s' % (msg, params))
         return cursor.lastrowid
-        
 
     def run_query(self, query, params):
         """
@@ -71,12 +62,10 @@ class dbmgr(object):
             cursor.execute(query, params)
             self.conn.commit()
         except sqlite3.OperationalError as msg:
-            pass
-            #self.logger.error(msg)
+            LOGGER.error('[DB]: %s' % msg)
         except sqlite3.IntegrityError as msg:
-            pass
-            #self.logger.warning(msg)
-
+            LOGGER.debug('[DB]: %s : %s : %s' % (msg, query, params))
+            LOGGER.error('[DB]: %s : %s' % (msg, params))
 
     def run_select_query(self, query, params=()):
         """
@@ -91,8 +80,7 @@ class dbmgr(object):
         try:
             cursor.execute(query, params)
         except sqlite3.OperationalError as msg:
-            pass
-            #self.logger.error(msg)
+            LOGGER.error('[DB]: %s' % msg)
 
         data = cursor.fetchall()
         return data
