@@ -8,7 +8,7 @@ Contributors: ...
 
 
 import sqlite3
-from log import LOGGER
+from qpicasa.log import LOGGER
 
 
 def dict_factory(cursor, row):

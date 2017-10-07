@@ -3,7 +3,6 @@ Folder Manager module
 author: Julien Dcruz
 """
 from db import dbmgr
-from PIL import Image
 
 
 class FolderManagerDB():
