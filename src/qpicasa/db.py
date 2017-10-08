@@ -34,7 +34,10 @@ class dbmgr(object):
     def disconnect(self):
         self.conn.close()
 
-    def run_insert_query(self, query, params):
+    def commit(self):
+        self.conn.commit()
+
+    def run_insert_query(self, query, params, commit=True):
         """
 	    Description: Executes an insert sql query using Pythons DB-API (Parameter substitution)
 	    Arguments: 'query': The sql query string
@@ -43,7 +46,8 @@ class dbmgr(object):
         cursor = self.conn.cursor()
         try:
             cursor.execute(query, params)
-            self.conn.commit()
+            if commit:
+                self.conn.commit()
         except sqlite3.OperationalError as msg:
             LOGGER.error('[DB]: %s' % msg)
         except sqlite3.IntegrityError as msg:
@@ -51,7 +55,7 @@ class dbmgr(object):
             LOGGER.error('[DB]: %s : %s' % (msg, params))
         return cursor.lastrowid
 
-    def run_query(self, query, params):
+    def run_query(self, query, params, commit=True):
         """
         Description: Executes an update/delete sql query using Pythons DB-API (Parameter substitution)
 	    Arguments: query: The sql query string
@@ -60,7 +64,8 @@ class dbmgr(object):
         cursor = self.conn.cursor()
         try:
             cursor.execute(query, params)
-            self.conn.commit()
+            if commit:
+                self.conn.commit()
         except sqlite3.OperationalError as msg:
             LOGGER.error('[DB]: %s' % msg)
         except sqlite3.IntegrityError as msg:

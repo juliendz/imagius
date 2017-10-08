@@ -3,10 +3,11 @@ File/Folder Watcher module
 author: Julien Dcruz
 """
 
+import os
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QDirIterator, qDebug
 from PyQt5.QtCore import QDir
 from .log import LOGGER
-from .foldermanager_db import FolderManagerDB
+from .meta_files import MetaFilesManager
 
 
 class Watcher(QObject):
@@ -17,7 +18,9 @@ class Watcher(QObject):
 
     def __init__(self):
         super(Watcher, self).__init__()
-        self._folder_mgr_db = FolderManagerDB()
+
+        self._meta_files_mgr = MetaFilesManager()
+
         self._img_ext_filter = ["*.jpg", "*.jpeg", "*.png"]
 
     @pyqtSlot()
@@ -29,27 +32,53 @@ class Watcher(QObject):
         self.watch_all_done.emit()
 
     def scan_folders(self):
-        watched_folders = self._folder_mgr_db.get_watched_dirs()
-        for idx, folder in enumerate(watched_folders):
-            dpath = folder['abspath']
-            dname = folder['name']
-            sdid = self._folder_mgr_db.get_scan_dir(dpath)
-            if not sdid:
-                sdid = self._folder_mgr_db.add_scan_dir(dpath, dname)
-            self.scan_folder(dpath, sdid)
-        LOGGER.info("Folder scan completed.")
+        watched_folders = self._meta_files_mgr.get_watched_dirs()
 
-    def scan_folder(self, abspath, sdid):
+        self._meta_files_mgr.connect()
+
+        for idx, folder in enumerate(watched_folders):
+            self.scan_folder(folder['abspath'], folder['name'])
+
+        self._meta_files_mgr.disconnect()
+
+        LOGGER.debug("Folder scan completed.")
+
+    def scan_folder(self, abs_path, dir_name):
         """
         <TODO>
         """
-        dirIter = QDirIterator(abspath, self._img_ext_filter, QDir.AllEntries | QDir.NoDotAndDotDot,
-                                   QDirIterator.FollowSymlinks)
-        while dirIter.hasNext():
-            dirIter.next()
-            file_info = dirIter.fileInfo()
+        sd_id = 0
+        sd_info = self._meta_files_mgr.get_scan_dir_id(abs_path)
+        if not sd_info or sd_info['id'] <= 0:
+            sd_id = self._meta_files_mgr.add_scan_dir(abs_path, dir_name)
+        else:
+            sd_id = sd_info['id']
+
+        dir_iter = QDirIterator(abs_path, self._img_ext_filter, 
+                                QDir.AllEntries | QDir.AllDirs | QDir.NoDotAndDotDot,
+                                QDirIterator.FollowSymlinks)
+        while dir_iter.hasNext():
+            dir_iter.next()
+            file_info = dir_iter.fileInfo()
             if file_info.isDir():
-                LOGGER.info("Found Directory: %s" % dirIter.filePath())
-                #self.scan_folder(dirIter.filePath())
+                LOGGER.debug("Found Directory: %s" %
+                             file_info.absoluteFilePath())
+                self.scan_folder(file_info.absoluteFilePath(),
+                                 file_info.fileName())
             else:
-                LOGGER.info("Found image file: %s" % dirIter.filePath())
+                LOGGER.debug("Found Image: %s" % file_info.absoluteFilePath())
+
+                si_info = self._meta_files_mgr.get_image_id(
+                    file_info.absoluteFilePath())
+
+                if si_info and si_info['id'] > 0:
+                    latest_mtime = os.path.getmtime(
+                        file_info.absoluteFilePath())
+                    if latest_mtime > si_info['mtime']:
+                        self._meta_files_mgr.update_image(si_info['id'],
+                                                          file_info.absoluteFilePath(),
+                                                          latest_mtime)
+                elif not si_info:
+                    self._meta_files_mgr.add_image(sd_id,
+                                                   file_info.absoluteFilePath(),
+                                                   file_info.fileName())

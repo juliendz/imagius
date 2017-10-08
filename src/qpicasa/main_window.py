@@ -8,7 +8,7 @@ import sys
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
-from .foldermanager import FolderManager
+from .folder_manager import FolderManager
 from .ui.ui_mainwindow import Ui_MainWindow
 from .foldermanager_window import FolderManagerWindow
 

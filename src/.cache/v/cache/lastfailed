@@ -1,0 +1,5 @@
+{
+  "qpicasa/tests/test_image.py": true,
+  "tests/test_image.py::test__add_image_db": true,
+  "tests/test_image.py::test__generate_thumb": true
+}
