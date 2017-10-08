@@ -24,6 +24,13 @@ class MetaFilesManager():
     def commit(self):    
         self._db.commit()
 
+    def get_scan_dirs(self):
+        query = "SELECT * FROM scan_dir"
+        self._db.connect()
+        res = self._db.run_select_query(query)
+        self._db.disconnect()
+        return res
+
     def get_scan_dir_id(self, abs_path):
         query = "SELECT id FROM scan_dir WHERE abspath = ?"
         params = (abs_path,)

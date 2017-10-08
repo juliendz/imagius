@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/mainwindow.ui'
+# Form implementation generated from reading ui file 'qpicasa/ui/mainwindow.ui'
 #
 # Created by: PyQt5 UI code generator 5.9
 #
@@ -24,9 +24,9 @@ class Ui_MainWindow(object):
         self.gridLayout = QtWidgets.QGridLayout(self.frame_2)
         self.gridLayout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
         self.gridLayout.setObjectName("gridLayout")
-        self.listView = QtWidgets.QListView(self.frame_2)
-        self.listView.setObjectName("listView")
-        self.gridLayout.addWidget(self.listView, 0, 0, 1, 1)
+        self.listView_scandirs = QtWidgets.QListView(self.frame_2)
+        self.listView_scandirs.setObjectName("listView_scandirs")
+        self.gridLayout.addWidget(self.listView_scandirs, 0, 0, 1, 1)
         self.horizontalLayout.addWidget(self.frame_2)
         self.frame = QtWidgets.QFrame(self.centralwidget)
         self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
