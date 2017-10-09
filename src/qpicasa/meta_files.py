@@ -24,6 +24,13 @@ class MetaFilesManager():
     def commit(self):    
         self._db.commit()
 
+    def get_watched_dirs(self):
+        query = "SELECT * FROM dir"
+        self._dir_db.connect()
+        res = self._dir_db.run_select_query(query)
+        self._dir_db.disconnect()
+        return res
+
     def get_scan_dirs(self):
         query = "SELECT * FROM scan_dir"
         self._db.connect()
@@ -88,9 +95,13 @@ class MetaFilesManager():
             return None
         return res[0]
 
-    def get_watched_dirs(self):
-        query = "SELECT * FROM dir"
-        self._dir_db.connect()
-        res = self._dir_db.run_select_query(query)
-        self._dir_db.disconnect()
+    def get_scan_dir_images(self, sd_id):
+        query = "SELECT * FROM scan_img WHERE sdid = ?"
+        params = (sd_id,)
+        self._db.connect()
+        res = self._db.run_select_query(query, params)
+        self._db.disconnect()
         return res
+
+
+  
