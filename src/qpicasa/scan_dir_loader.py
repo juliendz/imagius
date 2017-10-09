@@ -6,6 +6,7 @@ author: Julien Dcruz
 import os
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QDirIterator, qDebug
 from PyQt5.QtCore import QDir
+from PyQt5.QtGui import QImage
 from .log import LOGGER
 from .meta_files import MetaFilesManager
 
@@ -28,4 +29,5 @@ class ScanDirLoader(QObject):
         LOGGER.debug('Image loading starting.')
         images = self._meta_files_mgr.get_scan_dir_images(sd_id)
         for img in images:
+            img['thumb'] = QImage.fromData(img['thumb'])
             self.dir_image_load_success.emit(img)

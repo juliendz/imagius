@@ -8,8 +8,8 @@ import sys
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSize, QThread, QModelIndex
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont
-from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QGridLayout, QLabel
 from .folder_manager import FolderManager
 from .meta_files import MetaFilesManager
 from .scan_dir_loader import ScanDirLoader
@@ -39,6 +39,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._scan_dir_loader.dir_image_load_success.connect(self.on_dir_images_load_success)
         self._scan_dir_loader.dir_images_load_ended.connect(self.on_dir_images_load_ended)
 
+        self.listView_scandirs.clicked.connect(self.on_scan_dir_listview_clicked)
+
         scan_dirs = self._meta_files_mgr.get_scan_dirs()
         if scan_dirs:
             self._dirs_list_model = QStandardItemModel()
@@ -64,11 +66,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.listView_scandirs.setCurrentIndex(selIndex)
         selected = self.listView_scandirs.selectedIndexes()
         if len(selected) > 0:
-            selected_index = selected[0]
-            sd_id = selected_index.data(QtCore.Qt.UserRole + 1)
-            self._dir_load_start.emit(sd_id)
-
-
+            self._load_dir_images(selected[0])
+        
+        self._thumbs_layout = QGridLayout()
+        self.scrollArea.setLayout(self._thumbs_layout)
 
     def action_FolderManager_Clicked(self):
         self.w = FolderManagerWindow(self.folder_mgr)
@@ -78,10 +79,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSlot(object)
     def on_dir_images_load_success(self, img):
         LOGGER.debug('Image loaded.' + img["name"])
+        label = QLabel()
+        label.setPixmap(QPixmap.fromImage(img['thumb']))
+        label.setMaximumSize(QSize(128, 128))
+        self._thumbs_layout.addWidget(label)
 
     @pyqtSlot()
     def on_dir_images_load_ended(self):
         LOGGER.debug('Image loading ended')
 
+    @pyqtSlot(QModelIndex)
+    def on_scan_dir_listview_clicked(self, index):
+        self._clear_thumbs_layout()
+        self._load_dir_images(index)
+        
+    def _load_dir_images(self, model_index):
+        sd_id = model_index.data(QtCore.Qt.UserRole + 1)
+        self._dir_load_start.emit(sd_id)
 
+    def _clear_thumbs_layout(self):
+        for i in reversed(range(self._thumbs_layout.count())):
+            self._thumbs_layout.takeAt(i).widget().setParent(None)
 
