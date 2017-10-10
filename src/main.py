@@ -14,7 +14,7 @@ from qpicasa.log import LOGGER
 
 
 if __name__ == '__main__':
-    LOGGER.info('qPicasa starting up....')
+    LOGGER.info('======================================qPicasa starting up=======================================')
     app = QApplication(sys.argv)
     w = MainWindow()
     w.setWindowTitle('qPicasa')
