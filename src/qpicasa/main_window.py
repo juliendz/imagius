@@ -34,6 +34,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         #Connections
+        self._setup_connections()
+
+        self._setup_scan_dir_list_model()
+
+        #Start the image loader thread
+        self._scan_dir_loader.moveToThread(self._scan_dir_loader_thread)
+        self._scan_dir_loader_thread.start()
+        LOGGER.info('Image loader thread started.')
+
+        #Begin loading the currently selected dir
+        if self.listView_scandirs.model():
+            selIndex = self._dirs_list_model.index(0,0)
+            self.listView_scandirs.setCurrentIndex(selIndex)
+            selected = self.listView_scandirs.selectedIndexes()
+            if len(selected) > 0:
+                self._load_dir_images(selected[0])
+        
+        self._thumbs_layout = QGridLayout()
+        self.scrollArea.setLayout(self._thumbs_layout)
+
+    def _setup_connections(self):
         self.action_FolderManager.triggered.connect(self.action_FolderManager_Clicked)
         self._dir_load_start.connect(self._scan_dir_loader.load_scan_dir_images)
         self._scan_dir_loader.dir_image_load_success.connect(self.on_dir_images_load_success)
@@ -41,6 +62,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.listView_scandirs.clicked.connect(self.on_scan_dir_listview_clicked)
 
+    def _setup_scan_dir_list_model(self):
         scan_dirs = self._meta_files_mgr.get_scan_dirs()
         if scan_dirs:
             self._dirs_list_model = QStandardItemModel()
@@ -54,28 +76,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             self.listView_scandirs.setModel(self._dirs_list_model)
 
-        #Start the dir watcher thread
-        self.folder_mgr.init_watch_thread()
-
-        #Start the image loader thread
-        self._scan_dir_loader.moveToThread(self._scan_dir_loader_thread)
-        self._scan_dir_loader_thread.start()
-
-        #Begin loading the currently selected dir
-        if scan_dirs:
-            selIndex = self._dirs_list_model.index(0,0)
-            self.listView_scandirs.setCurrentIndex(selIndex)
-            selected = self.listView_scandirs.selectedIndexes()
-            if len(selected) > 0:
-                self._load_dir_images(selected[0])
-        
-        self._thumbs_layout = QGridLayout()
-        self.scrollArea.setLayout(self._thumbs_layout)
-
     def action_FolderManager_Clicked(self):
         self.w = FolderManagerWindow(self.folder_mgr)
         self.w.show()
 
+    def _load_dir_images(self, model_index):
+        sd_id = model_index.data(QtCore.Qt.UserRole + 1)
+        self._dir_load_start.emit(sd_id)
+
+    def _clear_thumbs_layout(self):
+        for i in reversed(range(self._thumbs_layout.count())):
+            self._thumbs_layout.takeAt(i).widget().setParent(None)
     
     @pyqtSlot(object)
     def on_dir_images_load_success(self, img):
@@ -88,17 +99,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSlot()
     def on_dir_images_load_ended(self):
         LOGGER.debug('Image loading ended')
+        #Start the dir watcher thread
+        self.folder_mgr.init_watch_thread()
 
     @pyqtSlot(QModelIndex)
     def on_scan_dir_listview_clicked(self, index):
         self._clear_thumbs_layout()
         self._load_dir_images(index)
         
-    def _load_dir_images(self, model_index):
-        sd_id = model_index.data(QtCore.Qt.UserRole + 1)
-        self._dir_load_start.emit(sd_id)
 
-    def _clear_thumbs_layout(self):
-        for i in reversed(range(self._thumbs_layout.count())):
-            self._thumbs_layout.takeAt(i).widget().setParent(None)
 

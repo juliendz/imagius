@@ -31,3 +31,4 @@ class ScanDirLoader(QObject):
         for img in images:
             img['thumb'] = QImage.fromData(img['thumb'])
             self.dir_image_load_success.emit(img)
+        self.dir_images_load_ended.emit()
