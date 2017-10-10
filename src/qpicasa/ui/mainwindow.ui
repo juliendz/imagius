@@ -203,20 +203,18 @@
         </widget>
        </item>
        <item>
-        <widget class="QScrollArea" name="scrollArea">
-         <property name="widgetResizable">
-          <bool>true</bool>
+        <widget class="QFrame" name="frame_thumbs_container">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
          </property>
-         <widget class="QWidget" name="scrollAreaWidgetContents">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>476</width>
-            <height>335</height>
-           </rect>
-          </property>
-         </widget>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
+           <widget class="QGraphicsView" name="gfxview_thumbs"/>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>
