@@ -4,6 +4,7 @@ author: Julien Dcruz
 """
 
 import os
+import time
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QDirIterator, qDebug
 from PyQt5.QtCore import QDir
 from .log import LOGGER
@@ -34,10 +35,19 @@ class Watcher(QObject):
     def scan_folders(self):
         watched_folders = self._meta_files_mgr.get_watched_dirs()
 
+        self._img_integrity_ts = time.time()
+
         self._meta_files_mgr.connect()
 
+        #Scan the watched directories.
         for idx, folder in enumerate(watched_folders):
             self.scan_folder(folder['abspath'], folder['name'])
+
+        #TODO: Emit list of unclean entries for notification
+        # self._meta_files_mgr.get_unclean_entries
+
+        #Finally, remove the non-existent files
+        self._meta_files_mgr.clean_db(self._img_integrity_ts)
 
         self._meta_files_mgr.disconnect()
 
@@ -54,7 +64,7 @@ class Watcher(QObject):
         else:
             sd_id = sd_info['id']
 
-        dir_iter = QDirIterator(abs_path, self._img_ext_filter, 
+        dir_iter = QDirIterator(abs_path, self._img_ext_filter,
                                 QDir.AllEntries | QDir.AllDirs | QDir.NoDotAndDotDot,
                                 QDirIterator.FollowSymlinks)
         while dir_iter.hasNext():
@@ -71,14 +81,22 @@ class Watcher(QObject):
                 si_info = self._meta_files_mgr.get_image_id(
                     file_info.absoluteFilePath())
 
+                #file exists
                 if si_info and si_info['id'] > 0:
                     latest_mtime = os.path.getmtime(
                         file_info.absoluteFilePath())
                     if latest_mtime > si_info['mtime']:
+                        self._meta_files_mgr.update_image_thumb(si_info['id'],
+                                                                file_info.absoluteFilePath(),
+                                                                latest_mtime,
+                                                                self._img_integrity_ts)
+                    else:
                         self._meta_files_mgr.update_image(si_info['id'],
-                                                          file_info.absoluteFilePath(),
-                                                          latest_mtime)
+                                                          self._img_integrity_ts)
+
+                #new file to add
                 elif not si_info:
                     self._meta_files_mgr.add_image(sd_id,
                                                    file_info.absoluteFilePath(),
-                                                   file_info.fileName())
+                                                   file_info.fileName(),
+                                                   self._img_integrity_ts)

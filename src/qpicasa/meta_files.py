@@ -4,7 +4,8 @@ Folder Manager module
 __license__ = 'MIT'
 __copyright__ = '2017, Julien Dcurz <juliendcruz at gmail.com>'
 
-import io, os
+import io
+import os
 from PIL import Image
 from qpicasa.db import dbmgr
 
@@ -15,13 +16,13 @@ class MetaFilesManager():
         self._db = dbmgr(dbpath)
         self._dir_db = dbmgr(dir_dbpath)
 
-    def connect(self):    
+    def connect(self):
         self._db.connect()
 
-    def disconnect(self):    
+    def disconnect(self):
         self._db.disconnect()
 
-    def commit(self):    
+    def commit(self):
         self._db.commit()
 
     def get_watched_dirs(self):
@@ -55,16 +56,19 @@ class MetaFilesManager():
         sd_id = self._db.run_insert_query(query, params)
         return sd_id
 
-    def add_image(self, sdid, abs_path, name):
+    def add_image(self, sdid, abs_path, name, int_check):
         THUMB_SIZE = (128, 128)
-        thumb_bytes =  self._generate_thumb(abs_path, THUMB_SIZE)
+        thumb_bytes = self._generate_thumb(abs_path, THUMB_SIZE)
         mtime = os.path.getmtime(abs_path)
-        return self._add_image_db(sdid, abs_path, name, thumb_bytes, mtime)
+        return self._add_image_db(sdid, abs_path, name, thumb_bytes, mtime, int_check)
 
-    def update_image(self, si_id, abs_path, mtime):
+    def update_image_thumb(self, si_id, abs_path, mtime, int_check):
         THUMB_SIZE = (128, 128)
-        thumb_bytes =  self._generate_thumb(abs_path, THUMB_SIZE)
-        self._update_image_db(si_id, thumb_bytes, mtime)
+        thumb_bytes = self._generate_thumb(abs_path, THUMB_SIZE)
+        self._update_image_thumb_db(si_id, thumb_bytes, mtime, int_check)
+
+    def update_image(self, si_id, int_check):
+        self._update_image_db(si_id, int_check)
 
     def _generate_thumb(self, abspath, thumb_size):
         thumb_bytes = io.BytesIO()
@@ -76,15 +80,20 @@ class MetaFilesManager():
             print(err)
         return thumb_bytes
 
-    def _add_image_db(self, sdid, abspath, name, blob, mtime):
-        query = "INSERT INTO scan_img (sdid, abspath, name, thumb, mtime) VALUES (?, ?, ?, ?, ?)"
-        params = (sdid, abspath, name, blob.getvalue(), mtime)
+    def _add_image_db(self, sdid, abspath, name, blob, mtime, int_check):
+        query = "INSERT INTO scan_img (sdid, abspath, name, thumb, mtime, integrity_check) VALUES (?, ?, ?, ?, ?, ?)"
+        params = (sdid, abspath, name, blob.getvalue(), mtime, int_check)
         si_id = self._db.run_insert_query(query, params)
         return si_id
 
-    def _update_image_db(self, si_id, blob, mtime):
-        query = "UPDATE scan_img set thumb = ?, mtime = ? WHERE id = ?"
-        params = (blob.getvalue(), mtime, si_id)
+    def _update_image_db(self, si_id, int_check):
+        query = "UPDATE scan_img set integrity_check = ? WHERE id = ?"
+        params = (int_check, si_id)
+        self._db.run_query(query, params)
+
+    def _update_image_thumb_db(self, si_id, blob, mtime, int_check):
+        query = "UPDATE scan_img set thumb = ?, mtime = ?, integrity_check = ? WHERE id = ?"
+        params = (blob.getvalue(), mtime, int_check, si_id)
         self._db.run_query(query, params)
 
     def get_image_id(self, abs_path):
@@ -103,5 +112,14 @@ class MetaFilesManager():
         self._db.disconnect()
         return res
 
+    def get_unclean_entries(self, int_check):
+        query = "SELECT abspath FROM scan_img WHERE integrity_check < ?"
+        params = (int_check,)
+        res = self._db.run_select_query(query, params)
+        return res
 
-  
+    def clean_db(self, int_check):
+        query = "DELETE FROM scan_img WHERE integrity_check < ?"
+        params = (int_check,)
+        return self._db.run_query(query, params, True)
+

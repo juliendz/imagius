@@ -62,11 +62,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._scan_dir_loader_thread.start()
 
         #Begin loading the currently selected dir
-        selIndex = self._dirs_list_model.index(0,0)
-        self.listView_scandirs.setCurrentIndex(selIndex)
-        selected = self.listView_scandirs.selectedIndexes()
-        if len(selected) > 0:
-            self._load_dir_images(selected[0])
+        if scan_dirs:
+            selIndex = self._dirs_list_model.index(0,0)
+            self.listView_scandirs.setCurrentIndex(selIndex)
+            selected = self.listView_scandirs.selectedIndexes()
+            if len(selected) > 0:
+                self._load_dir_images(selected[0])
         
         self._thumbs_layout = QGridLayout()
         self.scrollArea.setLayout(self._thumbs_layout)

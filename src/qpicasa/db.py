@@ -71,6 +71,8 @@ class dbmgr(object):
         except sqlite3.IntegrityError as msg:
             LOGGER.debug('[DB]: %s : %s : %s' % (msg, query, params))
             LOGGER.error('[DB]: %s : %s' % (msg, params))
+        
+        return cursor.rowcount
 
     def run_select_query(self, query, params=()):
         """

@@ -1,5 +1,6 @@
 <RCC>
-    <qresource prefix="/images">
-        <file alias="icon_slideshow">images/slideshow.png</file>
-    </qresource>
+  <qresource prefix="/images">
+    <file alias="icon_folder">images/folder.png</file>
+    <file alias="icon_slideshow">images/slideshow.png</file>
+  </qresource>
 </RCC>
