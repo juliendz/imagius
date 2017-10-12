@@ -16,6 +16,7 @@ from .meta_files import MetaFilesManager
 from .scan_dir_loader import ScanDirLoader
 from .ui.ui_mainwindow import Ui_MainWindow
 from .foldermanager_window import FolderManagerWindow
+from .qgraphics_thumb_item import QGraphicsThumbnailItem
 from .log import LOGGER
 
 
@@ -63,6 +64,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 selected = self.listView_scandirs.selectedIndexes()
                 if len(selected) > 0:
                     self._load_dir_images(selected[0])
+            else:
+                # Start the dir watcher thread
+                self.folder_mgr.init_watch_thread()
 
     def _setup_connections(self):
         self.action_FolderManager.triggered.connect(
@@ -101,6 +105,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _clear_thumbs(self):
         self._thumbs_gfx_scene.clear()
+        self.gfxview_thumbs.viewport().update()
         self._thumb_row_count = 0
         self._thumb_col_count = 0
 
@@ -108,7 +113,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_dir_images_load_success(self, img):
         LOGGER.debug('Image loaded.' + img["name"])
 
-        item = QGraphicsPixmapItem()
+        # item = QGraphicsPixmapItem()
+        item = QGraphicsThumbnailItem()
         item.setPixmap(QPixmap.fromImage(img['thumb']))
 
         thumb_shadow_effect = QGraphicsDropShadowEffect()
