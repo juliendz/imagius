@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'qpicasa/ui/mainwindow.ui'
 #
-# Created by: PyQt5 UI code generator 5.9
+# Created by: PyQt5 UI code generator 5.10
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -50,6 +50,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.frame)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.frame_4 = QtWidgets.QFrame(self.frame)
+        self.frame_4.setMinimumSize(QtCore.QSize(0, 80))
         self.frame_4.setMaximumSize(QtCore.QSize(16777215, 71))
         self.frame_4.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame_4.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -78,6 +79,11 @@ class Ui_MainWindow(object):
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.frame_6)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.lbl_dir_name = QtWidgets.QLabel(self.frame_6)
+        font = QtGui.QFont()
+        font.setFamily("Trebuchet MS")
+        font.setPointSize(16)
+        self.lbl_dir_name.setFont(font)
+        self.lbl_dir_name.setStyleSheet("color: rgb(170, 170, 127)")
         self.lbl_dir_name.setObjectName("lbl_dir_name")
         self.verticalLayout_2.addWidget(self.lbl_dir_name)
         self.lbl_cdate = QtWidgets.QLabel(self.frame_6)
@@ -114,7 +120,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.frame, 1, 1, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 764, 30))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 764, 21))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")

@@ -73,6 +73,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.action_FolderManager_Clicked)
         self._dir_load_start.connect(
             self._scan_dir_loader.load_scan_dir_images)
+        self._scan_dir_loader.dir_info_load.connect(
+            self.on_dir_info_load)
         self._scan_dir_loader.dir_image_load_success.connect(
             self.on_dir_images_load_success)
         self._scan_dir_loader.dir_images_load_ended.connect(
@@ -134,6 +136,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._thumbs_gfx_scene.addItem(item)
 
         self._thumb_col_count = self._thumb_col_count + 1
+
+
+    @pyqtSlot(object)
+    def on_dir_info_load(self, dir_info):
+        LOGGER.debug('Scan Dir Info loaded')
+        self.lbl_dir_name.setText(dir_info['name'])
 
     @pyqtSlot()
     def on_dir_images_load_ended(self):

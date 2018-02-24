@@ -39,6 +39,17 @@ class MetaFilesManager():
         self._db.disconnect()
         return res
 
+    def get_scan_dir(self, id):
+        query = "SELECT * FROM scan_dir WHERE id = ?"
+        params = (id,)
+        self._db.connect()
+        res = self._db.run_select_query(query, params)
+        self._db.disconnect()
+        if not res:
+            return None
+        return res[0]
+
+
     def get_scan_dir_id(self, abs_path):
         query = "SELECT id FROM scan_dir WHERE abspath = ?"
         params = (abs_path,)
