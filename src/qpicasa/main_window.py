@@ -7,7 +7,7 @@ last edited: 7th December 2016
 import sys
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSize, QThread, QModelIndex
-from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont
+from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont, QIcon
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QGridLayout, QLabel, QWidget
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QGraphicsDropShadowEffect
@@ -58,15 +58,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def resizeEvent(self, event):
         if event.spontaneous():
             # Begin loading the currently selected dir
-            if self.listView_scandirs.model():
-                selIndex = self._dirs_list_model.index(0, 0)
-                self.listView_scandirs.setCurrentIndex(selIndex)
-                selected = self.listView_scandirs.selectedIndexes()
+            if self.treeView_scandirs.model():
+                selIndex = self._dirs_list_model.index(4, 0)
+                self.treeView_scandirs.setCurrentIndex(selIndex)
+                selected = self.treeView_scandirs.selectedIndexes()
                 if len(selected) > 0:
                     self._load_dir_images(selected[0])
             else:
+                pass
                 # Start the dir watcher thread
-                self.folder_mgr.init_watch_thread()
+                # self.folder_mgr.init_watch_thread()
+            self.folder_mgr.init_watch_thread()
 
     def _setup_connections(self):
         self.action_FolderManager.triggered.connect(
@@ -80,29 +82,42 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._scan_dir_loader.dir_images_load_ended.connect(
             self.on_dir_images_load_ended)
 
-        self.listView_scandirs.clicked.connect(
-            self.on_scan_dir_listview_clicked)
+        self.treeView_scandirs.clicked.connect(
+            self.on_scan_dir_treeView_clicked)
 
     def _setup_scan_dir_list_model(self):
         scan_dirs = self._meta_files_mgr.get_scan_dirs()
         if scan_dirs:
             self._dirs_list_model = QStandardItemModel()
+
             self._dirs_list_model.setColumnCount(1)
-            self._dirs_list_model.setRowCount(len(scan_dirs))
+            # self._dirs_list_model.setRowCount(len(scan_dirs))
+
+            root_tree_item = self._dirs_list_model.invisibleRootItem()
+
+            #FOLDERS item
+            folder_item = QStandardItem("Folders")  
+            folder_item_font = QFont()
+            folder_item_font.setBold(True)
+            folder_item.setFont(folder_item_font)
+            folder_item.setSizeHint(QSize(folder_item.sizeHint().width(), 30));
+            root_tree_item.appendRow(folder_item)
+
             for idx, dir in enumerate(scan_dirs):
                 item = QStandardItem(dir["name"])
                 item.setData(dir['id'], QtCore.Qt.UserRole + 1)
-                # item.setSizeHint(QSize(item.sizeHint().width(), 30));
-                self._dirs_list_model.setItem(idx, 0, item)
+                item.setSizeHint(QSize(item.sizeHint().width(), 30));
+                item.setIcon(QIcon(':/images/icon_folder'))
+                folder_item.appendRow(item)
 
-            self.listView_scandirs.setModel(self._dirs_list_model)
+            self.treeView_scandirs.setModel(self._dirs_list_model)
+            self.treeView_scandirs.expandAll()
 
     def action_FolderManager_Clicked(self):
         self.w = FolderManagerWindow(self.folder_mgr)
         self.w.show()
 
-    def _load_dir_images(self, model_index):
-        sd_id = model_index.data(QtCore.Qt.UserRole + 1)
+    def _load_dir_images(self, sd_id):
         self._dir_load_start.emit(sd_id)
 
     def _clear_thumbs(self):
@@ -150,6 +165,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.folder_mgr.init_watch_thread()
 
     @pyqtSlot(QModelIndex)
-    def on_scan_dir_listview_clicked(self, index):
-        self._clear_thumbs()
-        self._load_dir_images(index)
+    def on_scan_dir_treeView_clicked(self, index):
+        sd_id = index.data(QtCore.Qt.UserRole + 1)
+        #Categories tree nodes will not contain 'data'
+        if sd_id:
+            self._clear_thumbs()
+            self._load_dir_images(sd_id)

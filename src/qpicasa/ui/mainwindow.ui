@@ -72,7 +72,14 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QListView" name="listView_scandirs"/>
+        <widget class="QTreeView" name="treeView_scandirs">
+         <property name="indentation">
+          <number>5</number>
+         </property>
+         <attribute name="headerVisible">
+          <bool>false</bool>
+         </attribute>
+        </widget>
        </item>
       </layout>
      </widget>

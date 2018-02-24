@@ -16,6 +16,7 @@ class Watcher(QObject):
     <TODO>
     """
     watch_all_done = pyqtSignal()
+    new_image_found = pyqtSignal(object)
 
     def __init__(self):
         super(Watcher, self).__init__()
@@ -96,6 +97,7 @@ class Watcher(QObject):
 
                 #new file to add
                 elif not si_info:
+                    LOGGER.debug("Found New image: %s" % file_info.absoluteFilePath())
                     self._meta_files_mgr.add_image(sd_id,
                                                    file_info.absoluteFilePath(),
                                                    file_info.fileName(),
