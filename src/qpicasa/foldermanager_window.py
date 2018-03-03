@@ -10,16 +10,17 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QDialog, QFileDialog, QMessageBox
 from PyQt5 import QtCore
 from PyQt5.QtCore import QDir, QStandardPaths
+from .folder_manager import FolderManager
 from .ui.ui_foldermanager import Ui_FolderManagerWindow
 from .log import LOGGER
 
 
 class FolderManagerWindow(QDialog, Ui_FolderManagerWindow):
-    def __init__(self, folder_mgr, parent=None):
+    def __init__(self, parent=None):
         super(FolderManagerWindow, self).__init__(parent)
         self.setupUi(self)
 
-        self.folder_mgr = folder_mgr
+        self.folder_mgr = FolderManager()
         self.model = QStandardItemModel()
 
         self.btn_AddFolder.clicked.connect(self.add_folder)

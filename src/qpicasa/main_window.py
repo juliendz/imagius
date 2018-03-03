@@ -12,7 +12,6 @@ from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
 from PyQt5.QtWidgets import QGridLayout, QLabel, QWidget
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QGraphicsDropShadowEffect
-from .folder_manager import FolderManager
 from .meta_files import MetaFilesManager
 from .ui.ui_mainwindow import Ui_MainWindow
 from .foldermanager_window import FolderManagerWindow
@@ -36,9 +35,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._thumb_col_count = 0
         self._thumb_curr_row_width = 0
 
-        self._scan_dir_loader_thread = QThread()
         self._dir_watcher_thread = QThread()
-        self.folder_mgr = FolderManager()
         self._meta_files_mgr = MetaFilesManager()
         self._watch = Watcher()
 
@@ -115,7 +112,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.treeView_scandirs.expandAll()
 
     def action_FolderManager_Clicked(self):
-        self.w = FolderManagerWindow(self.folder_mgr)
+        self.w = FolderManagerWindow()
         self.w.show()
 
     def _load_dir_images(self, sd_id):
