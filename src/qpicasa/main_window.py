@@ -8,22 +8,27 @@ import sys
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSize, QThread, QModelIndex
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont, QIcon
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QMainWindow, QFileDialog, QGridLayout, QLabel, QWidget
+from PyQt5.QtGui import QPixmap, QImage
+from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
+from PyQt5.QtWidgets import QGridLayout, QLabel, QWidget
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QGraphicsDropShadowEffect
 from .folder_manager import FolderManager
 from .meta_files import MetaFilesManager
-from .scan_dir_loader import ScanDirLoader
 from .ui.ui_mainwindow import Ui_MainWindow
 from .foldermanager_window import FolderManagerWindow
 from .qgraphics_thumb_item import QGraphicsThumbnailItem
+
+from .watcher import Watcher
 from .log import LOGGER
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
+    BATCH_COUNT =  50
+
     # signals
     _dir_load_start = pyqtSignal(object)
+    _dir_watcher_start = pyqtSignal()
 
     def __init__(self, parent=None):
         self.w = None
@@ -32,9 +37,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._thumb_curr_row_width = 0
 
         self._scan_dir_loader_thread = QThread()
+        self._dir_watcher_thread = QThread()
         self.folder_mgr = FolderManager()
         self._meta_files_mgr = MetaFilesManager()
-        self._scan_dir_loader = ScanDirLoader()
+        self._watch = Watcher()
 
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
@@ -43,11 +49,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._setup_connections()
 
         self._setup_scan_dir_list_model()
-
-        # Start the image loader thread
-        self._scan_dir_loader.moveToThread(self._scan_dir_loader_thread)
-        self._scan_dir_loader_thread.start()
-        LOGGER.info('Image loader thread started.')
 
         # Setup the thumbs gfx scene
         self._thumbs_gfx_scene = QGraphicsScene()
@@ -67,23 +68,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             else:
                 pass
                 # Start the dir watcher thread
-                # self.folder_mgr.init_watch_thread()
-            self.folder_mgr.init_watch_thread()
+            self.init_watch_thread()
 
     def _setup_connections(self):
         self.action_FolderManager.triggered.connect(
             self.action_FolderManager_Clicked)
-        self._dir_load_start.connect(
-            self._scan_dir_loader.load_scan_dir_images)
-        self._scan_dir_loader.dir_info_load.connect(
-            self.on_dir_info_load)
-        self._scan_dir_loader.dir_image_load_success.connect(
-            self.on_dir_images_load_success)
-        self._scan_dir_loader.dir_images_load_ended.connect(
-            self.on_dir_images_load_ended)
+
+        #Watcher
+        self._dir_watcher_start.connect(self._watch.watch_all)
 
         self.treeView_scandirs.clicked.connect(
             self.on_scan_dir_treeView_clicked)
+
+    def init_watch_thread(self):
+        self._watch.moveToThread(self._dir_watcher_thread)
+        self._dir_watcher_thread.start()
+        LOGGER.info('Watcher thread started.')
+        self._dir_watcher_start.emit()
 
     def _setup_scan_dir_list_model(self):
         scan_dirs = self._meta_files_mgr.get_scan_dirs()
@@ -118,18 +119,34 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.w.show()
 
     def _load_dir_images(self, sd_id):
-        self._dir_load_start.emit(sd_id)
+        LOGGER.debug("Folder(%s) loading starting...." % sd_id)
 
-    def _clear_thumbs(self):
-        self._thumbs_gfx_scene.clear()
-        self.gfxview_thumbs.viewport().update()
-        self._thumb_row_count = 0
-        self._thumb_col_count = 0
+        dir_info = self._meta_files_mgr.get_scan_dir(sd_id)
+        self.lbl_dir_name.setText(dir_info['name'])
 
-    @pyqtSlot(object)
-    def on_dir_images_load_success(self, img):
-        LOGGER.debug('Image loaded.' + img["name"])
+        images = self._meta_files_mgr.get_scan_dir_images(sd_id)
+        tot_img_count = len(images)
+        batch_counter = 0
+        img_batch = []
 
+        for img in images:
+            img['thumb'] = QImage.fromData(img['thumb'])
+            self.add_img_to_scene_graph(img)
+            img_batch.append(img)
+            batch_counter = batch_counter + 1
+
+            #Call processEvents() every <BATCH_COUNT> images
+            #The first condition covers both cases:
+            #   1. When <tot_img_count> < <BATCH_COUNT>
+            #   2. When <tot_img_count> is not a multiple of <BATCH_COUNT>
+            #      thereby leaving a batch of images less than <BATCH_COUNT> at the end
+            if batch_counter >= tot_img_count or (batch_counter % self.BATCH_COUNT == 0):
+                QApplication.processEvents()
+        
+        LOGGER.debug("Folder(%s) loading ended." % sd_id)
+
+    def add_img_to_scene_graph(self, img):
+        LOGGER.debug("Adding Image(%s) to scene graph." % img['name'])
         # item = QGraphicsPixmapItem()
         item = QGraphicsThumbnailItem()
         item.setPixmap(QPixmap.fromImage(img['thumb']))
@@ -150,19 +167,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self._thumbs_gfx_scene.addItem(item)
 
-        self._thumb_col_count = self._thumb_col_count + 1
+        self._thumb_col_count = self._thumb_col_count +  1
 
-
-    @pyqtSlot(object)
-    def on_dir_info_load(self, dir_info):
-        LOGGER.debug('Scan Dir Info loaded')
-        self.lbl_dir_name.setText(dir_info['name'])
-
-    @pyqtSlot()
-    def on_dir_images_load_ended(self):
-        LOGGER.debug('Image loading ended')
-        # Start the dir watcher thread
-        self.folder_mgr.init_watch_thread()
+    def _clear_thumbs(self):
+        self._thumbs_gfx_scene.clear()
+        self.gfxview_thumbs.viewport().update()
+        self.gfxview_thumbs.centerOn(0,0)
+        self._thumb_row_count = 0
+        self._thumb_col_count = 0
 
     @pyqtSlot(QModelIndex)
     def on_scan_dir_treeView_clicked(self, index):

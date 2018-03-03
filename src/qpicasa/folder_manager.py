@@ -4,22 +4,14 @@ author: Julien Dcruz
 """
 from PyQt5.QtCore import QObject, QThread, pyqtSignal, pyqtSlot
 from .db import dbmgr
-from .watcher import Watcher
 from .log import LOGGER
 
 
 class FolderManager(QObject):
-    # Signals
-    folder_watch_started = pyqtSignal()
 
     def __init__(self, dbpath="app.db"):
         super(FolderManager, self).__init__()
         self._db = dbmgr(dbpath)
-        self._thread = QThread()
-        self._watch = Watcher()
-        # Connections
-        self.folder_watch_started.connect(self._watch.watch_all)
-
 
     def get_watched_dirs(self):
         query = "SELECT * FROM dir"
@@ -50,8 +42,4 @@ class FolderManager(QObject):
         self._db.run_query(query, params)
         self._db.disconnect()
 
-    def init_watch_thread(self):
-        self._watch.moveToThread(self._thread)
-        self._thread.start()
-        LOGGER.info('Watcher thread started.')
-        self.folder_watch_started.emit()
+    

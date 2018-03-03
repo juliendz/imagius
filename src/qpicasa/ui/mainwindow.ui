@@ -74,7 +74,7 @@
        <item>
         <widget class="QTreeView" name="treeView_scandirs">
          <property name="indentation">
-          <number>5</number>
+          <number>10</number>
          </property>
          <attribute name="headerVisible">
           <bool>false</bool>
