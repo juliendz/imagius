@@ -7,11 +7,13 @@ last edited: 7th December 2016
 import sys
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSize, QThread, QModelIndex
+from PyQt5.QtCore import QItemSelectionModel, QItemSelection
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont, QIcon
 from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
 from PyQt5.QtWidgets import QGridLayout, QLabel, QWidget
-from PyQt5.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QGraphicsDropShadowEffect
+from PyQt5.QtWidgets import QGraphicsScene, QGraphicsPixmapItem
+from PyQt5.QtWidgets import QGraphicsDropShadowEffect
 from .meta_files import MetaFilesManager
 from .ui.ui_mainwindow import Ui_MainWindow
 from .foldermanager_window import FolderManagerWindow
@@ -23,7 +25,7 @@ from .log import LOGGER
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
-    BATCH_COUNT =  50
+    BATCH_COUNT = 50
 
     # signals
     _dir_load_start = pyqtSignal(object)
@@ -38,14 +40,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._thumb_col_count = 0
         self._thumb_curr_row_width = 0
 
-        #threads
+        # threads
         self._dir_watcher_thread = QThread()
 
-        #helpers
+        # helpers
         self._meta_files_mgr = MetaFilesManager()
         self._watch = Watcher()
 
-        #connections
+        # connections
         self._setup_connections()
 
         self._setup_scan_dir_list_model()
@@ -60,11 +62,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if event.spontaneous():
             # Begin loading the currently selected dir
             if self.treeView_scandirs.model():
-                selIndex = self._dirs_list_model.index(4, 0)
-                self.treeView_scandirs.setCurrentIndex(selIndex)
+
+                self._dirs_list_selection_model.select(
+                    self._dirs_list_model.index(0, 0).child(0, 0),
+                    QItemSelectionModel.Select | QItemSelectionModel.Rows
+                )
+
                 selected = self.treeView_scandirs.selectedIndexes()
-                if len(selected) > 0:
-                    self._load_dir_images(selected[0])
+                sd_id = selected[0].data(QtCore.Qt.UserRole + 1)
+                if sd_id > 0:
+                    self._load_dir_images(sd_id)
             else:
                 pass
                 # Start the dir watcher thread
@@ -90,19 +97,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         scan_dirs = self._meta_files_mgr.get_scan_dirs()
         if scan_dirs:
             self._dirs_list_model = QStandardItemModel()
+            self._dirs_list_selection_model = QItemSelectionModel(
+                self._dirs_list_model)
 
             self._dirs_list_model.setColumnCount(1)
             # self._dirs_list_model.setRowCount(len(scan_dirs))
 
-            root_tree_item = self._dirs_list_model.invisibleRootItem()
+            self._root_tree_item = self._dirs_list_model.invisibleRootItem()
 
             # FOLDERS item
-            folder_item = QStandardItem("Folders")  
+            folder_item = QStandardItem("Folders")
             folder_item_font = QFont()
             folder_item_font.setBold(True)
             folder_item.setFont(folder_item_font)
             folder_item.setSizeHint(QSize(folder_item.sizeHint().width(), 30))
-            root_tree_item.appendRow(folder_item)
+            self._root_tree_item.appendRow(folder_item)
 
             for idx, dir in enumerate(scan_dirs):
                 item_title = "%s(%s)" % (dir['name'], dir['img_count'])
@@ -113,6 +122,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 folder_item.appendRow(item)
 
             self.treeView_scandirs.setModel(self._dirs_list_model)
+            self.treeView_scandirs.setSelectionModel(
+                self._dirs_list_selection_model)
             self.treeView_scandirs.expandAll()
 
     def action_FolderManager_Clicked(self):
@@ -136,14 +147,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             img_batch.append(img)
             batch_counter = batch_counter + 1
 
-            #Call processEvents() every <BATCH_COUNT> images
-            #The first condition covers both cases:
+            # Call processEvents() every <BATCH_COUNT> images
+            # The first condition covers both cases:
             #   1. When <tot_img_count> < <BATCH_COUNT>
             #   2. When <tot_img_count> is not a multiple of <BATCH_COUNT>
             #      thereby leaving a batch of images less than <BATCH_COUNT> at the end
             if batch_counter >= tot_img_count or (batch_counter % self.BATCH_COUNT == 0):
                 QApplication.processEvents()
-        
+
         LOGGER.debug("Folder(%s) loading ended." % sd_id)
 
     def add_img_to_scene_graph(self, img):
@@ -168,19 +179,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self._thumbs_gfx_scene.addItem(item)
 
-        self._thumb_col_count = self._thumb_col_count +  1
+        self._thumb_col_count = self._thumb_col_count + 1
 
     def _clear_thumbs(self):
         self._thumbs_gfx_scene.clear()
         self.gfxview_thumbs.viewport().update()
-        self.gfxview_thumbs.centerOn(0,0)
+        self.gfxview_thumbs.centerOn(0, 0)
         self._thumb_row_count = 0
         self._thumb_col_count = 0
 
     @pyqtSlot(QModelIndex)
     def on_scan_dir_treeView_clicked(self, index):
         sd_id = index.data(QtCore.Qt.UserRole + 1)
-        #Categories tree nodes will not contain 'data'
+        # Categories tree nodes will not contain 'data'
         if sd_id:
             self._clear_thumbs()
             self._load_dir_images(sd_id)
