@@ -49,7 +49,6 @@ class MetaFilesManager():
             return None
         return res[0]
 
-
     def get_scan_dir_id(self, abs_path):
         query = "SELECT * FROM scan_dir WHERE abspath = ?"
         params = (abs_path,)
@@ -73,6 +72,15 @@ class MetaFilesManager():
         """
         query = "UPDATE scan_dir SET mtime = ? WHERE id = ?"
         params = (mtime, sd_id)
+        sd_id = self._db.run_query(query, params)
+        return sd_id
+
+    def update_scan_dir_img_count(self, sd_id, count):
+        """
+        <TODO>
+        """
+        query = "UPDATE scan_dir SET img_count = ? WHERE id = ?"
+        params = (count, sd_id)
         sd_id = self._db.run_query(query, params)
         return sd_id
 
@@ -147,4 +155,11 @@ class MetaFilesManager():
         query = "DELETE FROM scan_img WHERE sdid = ? AND integrity_check < ?"
         params = (sd_id, int_check)
         return self._db.run_query(query, params, True)
+
+    def get_scan_dir_img_count(self, sd_id):
+        query = "select COUNT(id) AS 'img_count' from scan_img WHERE sdid = ?"
+        params = (sd_id,)
+        res = self._db.run_select_query(query, params)
+        print(res)
+        return res[0]['img_count']
 

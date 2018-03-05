@@ -129,4 +129,6 @@ class Watcher(QObject):
         if is_new_or_modified is True:
             self._meta_files_mgr.prune_scan_dir(sd_id,
                                                 self._img_integrity_ts)
+            img_count = self._meta_files_mgr.get_scan_dir_img_count(sd_id)
+            self._meta_files_mgr.update_scan_dir_img_count(sd_id, img_count)
         self._meta_files_mgr.update_scan_dir_mtime(sd_id, modified_time)

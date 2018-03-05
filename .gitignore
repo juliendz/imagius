@@ -4,3 +4,4 @@ ui/__pycache__/*
 *.db
 *.log
 *.pyc
+/src/*.db-journal

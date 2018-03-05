@@ -74,7 +74,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_FolderManager.triggered.connect(
             self.action_FolderManager_Clicked)
 
-        #Watcher
+        # Watcher
         self._dir_watcher_start.connect(self._watch.watch_all)
 
         self.treeView_scandirs.clicked.connect(
@@ -96,18 +96,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             root_tree_item = self._dirs_list_model.invisibleRootItem()
 
-            #FOLDERS item
+            # FOLDERS item
             folder_item = QStandardItem("Folders")  
             folder_item_font = QFont()
             folder_item_font.setBold(True)
             folder_item.setFont(folder_item_font)
-            folder_item.setSizeHint(QSize(folder_item.sizeHint().width(), 30));
+            folder_item.setSizeHint(QSize(folder_item.sizeHint().width(), 30))
             root_tree_item.appendRow(folder_item)
 
             for idx, dir in enumerate(scan_dirs):
-                item = QStandardItem(dir["name"])
+                item_title = "%s(%s)" % (dir['name'], dir['img_count'])
+                item = QStandardItem(item_title)
                 item.setData(dir['id'], QtCore.Qt.UserRole + 1)
-                item.setSizeHint(QSize(item.sizeHint().width(), 30));
+                item.setSizeHint(QSize(item.sizeHint().width(), 30))
                 item.setIcon(QIcon(':/images/icon_folder'))
                 folder_item.appendRow(item)
 
