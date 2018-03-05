@@ -51,7 +51,7 @@ class MetaFilesManager():
 
 
     def get_scan_dir_id(self, abs_path):
-        query = "SELECT id FROM scan_dir WHERE abspath = ?"
+        query = "SELECT * FROM scan_dir WHERE abspath = ?"
         params = (abs_path,)
         res = self._db.run_select_query(query, params)
         if not res:
@@ -65,6 +65,15 @@ class MetaFilesManager():
         query = "INSERT INTO scan_dir (abspath, name) VALUES (?, ?)"
         params = (path, name)
         sd_id = self._db.run_insert_query(query, params)
+        return sd_id
+
+    def update_scan_dir_mtime(self, sd_id, mtime):
+        """
+        <TODO>
+        """
+        query = "UPDATE scan_dir SET mtime = ? WHERE id = ?"
+        params = (mtime, sd_id)
+        sd_id = self._db.run_query(query, params)
         return sd_id
 
     def add_image(self, sdid, abs_path, name, int_check):
@@ -132,5 +141,10 @@ class MetaFilesManager():
     def clean_db(self, int_check):
         query = "DELETE FROM scan_img WHERE integrity_check < ?"
         params = (int_check,)
+        return self._db.run_query(query, params, True)
+
+    def prune_scan_dir(self, sd_id, int_check):
+        query = "DELETE FROM scan_img WHERE sdid = ? AND integrity_check < ?"
+        params = (sd_id, int_check)
         return self._db.run_query(query, params, True)
 

@@ -30,19 +30,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     _dir_watcher_start = pyqtSignal()
 
     def __init__(self, parent=None):
+        super(MainWindow, self).__init__(parent)
+        self.setupUi(self)
+
         self.w = None
         self._thumb_row_count = 0
         self._thumb_col_count = 0
         self._thumb_curr_row_width = 0
 
+        #threads
         self._dir_watcher_thread = QThread()
+
+        #helpers
         self._meta_files_mgr = MetaFilesManager()
         self._watch = Watcher()
 
-        super(MainWindow, self).__init__(parent)
-        self.setupUi(self)
-
-        # Connections
+        #connections
         self._setup_connections()
 
         self._setup_scan_dir_list_model()
