@@ -7,12 +7,12 @@ last edited: 7th December 2016
 import sys
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSize, QThread, QModelIndex
-from PyQt5.QtCore import QItemSelectionModel, QItemSelection
+from PyQt5.QtCore import QItemSelectionModel, QItemSelection, QSize
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont, QIcon
 from PyQt5.QtGui import QPixmap, QImage, QColor
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
 from PyQt5.QtWidgets import QGridLayout, QLabel, QWidget, QPushButton
-from PyQt5.QtWidgets import QGraphicsScene, QGraphicsPixmapItem
+from PyQt5.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QListView
 from PyQt5.QtWidgets import QGraphicsDropShadowEffect, QGraphicsGridLayout
 from .meta_files import MetaFilesManager
 from .ui.ui_mainwindow import Ui_MainWindow
@@ -52,11 +52,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self._setup_scan_dir_list_model()
 
-        # Setup the thumbs gfx scene
-        self._thumbs_gfx_scene = QGraphicsScene()
-        self.gfxview_thumbs.setScene(self._thumbs_gfx_scene)
-        self.gfxview_thumbs.setAlignment(
-            QtCore.Qt.AlignTop | QtCore.Qt.AlignLeft)
+        # self.listView_thumbs.setIconSize(QSize(24, 24))
+        # self.listView_thumbs.setGridSize(QSize(120, 120))
+        # self.listView_thumbs.setSpacing(16)
 
     def resizeEvent(self, event):
         if event.spontaneous():
@@ -141,6 +139,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         batch_counter = 0
         img_batch = []
 
+        self._thumbs_view_model = QStandardItemModel()
+
         for img in images:
             img['thumb'] = QImage.fromData(img['thumb'])
             self.add_img_to_scene_graph(img)
@@ -155,39 +155,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if batch_counter >= tot_img_count or (batch_counter % self.BATCH_COUNT == 0):
                 QApplication.processEvents()
 
+        self.listView_thumbs.setModel(self._thumbs_view_model)
+        # self.listView_thumbs.setMovement(QListView.Snap)
         LOGGER.debug("Folder(%s) loading ended." % sd_id)
 
     def add_img_to_scene_graph(self, img):
         LOGGER.debug("Adding Image(%s) to scene graph." % img['name'])
-        # item = QGraphicsPixmapItem()
-        item = QGraphicsThumbnailItem()
-        item.setPixmap(QPixmap.fromImage(img['thumb']))
+        item = QStandardItem()
+        item.setData(QPixmap.fromImage(img['thumb']), QtCore.Qt.DecorationRole)
 
-        thumb_shadow_effect = QGraphicsDropShadowEffect()
-        thumb_shadow_effect.setOffset(1.5)
-        thumb_shadow_effect.setColor(QColor(232, 232, 232))
-        item.setGraphicsEffect(thumb_shadow_effect)
-
-        if (self._thumb_curr_row_width + 300 > self.gfxview_thumbs.viewport().size().width()):
-            self._thumb_row_count = self._thumb_row_count + 1
-            self._thumb_col_count = 0
-            self._thumb_curr_row_width = 0
-
-        pos_x = (self._thumb_col_count * 150)
-        pos_y = (self._thumb_row_count * 140)
-        self._thumb_curr_row_width = pos_x
-        item.setPos(pos_x, pos_y)
-
-        self._thumbs_gfx_scene.addItem(item)
-
-        self._thumb_col_count = self._thumb_col_count + 1
+        # thumb_shadow_effect = QGraphicsDropShadowEffect()
+        # thumb_shadow_effect.setOffset(1.5)
+        # thumb_shadow_effect.setColor(QColor(232, 232, 232))
+        # item.setGraphicsEffect(thumb_shadow_effect)
+        self._thumbs_view_model.appendRow(item)
 
     def _clear_thumbs(self):
-        self._thumbs_gfx_scene.clear()
-        self.gfxview_thumbs.viewport().update()
-        self.gfxview_thumbs.centerOn(0, 0)
-        self._thumb_row_count = 0
-        self._thumb_col_count = 0
+        self._thumbs_view_model.clear()
 
     @pyqtSlot(QModelIndex)
     def on_scan_dir_treeView_clicked(self, index):
