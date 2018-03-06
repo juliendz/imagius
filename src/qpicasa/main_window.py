@@ -9,11 +9,11 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSize, QThread, QModelIndex
 from PyQt5.QtCore import QItemSelectionModel, QItemSelection
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont, QIcon
-from PyQt5.QtGui import QPixmap, QImage
+from PyQt5.QtGui import QPixmap, QImage, QColor
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
-from PyQt5.QtWidgets import QGridLayout, QLabel, QWidget
+from PyQt5.QtWidgets import QGridLayout, QLabel, QWidget, QPushButton
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsPixmapItem
-from PyQt5.QtWidgets import QGraphicsDropShadowEffect
+from PyQt5.QtWidgets import QGraphicsDropShadowEffect, QGraphicsGridLayout
 from .meta_files import MetaFilesManager
 from .ui.ui_mainwindow import Ui_MainWindow
 from .foldermanager_window import FolderManagerWindow
@@ -164,7 +164,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         item.setPixmap(QPixmap.fromImage(img['thumb']))
 
         thumb_shadow_effect = QGraphicsDropShadowEffect()
-        thumb_shadow_effect.setOffset(3.0)
+        thumb_shadow_effect.setOffset(1.5)
+        thumb_shadow_effect.setColor(QColor(232, 232, 232))
         item.setGraphicsEffect(thumb_shadow_effect)
 
         if (self._thumb_curr_row_width + 300 > self.gfxview_thumbs.viewport().size().width()):

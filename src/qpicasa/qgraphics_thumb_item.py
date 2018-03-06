@@ -16,7 +16,7 @@ class QGraphicsThumbnailItem(QGraphicsPixmapItem):
 
     def __init__(self, parent=None):
         super(QGraphicsPixmapItem, self).__init__(parent)
-        self.setAcceptHoverEvents(True);
+        self.setAcceptHoverEvents(True)
         self.setFlag(QGraphicsItem.ItemIsSelectable, True)
         self.setFlag(QGraphicsItem.ItemIsFocusable, True)
 

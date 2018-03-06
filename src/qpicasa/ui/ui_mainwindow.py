@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'qpicasa/ui/mainwindow.ui'
 #
-# Created by: PyQt5 UI code generator 5.10
+# Created by: PyQt5 UI code generator 5.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -40,7 +40,7 @@ class Ui_MainWindow(object):
         self.verticalLayout = QtWidgets.QVBoxLayout(self.frame_2)
         self.verticalLayout.setObjectName("verticalLayout")
         self.treeView_scandirs = QtWidgets.QTreeView(self.frame_2)
-        self.treeView_scandirs.setIndentation(5)
+        self.treeView_scandirs.setIndentation(10)
         self.treeView_scandirs.setObjectName("treeView_scandirs")
         self.treeView_scandirs.header().setVisible(False)
         self.verticalLayout.addWidget(self.treeView_scandirs)
