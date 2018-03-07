@@ -86,6 +86,7 @@ class Watcher(QObject):
                                     QDir.AllDirs |
                                     QDir.NoDotAndDotDot,
                                     QDirIterator.FollowSymlinks)
+        has_new_images = False
         while dir_iter.hasNext():
             dir_iter.next()
             file_info = dir_iter.fileInfo()
@@ -129,11 +130,13 @@ class Watcher(QObject):
                         file_info.absoluteFilePath(),
                         file_info.fileName(),
                         self._img_integrity_ts)
+                    has_new_images = True
 
         if is_new_or_modified is True:
             self._meta_files_mgr.prune_scan_dir(sd_id, self._img_integrity_ts)
             img_count = self._meta_files_mgr.get_scan_dir_img_count(sd_id)
             self._meta_files_mgr.update_scan_dir_img_count(sd_id, img_count)
-            self.dir_added_or_updated.emit({'id': sd_id, 'name': dir_name, 'img_count': img_count})
+            if has_new_images:
+                self.dir_added_or_updated.emit({'id': sd_id, 'name': dir_name, 'img_count': img_count})
 
         self._meta_files_mgr.update_scan_dir_mtime(sd_id, modified_time)
