@@ -17,6 +17,7 @@ class Watcher(QObject):
     """
     watch_all_done = pyqtSignal()
     new_img_found = pyqtSignal(object)
+    dir_added_or_updated = pyqtSignal(object)
 
     def __init__(self):
         super(Watcher, self).__init__()
@@ -130,9 +131,9 @@ class Watcher(QObject):
                         self._img_integrity_ts)
 
         if is_new_or_modified is True:
-            self._meta_files_mgr.prune_scan_dir(sd_id,
-                                                self._img_integrity_ts)
+            self._meta_files_mgr.prune_scan_dir(sd_id, self._img_integrity_ts)
             img_count = self._meta_files_mgr.get_scan_dir_img_count(sd_id)
             self._meta_files_mgr.update_scan_dir_img_count(sd_id, img_count)
+            self.dir_added_or_updated.emit({'id': sd_id, 'name': dir_name, 'img_count': img_count})
 
         self._meta_files_mgr.update_scan_dir_mtime(sd_id, modified_time)

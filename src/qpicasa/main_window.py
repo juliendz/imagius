@@ -25,7 +25,9 @@ from .log import LOGGER
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
-    BATCH_COUNT = 50
+    _batch_count = 50
+
+    _TV_FOLDERS_ITEM_MAP = {}
 
     # signals
     _dir_load_start = pyqtSignal(object)
@@ -85,6 +87,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._dir_watcher_start.connect(self._watch.watch_all)
         self._watch.new_img_found.connect(self.on_new_img_found)
         self._watch.watch_all_done.connect(self.on_watch_all_done)
+        self._watch.dir_added_or_updated.connect(self.on_dir_added_or_updated)
 
         self.treeView_scandirs.clicked.connect(
             self.on_scan_dir_treeView_clicked)
@@ -99,8 +102,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         scan_dirs = self._meta_files_mgr.get_scan_dirs()
         if scan_dirs:
             self._dirs_list_model = QStandardItemModel()
-            self._dirs_list_selection_model = QItemSelectionModel(
-                self._dirs_list_model)
+            self._dirs_list_selection_model = QItemSelectionModel(self._dirs_list_model)
 
             self._dirs_list_model.setColumnCount(1)
             # self._dirs_list_model.setRowCount(len(scan_dirs))
@@ -112,22 +114,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             folder_item_font = QFont()
             folder_item_font.setBold(True)
             folder_item.setFont(folder_item_font)
-            folder_item.setSizeHint(QSize(folder_item.sizeHint().width(), 30))
+            folder_item.setSizeHint(QSize(folder_item.sizeHint().width(), 24))
             self._root_tree_item.appendRow(folder_item)
+            self._TV_FOLDERS_ITEM_MAP[0] = folder_item
 
             for idx, dir in enumerate(scan_dirs):
                 item_title = "%s(%s)" % (dir['name'], dir['img_count'])
                 item = QStandardItem(item_title)
                 item.setData(dir['id'], QtCore.Qt.UserRole + 1)
-                item.setSizeHint(QSize(item.sizeHint().width(), 30))
+                item.setSizeHint(QSize(item.sizeHint().width(), 24))
                 item.setIcon(QIcon(':/images/icon_folder'))
                 folder_item.appendRow(item)
+                self._TV_FOLDERS_ITEM_MAP[dir['id']] = item
 
             self.treeView_scandirs.setModel(self._dirs_list_model)
-            self.treeView_scandirs.setSelectionModel(
-                self._dirs_list_selection_model)
+            self.treeView_scandirs.setSelectionModel(self._dirs_list_selection_model)
             self.treeView_scandirs.expandAll()
-
+    
     def action_FolderManager_Clicked(self):
         self.w = FolderManagerWindow()
         self.w.show()
@@ -156,7 +159,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             #   1. When <tot_img_count> < <BATCH_COUNT>
             #   2. When <tot_img_count> is not a multiple of <BATCH_COUNT>
             #      thereby leaving a batch of images less than <BATCH_COUNT> at the end
-            if batch_counter >= tot_img_count or (batch_counter % self.BATCH_COUNT == 0):
+            if batch_counter >= tot_img_count or batch_counter % self._batch_count == 0:
                 QApplication.processEvents()
 
         self.listView_thumbs.setModel(self._thumbs_view_model)
@@ -176,6 +179,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # item.setGraphicsEffect(thumb_shadow_effect)
         self._thumbs_view_model.appendRow(item)
 
+    def _tv_add_scan_dir(self, dir_info, highlight=False):
+        item_title = "%s(%s)" % (dir_info['name'], dir_info['img_count'])
+        item = QStandardItem(item_title)
+        item.setData(dir_info['id'], QtCore.Qt.UserRole + 1)
+        item.setSizeHint(QSize(item.sizeHint().width(), 24))
+        item.setIcon(QIcon(':/images/icon_folder'))
+        if highlight:
+            bold_font = QFont()
+            bold_font.setBold(True)
+            item.setFont(bold_font)
+        folder_item = self._TV_FOLDERS_ITEM_MAP[0]
+        folder_item.appendRow(item)
+        self._TV_FOLDERS_ITEM_MAP[dir_info['id']] = item
+
     def _clear_thumbs(self):
         self._thumbs_view_model.clear()
 
@@ -192,6 +209,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusBar().showMessage("Found new image: %s - %s" %
                                      (img_info['dir'],
                                       img_info['filename']))
+
+    @pyqtSlot(object)
+    def on_dir_added_or_updated(self, dir_info):
+        if dir_info['id'] in self._TV_FOLDERS_ITEM_MAP:
+            item = self._TV_FOLDERS_ITEM_MAP[dir_info['id']]
+            item_title = "%s(%s)" % (dir_info['name'], dir_info['img_count'])
+            item.setText(item_title)
+            bold_font = QFont()
+            bold_font.setBold(True)
+            item.setFont(bold_font)
+        else:
+            self._tv_add_scan_dir(dir_info, True)
 
     @pyqtSlot()
     def on_watch_all_done(self):

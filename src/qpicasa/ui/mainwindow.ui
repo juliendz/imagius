@@ -297,7 +297,36 @@
      <string>Abo&amp;ut</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <widget class="QMenu" name="menuThumbnail_Captions">
+     <property name="title">
+      <string>Thumbnail Captions</string>
+     </property>
+     <addaction name="actionFilename"/>
+     <addaction name="actionFilename_2"/>
+    </widget>
+    <widget class="QMenu" name="menuFolder_View">
+     <property name="title">
+      <string>Folder View</string>
+     </property>
+     <addaction name="actionFlat_View"/>
+    </widget>
+    <addaction name="actionSmall_Thumbnails"/>
+    <addaction name="actionNormal_Thumbnails"/>
+    <addaction name="separator"/>
+    <addaction name="actionProperties"/>
+    <addaction name="actionTags"/>
+    <addaction name="separator"/>
+    <addaction name="actionSlideshow"/>
+    <addaction name="separator"/>
+    <addaction name="menuThumbnail_Captions"/>
+    <addaction name="menuFolder_View"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuView"/>
    <addaction name="menuTools"/>
    <addaction name="menuAbout"/>
   </widget>
@@ -305,6 +334,61 @@
   <action name="action_FolderManager">
    <property name="text">
     <string>&amp;Folder Manager</string>
+   </property>
+  </action>
+  <action name="actionSmall_Thumbnails">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Small Thumbnails</string>
+   </property>
+  </action>
+  <action name="actionNormal_Thumbnails">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Normal Thumbnails</string>
+   </property>
+  </action>
+  <action name="actionProperties">
+   <property name="text">
+    <string>Properties</string>
+   </property>
+  </action>
+  <action name="actionTags">
+   <property name="text">
+    <string>Tags</string>
+   </property>
+  </action>
+  <action name="actionSlideshow">
+   <property name="text">
+    <string>Slideshow</string>
+   </property>
+  </action>
+  <action name="actionFilename">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>None</string>
+   </property>
+  </action>
+  <action name="actionFilename_2">
+   <property name="text">
+    <string>Filename</string>
+   </property>
+  </action>
+  <action name="actionFlat_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Flat Folder View</string>
    </property>
   </action>
  </widget>
