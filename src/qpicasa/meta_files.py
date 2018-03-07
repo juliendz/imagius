@@ -102,7 +102,7 @@ class MetaFilesManager():
         thumb_bytes = io.BytesIO()
         try:
             with Image.open(abspath) as image:
-                image.thumbnail(thumb_size)
+                image.thumbnail(thumb_size, Image.ANTIALIAS)
                 image.save(thumb_bytes, image.format)
         except IOError as err:
             print(err)

@@ -16,7 +16,7 @@ class Watcher(QObject):
     <TODO>
     """
     watch_all_done = pyqtSignal()
-    new_image_found = pyqtSignal(object)
+    new_img_found = pyqtSignal(object)
 
     def __init__(self):
         super(Watcher, self).__init__()
@@ -69,7 +69,7 @@ class Watcher(QObject):
             is_new_or_modified = True
         else:
             sd_id = sd_info['id']
-            if (modified_time > sd_info['mtime']):
+            if not sd_info['mtime'] or (modified_time > sd_info['mtime']):
                 LOGGER.debug("Folder(%s):(%s) has changed since last scan." %
                              (sd_id, sd_info['abspath']))
                 is_new_or_modified = True
@@ -120,6 +120,9 @@ class Watcher(QObject):
                 elif not si_info:
                     LOGGER.debug("Found New image: %s" %
                                  file_info.absoluteFilePath())
+                    sig_param = {'dir': dir_name,
+                                 'filename': file_info.fileName()}
+                    self.new_img_found.emit(sig_param)
                     self._meta_files_mgr.add_image(
                         sd_id,
                         file_info.absoluteFilePath(),
@@ -131,4 +134,5 @@ class Watcher(QObject):
                                                 self._img_integrity_ts)
             img_count = self._meta_files_mgr.get_scan_dir_img_count(sd_id)
             self._meta_files_mgr.update_scan_dir_img_count(sd_id, img_count)
+
         self._meta_files_mgr.update_scan_dir_mtime(sd_id, modified_time)

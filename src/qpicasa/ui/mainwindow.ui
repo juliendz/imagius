@@ -235,17 +235,32 @@
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
            <widget class="QListView" name="listView_thumbs">
+            <property name="sizeAdjustPolicy">
+             <enum>QAbstractScrollArea::AdjustIgnored</enum>
+            </property>
             <property name="dragEnabled">
              <bool>true</bool>
             </property>
             <property name="selectionMode">
              <enum>QAbstractItemView::SingleSelection</enum>
             </property>
+            <property name="verticalScrollMode">
+             <enum>QAbstractItemView::ScrollPerPixel</enum>
+            </property>
+            <property name="horizontalScrollMode">
+             <enum>QAbstractItemView::ScrollPerPixel</enum>
+            </property>
             <property name="movement">
              <enum>QListView::Snap</enum>
             </property>
+            <property name="layoutMode">
+             <enum>QListView::Batched</enum>
+            </property>
             <property name="viewMode">
              <enum>QListView::IconMode</enum>
+            </property>
+            <property name="uniformItemSizes">
+             <bool>false</bool>
             </property>
            </widget>
           </item>

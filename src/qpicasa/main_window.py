@@ -7,13 +7,13 @@ last edited: 7th December 2016
 import sys
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSize, QThread, QModelIndex
-from PyQt5.QtCore import QItemSelectionModel, QItemSelection, QSize
+from PyQt5.QtCore import QItemSelectionModel, QItemSelection, QSize, QPointF
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont, QIcon
 from PyQt5.QtGui import QPixmap, QImage, QColor
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
 from PyQt5.QtWidgets import QGridLayout, QLabel, QWidget, QPushButton
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QListView
-from PyQt5.QtWidgets import QGraphicsDropShadowEffect, QGraphicsGridLayout
+from PyQt5.QtWidgets import QGraphicsDropShadowEffect, QGraphicsGridLayout, QScroller
 from .meta_files import MetaFilesManager
 from .ui.ui_mainwindow import Ui_MainWindow
 from .foldermanager_window import FolderManagerWindow
@@ -52,9 +52,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self._setup_scan_dir_list_model()
 
-        # self.listView_thumbs.setIconSize(QSize(24, 24))
+        self.listView_thumbs.setIconSize(QSize(96, 96))
         # self.listView_thumbs.setGridSize(QSize(120, 120))
-        # self.listView_thumbs.setSpacing(16)
+        self.listView_thumbs.setSpacing(16)
+
+        self.statusBar().showMessage("Ready")
 
     def resizeEvent(self, event):
         if event.spontaneous():
@@ -81,6 +83,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Watcher
         self._dir_watcher_start.connect(self._watch.watch_all)
+        self._watch.new_img_found.connect(self.on_new_img_found)
+        self._watch.watch_all_done.connect(self.on_watch_all_done)
 
         self.treeView_scandirs.clicked.connect(
             self.on_scan_dir_treeView_clicked)
@@ -157,6 +161,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.listView_thumbs.setModel(self._thumbs_view_model)
         # self.listView_thumbs.setMovement(QListView.Snap)
+        QScroller.grabGesture(self.listView_thumbs.viewport(),
+                              QScroller.LeftMouseButtonGesture)
         LOGGER.debug("Folder(%s) loading ended." % sd_id)
 
     def add_img_to_scene_graph(self, img):
@@ -180,3 +186,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if sd_id:
             self._clear_thumbs()
             self._load_dir_images(sd_id)
+
+    @pyqtSlot(object)
+    def on_new_img_found(self, img_info):
+        self.statusBar().showMessage("Found new image: %s - %s" %
+                                     (img_info['dir'],
+                                      img_info['filename']))
+
+    @pyqtSlot()
+    def on_watch_all_done(self):
+        self.statusBar().clearMessage()
