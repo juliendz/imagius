@@ -119,6 +119,7 @@ class Ui_MainWindow(object):
         self.listView_thumbs.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustIgnored)
         self.listView_thumbs.setDragEnabled(True)
         self.listView_thumbs.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.listView_thumbs.setIconSize(QtCore.QSize(128, 128))
         self.listView_thumbs.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
         self.listView_thumbs.setHorizontalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
         self.listView_thumbs.setMovement(QtWidgets.QListView.Snap)

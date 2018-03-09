@@ -9,7 +9,7 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSize, QThread, QModelIndex
 from PyQt5.QtCore import QItemSelectionModel, QItemSelection, QSize, QPointF
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont, QIcon
-from PyQt5.QtGui import QPixmap, QImage, QColor
+from PyQt5.QtGui import QPixmap, QImage, QColor, QIcon
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
 from PyQt5.QtWidgets import QGridLayout, QLabel, QWidget, QPushButton
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QListView
@@ -54,29 +54,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self._setup_scan_dir_list_model()
 
-        self.listView_thumbs.setIconSize(QSize(96, 96))
-        # self.listView_thumbs.setGridSize(QSize(120, 120))
-        self.listView_thumbs.setSpacing(16)
+        self.listView_thumbs.setIconSize(QSize(128, 128))
+        self.listView_thumbs.setGridSize(QSize(148, 148))
+        # self.listView_thumbs.setSpacing(16)
 
         self.statusBar().showMessage("Ready")
 
     def resizeEvent(self, event):
         if event.spontaneous():
             # Begin loading the currently selected dir
-            if self.treeView_scandirs.model():
-
+            folders_index = self._dirs_list_model.indexFromItem(self._TV_FOLDERS_ITEM_MAP[0])
+            if self._dirs_list_model.rowCount(folders_index) > 0:
                 self._dirs_list_selection_model.select(
                     self._dirs_list_model.index(0, 0).child(0, 0),
                     QItemSelectionModel.Select | QItemSelectionModel.Rows
                 )
-
                 selected = self.treeView_scandirs.selectedIndexes()
                 sd_id = selected[0].data(QtCore.Qt.UserRole + 1)
                 if sd_id > 0:
                     self._load_dir_images(sd_id)
-            else:
-                pass
-                # Start the dir watcher thread
+            # Start the dir watcher thread
             self.init_watch_thread()
 
     def _setup_connections(self):
@@ -101,24 +98,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _setup_scan_dir_list_model(self):
         scan_dirs = self._meta_files_mgr.get_scan_dirs()
+        self._dirs_list_model = QStandardItemModel()
+        self._dirs_list_selection_model = QItemSelectionModel(self._dirs_list_model)
+        self._thumbs_view_model = QStandardItemModel()
+
+        self._dirs_list_model.setColumnCount(1)
+        # self._dirs_list_model.setRowCount(len(scan_dirs))
+
+        self._root_tree_item = self._dirs_list_model.invisibleRootItem()
+        # FOLDERS item
+        folder_item = QStandardItem("Folders")
+        folder_item_font = QFont()
+        folder_item_font.setBold(True)
+        folder_item.setFont(folder_item_font)
+        folder_item.setSizeHint(QSize(folder_item.sizeHint().width(), 24))
+        self._root_tree_item.appendRow(folder_item)
+        self._TV_FOLDERS_ITEM_MAP[0] = folder_item
+
+        self.treeView_scandirs.setModel(self._dirs_list_model)
+        self.treeView_scandirs.setSelectionModel(self._dirs_list_selection_model)
+        self.treeView_scandirs.expandAll()
+
         if scan_dirs:
-            self._dirs_list_model = QStandardItemModel()
-            self._dirs_list_selection_model = QItemSelectionModel(self._dirs_list_model)
-
-            self._dirs_list_model.setColumnCount(1)
-            # self._dirs_list_model.setRowCount(len(scan_dirs))
-
-            self._root_tree_item = self._dirs_list_model.invisibleRootItem()
-
-            # FOLDERS item
-            folder_item = QStandardItem("Folders")
-            folder_item_font = QFont()
-            folder_item_font.setBold(True)
-            folder_item.setFont(folder_item_font)
-            folder_item.setSizeHint(QSize(folder_item.sizeHint().width(), 24))
-            self._root_tree_item.appendRow(folder_item)
-            self._TV_FOLDERS_ITEM_MAP[0] = folder_item
-
             for idx, dir in enumerate(scan_dirs):
                 item_title = "%s(%s)" % (dir['name'], dir['img_count'])
                 item = QStandardItem(item_title)
@@ -127,10 +128,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 item.setIcon(QIcon(':/images/icon_folder'))
                 folder_item.appendRow(item)
                 self._TV_FOLDERS_ITEM_MAP[dir['id']] = item
-
-            self.treeView_scandirs.setModel(self._dirs_list_model)
-            self.treeView_scandirs.setSelectionModel(self._dirs_list_selection_model)
-            self.treeView_scandirs.expandAll()
     
     def action_FolderManager_Clicked(self):
         self.w = FolderManagerWindow()
@@ -147,7 +144,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         batch_counter = 0
         img_batch = []
 
-        self._thumbs_view_model = QStandardItemModel()
 
         for img in images:
             img['thumb'] = QImage.fromData(img['thumb'])
@@ -168,11 +164,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         QScroller.grabGesture(self.listView_thumbs.viewport(),
                               QScroller.LeftMouseButtonGesture)
         LOGGER.debug("Folder(%s) loading ended." % sd_id)
+        print(self.listView_thumbs.iconSize())
 
     def add_img_to_scene_graph(self, img):
         LOGGER.debug("Adding Image(%s) to scene graph." % img['name'])
         item = QStandardItem()
-        item.setData(QPixmap.fromImage(img['thumb']), QtCore.Qt.DecorationRole)
+        item.setText(img['name'])
+        item.setIcon(QIcon(QPixmap.fromImage(img['thumb'])))
 
         # thumb_shadow_effect = QGraphicsDropShadowEffect()
         # thumb_shadow_effect.setOffset(1.5)

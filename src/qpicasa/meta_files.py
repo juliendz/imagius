@@ -11,6 +11,7 @@ from qpicasa.db import dbmgr
 
 
 class MetaFilesManager():
+    _thumb_size = (256, 256)
 
     def __init__(self, dbpath="meta-files.db", dir_dbpath="app.db"):
         self._db = dbmgr(dbpath)
@@ -93,14 +94,12 @@ class MetaFilesManager():
         return sd_id
 
     def add_image(self, sdid, abs_path, name, int_check):
-        THUMB_SIZE = (128, 128)
-        thumb_bytes = self._generate_thumb(abs_path, THUMB_SIZE)
+        thumb_bytes = self._generate_thumb(abs_path, self._thumb_size)
         mtime = os.path.getmtime(abs_path)
         return self._add_image_db(sdid, abs_path, name, thumb_bytes, mtime, int_check)
 
     def update_image_thumb(self, si_id, abs_path, mtime, int_check):
-        THUMB_SIZE = (128, 128)
-        thumb_bytes = self._generate_thumb(abs_path, THUMB_SIZE)
+        thumb_bytes = self._generate_thumb(abs_path, self._thumb_size)
         self._update_image_thumb_db(si_id, thumb_bytes, mtime, int_check)
 
     def update_image(self, si_id, int_check):
