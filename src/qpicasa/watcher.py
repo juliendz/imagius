@@ -18,6 +18,7 @@ class Watcher(QObject):
     watch_all_done = pyqtSignal()
     new_img_found = pyqtSignal(object)
     dir_added_or_updated = pyqtSignal(object)
+    dir_empty_or_deleted = pyqtSignal(object)
 
     def __init__(self):
         super(Watcher, self).__init__()
@@ -138,5 +139,9 @@ class Watcher(QObject):
             self._meta_files_mgr.update_scan_dir_img_count(sd_id, img_count)
             if has_new_images:
                 self.dir_added_or_updated.emit({'id': sd_id, 'name': dir_name, 'img_count': img_count})
-
-        self._meta_files_mgr.update_scan_dir_mtime(sd_id, modified_time)
+            # Only update `mtime` if the scan_dir is new or modified
+            if img_count > 0:
+                self._meta_files_mgr.update_scan_dir_mtime(sd_id, modified_time)
+            else:
+                self._meta_files_mgr.remove_scan_dir(sd_id)
+                self.dir_empty_or_deleted.emit({'id': sd_id})

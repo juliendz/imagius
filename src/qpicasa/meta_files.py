@@ -66,6 +66,14 @@ class MetaFilesManager():
         sd_id = self._db.run_insert_query(query, params)
         return sd_id
 
+    def remove_scan_dir(self, id):
+        """
+        <TODO>
+        """
+        query = "DELETE FROM scan_dir WHERE id = ?"
+        params = (id,)
+        return self._db.run_query(query, params)
+
     def update_scan_dir_mtime(self, sd_id, mtime):
         """
         <TODO>

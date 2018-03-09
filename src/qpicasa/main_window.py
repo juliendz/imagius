@@ -88,6 +88,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._watch.new_img_found.connect(self.on_new_img_found)
         self._watch.watch_all_done.connect(self.on_watch_all_done)
         self._watch.dir_added_or_updated.connect(self.on_dir_added_or_updated)
+        self._watch.dir_empty_or_deleted.connect(self.on_dir_empty_deleted)
 
         self.treeView_scandirs.clicked.connect(
             self.on_scan_dir_treeView_clicked)
@@ -221,6 +222,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             item.setFont(bold_font)
         else:
             self._tv_add_scan_dir(dir_info, True)
+
+    @pyqtSlot(object)
+    def on_dir_empty_deleted(self, dir_info):
+        if dir_info['id'] in self._TV_FOLDERS_ITEM_MAP:
+            item = self._TV_FOLDERS_ITEM_MAP[dir_info['id']]
+            item_index = self._dirs_list_model.indexFromItem(item)
+            parent_index = self._dirs_list_model.indexFromItem(self._TV_FOLDERS_ITEM_MAP[0])
+            self._dirs_list_model.removeRow(item_index.row(), parent_index)
+            self._TV_FOLDERS_ITEM_MAP.pop(dir_info['id'])
 
     @pyqtSlot()
     def on_watch_all_done(self):
