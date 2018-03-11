@@ -88,6 +88,8 @@ class Watcher(QObject):
                                     QDir.NoDotAndDotDot,
                                     QDirIterator.FollowSymlinks)
         has_new_images = False
+        img_count = self._meta_files_mgr.get_scan_dir_img_count(sd_id)
+        img_serial = img_count + 1
         while dir_iter.hasNext():
             dir_iter.next()
             file_info = dir_iter.fileInfo()
@@ -121,17 +123,18 @@ class Watcher(QObject):
 
                 # new file to add
                 elif not si_info:
-                    LOGGER.debug("Found New image: %s" %
-                                 file_info.absoluteFilePath())
-                    sig_param = {'dir': dir_name,
-                                 'filename': file_info.fileName()}
-                    self.new_img_found.emit(sig_param)
+                    LOGGER.debug("Found New image: %s" % file_info.absoluteFilePath())
+                    self.new_img_found.emit({'dir': dir_name, 'filename': file_info.fileName()})
                     self._meta_files_mgr.add_image(
                         sd_id,
                         file_info.absoluteFilePath(),
                         file_info.fileName(),
-                        self._img_integrity_ts)
+                        self._img_integrity_ts,
+                        img_serial)
                     has_new_images = True
+                    img_serial = img_serial + 1
+
+        self._meta_files_mgr.commit()
 
         if is_new_or_modified is True:
             self._meta_files_mgr.prune_scan_dir(sd_id, self._img_integrity_ts)

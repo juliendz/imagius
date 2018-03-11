@@ -93,10 +93,10 @@ class MetaFilesManager():
         sd_id = self._db.run_query(query, params)
         return sd_id
 
-    def add_image(self, sdid, abs_path, name, int_check):
+    def add_image(self, sdid, abs_path, name, int_check, serial):
         thumb_bytes = self._generate_thumb(abs_path, self._thumb_size)
         mtime = os.path.getmtime(abs_path)
-        return self._add_image_db(sdid, abs_path, name, thumb_bytes, mtime, int_check)
+        return self._add_image_db(sdid, abs_path, name, thumb_bytes, mtime, int_check, serial)
 
     def update_image_thumb(self, si_id, abs_path, mtime, int_check):
         thumb_bytes = self._generate_thumb(abs_path, self._thumb_size)
@@ -115,21 +115,21 @@ class MetaFilesManager():
             print(err)
         return thumb_bytes
 
-    def _add_image_db(self, sdid, abspath, name, blob, mtime, int_check):
-        query = "INSERT INTO scan_img (sdid, abspath, name, thumb, mtime, integrity_check) VALUES (?, ?, ?, ?, ?, ?)"
-        params = (sdid, abspath, name, blob.getvalue(), mtime, int_check)
-        si_id = self._db.run_insert_query(query, params)
+    def _add_image_db(self, sdid, abspath, name, blob, mtime, int_check, serial):
+        query = "INSERT INTO scan_img (sdid, abspath, name, thumb, mtime, integrity_check, serial) VALUES (?, ?, ?, ?, ?, ?, ?)"
+        params = (sdid, abspath, name, blob.getvalue(), mtime, int_check, serial)
+        si_id = self._db.run_insert_query(query, params, False)
         return si_id
 
     def _update_image_db(self, si_id, int_check):
         query = "UPDATE scan_img set integrity_check = ? WHERE id = ?"
         params = (int_check, si_id)
-        self._db.run_query(query, params)
+        self._db.run_query(query, params, False)
 
     def _update_image_thumb_db(self, si_id, blob, mtime, int_check):
         query = "UPDATE scan_img set thumb = ?, mtime = ?, integrity_check = ? WHERE id = ?"
         params = (blob.getvalue(), mtime, int_check, si_id)
-        self._db.run_query(query, params)
+        self._db.run_query(query, params, False)
 
     def get_image_id(self, abs_path):
         query = "SELECT id, mtime FROM scan_img WHERE abspath = ?"
