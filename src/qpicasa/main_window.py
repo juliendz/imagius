@@ -17,6 +17,7 @@ from PyQt5.QtWidgets import QGraphicsDropShadowEffect, QGraphicsGridLayout, QScr
 from .meta_files import MetaFilesManager
 from .ui.ui_mainwindow import Ui_MainWindow
 from .foldermanager_window import FolderManagerWindow
+from .slideshow_window import SlideshowWindow
 from .qgraphics_thumb_item import QGraphicsThumbnailItem
 
 from .watcher import Watcher
@@ -77,8 +78,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.init_watch_thread()
 
     def _setup_connections(self):
-        self.action_FolderManager.triggered.connect(
-            self.action_FolderManager_Clicked)
+        # Menu
+        self.action_FolderManager.triggered.connect(self.action_FolderManager_Clicked)
+
+        # Btns
+        self.btn_slideshow.clicked.connect(self.start_slideshow)
 
         # Watcher
         self._dir_watcher_start.connect(self._watch.watch_all)
@@ -87,8 +91,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._watch.dir_added_or_updated.connect(self.on_dir_added_or_updated)
         self._watch.dir_empty_or_deleted.connect(self.on_dir_empty_deleted)
 
-        self.treeView_scandirs.clicked.connect(
-            self.on_scan_dir_treeView_clicked)
+        # TV
+        self.treeView_scandirs.clicked.connect(self.on_scan_dir_treeView_clicked)
 
     def init_watch_thread(self):
         self._watch.moveToThread(self._dir_watcher_thread)
@@ -194,6 +198,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _clear_thumbs(self):
         self._thumbs_view_model.clear()
+
+    @pyqtSlot()
+    def start_slideshow(self):
+        self._slideshow = SlideshowWindow()
+        self._slideshow.showFullScreen()
 
     @pyqtSlot(QModelIndex)
     def on_scan_dir_treeView_clicked(self, index):
