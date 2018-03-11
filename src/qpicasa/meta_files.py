@@ -139,6 +139,12 @@ class MetaFilesManager():
             return None
         return res[0]
 
+    def get_scan_dir_image(self, sd_id, serial):
+        query = "SELECT * FROM scan_img WHERE sdid = ? AND serial = ?"
+        params = (sd_id, serial)
+        res = self._db.run_select_query(query, params)
+        return res[0]
+
     def get_scan_dir_images(self, sd_id):
         query = "SELECT * FROM scan_img WHERE sdid = ?"
         params = (sd_id,)

@@ -105,6 +105,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._dirs_list_model = QStandardItemModel()
         self._dirs_list_selection_model = QItemSelectionModel(self._dirs_list_model)
         self._thumbs_view_model = QStandardItemModel()
+        self._thumbs_selection_model = QItemSelectionModel(self._thumbs_view_model)
 
         self._dirs_list_model.setColumnCount(1)
         # self._dirs_list_model.setRowCount(len(scan_dirs))
@@ -201,7 +202,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     @pyqtSlot()
     def start_slideshow(self):
-        self._slideshow = SlideshowWindow()
+        self._slideshow = SlideshowWindow({'sd_id': 2, 'serial': 1})
+        self._slideshow.setWindowFlags(QtCore.Qt.CustomizeWindowHint | QtCore.Qt.FramelessWindowHint)
         self._slideshow.showFullScreen()
 
     @pyqtSlot(QModelIndex)
