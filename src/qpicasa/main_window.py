@@ -202,7 +202,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     @pyqtSlot()
     def start_slideshow(self):
-        self._slideshow = SlideshowWindow({'sd_id': 2, 'serial': 1})
+        self._slideshow = SlideshowWindow(2, 1)
         self._slideshow.setWindowFlags(QtCore.Qt.CustomizeWindowHint | QtCore.Qt.FramelessWindowHint)
         self._slideshow.showFullScreen()
 
