@@ -63,6 +63,7 @@ class SlideshowWindow(QWidget, Ui_SlideshowWindow):
         if not dr_img:
             # TODO: Show end of slideshow message
             print("Slideshow ended")
+            self._timer.stop()
         else:
             self.load_image(dr_img['abspath'])
             if self._is_slideshow:

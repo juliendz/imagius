@@ -165,16 +165,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 QApplication.processEvents()
 
         self.listView_thumbs.setModel(self._thumbs_view_model)
-        # self.listView_thumbs.setMovement(QListView.Snap)
+        self.listView_thumbs.setSelectionModel(self._thumbs_selection_model)
+
         QScroller.grabGesture(self.listView_thumbs.viewport(),
                               QScroller.LeftMouseButtonGesture)
         LOGGER.debug("Folder(%s) loading ended." % sd_id)
-        print(self.listView_thumbs.iconSize())
+        # print(self.listView_thumbs.iconSize())
 
     def add_img_to_scene_graph(self, img):
         LOGGER.debug("Adding Image(%s) to scene graph." % img['name'])
         item = QStandardItem()
         item.setText(img['name'])
+        item.setData(img['id'], QtCore.Qt.UserRole + 1)
+        item.setData(img['serial'], QtCore.Qt.UserRole + 2)
         item.setIcon(QIcon(QPixmap.fromImage(img['thumb'])))
 
         # thumb_shadow_effect = QGraphicsDropShadowEffect()
@@ -202,9 +205,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     @pyqtSlot()
     def start_slideshow(self):
-        self._slideshow = SlideshowWindow(2, 1)
-        self._slideshow.setWindowFlags(QtCore.Qt.CustomizeWindowHint | QtCore.Qt.FramelessWindowHint)
-        self._slideshow.showFullScreen()
+        selected = self.treeView_scandirs.selectedIndexes()
+        sd_id = selected[0].data(QtCore.Qt.UserRole + 1)
+
+        img_serial = 1
+        thumb_selected = self.listView_thumbs.selectedIndexes()
+        if len(thumb_selected) > 0:
+            img_serial = thumb_selected[0].data(QtCore.Qt.UserRole + 2)
+
+        if sd_id > 0:
+            self._slideshow = SlideshowWindow(sd_id, img_serial)
+            self._slideshow.setWindowFlags(QtCore.Qt.CustomizeWindowHint | QtCore.Qt.FramelessWindowHint)
+            self._slideshow.showFullScreen()
 
     @pyqtSlot(QModelIndex)
     def on_scan_dir_treeView_clicked(self, index):
