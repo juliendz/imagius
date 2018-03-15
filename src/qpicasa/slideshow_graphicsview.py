@@ -13,6 +13,8 @@ from .log import LOGGER
 
 class SlideshowGraphicsView(QtWidgets.QGraphicsView):
 
+    mouse_moved = QtCore.pyqtSignal(object)
+
     def __init__(self, parent=None):
         super(QtWidgets.QGraphicsView, self).__init__(parent)
 
@@ -23,6 +25,12 @@ class SlideshowGraphicsView(QtWidgets.QGraphicsView):
         self.setBackgroundBrush(brush)
         self.setInteractive(False)
         self.setObjectName("gfx_slide")
+        self.setInteractive(True)
+        self.setMouseTracking(True)
+        self.setAttribute(QtCore.Qt.WA_Hover)
+
+    def mouseMoveEvent(self, event):
+        self.mouse_moved.emit(event.pos())
 
     # def drawBackground(self, painter, rect):
     #     self.setCacheMode(self.CacheNone)

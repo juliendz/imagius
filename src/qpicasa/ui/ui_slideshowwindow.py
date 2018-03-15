@@ -12,6 +12,7 @@ class Ui_SlideshowWindow(object):
     def setupUi(self, SlideshowWindow):
         SlideshowWindow.setObjectName("SlideshowWindow")
         SlideshowWindow.resize(594, 510)
+        SlideshowWindow.setMouseTracking(True)
         self.horizontalLayout = QtWidgets.QHBoxLayout(SlideshowWindow)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setSpacing(0)

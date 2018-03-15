@@ -6,23 +6,53 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>636</width>
-    <height>94</height>
+    <width>592</width>
+    <height>72</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QFrame" name="frame">
      <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
+      <enum>QFrame::NoFrame</enum>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <property name="spacing">
+       <number>5</number>
+      </property>
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
       <item>
        <widget class="QPushButton" name="btn_exit">
         <property name="text">
@@ -31,21 +61,21 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btn_prev_image">
+       <widget class="QPushButton" name="btn_prev_slide">
         <property name="text">
          <string>Prev</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btn_play">
+       <widget class="QPushButton" name="btn_start_slideshow">
         <property name="text">
-         <string>Play</string>
+         <string>Start</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btn_next_image">
+       <widget class="QPushButton" name="btn_next_slide">
         <property name="text">
          <string>Next</string>
         </property>
@@ -54,11 +84,26 @@
       <item>
        <widget class="QGroupBox" name="groupBox">
         <property name="title">
-         <string>Display Time</string>
+         <string>Display Time (seconds)</string>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <property name="spacing">
+          <number>5</number>
+         </property>
+         <property name="leftMargin">
+          <number>5</number>
+         </property>
+         <property name="topMargin">
+          <number>5</number>
+         </property>
+         <property name="rightMargin">
+          <number>5</number>
+         </property>
+         <property name="bottomMargin">
+          <number>5</number>
+         </property>
          <item>
-          <widget class="QPushButton" name="btn_decre_time">
+          <widget class="QPushButton" name="btn_decre_interval">
            <property name="text">
             <string>-</string>
            </property>
@@ -66,13 +111,19 @@
          </item>
          <item>
           <widget class="QLabel" name="lbl_display_time">
+           <property name="font">
+            <font>
+             <family>Noto Sans</family>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>0</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="btn_incre_time">
+          <widget class="QPushButton" name="btn_incre_interval">
            <property name="text">
             <string>+</string>
            </property>
