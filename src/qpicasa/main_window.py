@@ -37,6 +37,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
+        self.frame_metadata.hide()
 
         self.w = None
         self._thumb_row_count = 0
@@ -80,6 +81,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def _setup_connections(self):
         # Menu
         self.action_FolderManager.triggered.connect(self.action_FolderManager_Clicked)
+        self.action_properties.triggered.connect(self.action_properties_clicked)
 
         # Btns
         self.btn_slideshow.clicked.connect(self.start_slideshow)
@@ -91,8 +93,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._watch.dir_added_or_updated.connect(self.on_dir_added_or_updated)
         self._watch.dir_empty_or_deleted.connect(self.on_dir_empty_deleted)
 
-        # TV
+        # Tree View
         self.treeView_scandirs.clicked.connect(self.on_scan_dir_treeView_clicked)
+
+        # Thumbs view
+        self.listView_thumbs.clicked.connect(self.on_thumb_clicked)
 
     def init_watch_thread(self):
         self._watch.moveToThread(self._dir_watcher_thread)
@@ -138,6 +143,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.w = FolderManagerWindow()
         self.w.show()
 
+    def action_properties_clicked(self):
+        if self.action_properties.isChecked():
+            self.frame_metadata.show()
+        else:
+            self.frame_metadata.hide()
+
     def _load_dir_images(self, sd_id):
         LOGGER.debug("Folder(%s) loading starting...." % sd_id)
 
@@ -148,7 +159,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         tot_img_count = len(images)
         batch_counter = 0
         img_batch = []
-
 
         for img in images:
             img['thumb'] = QImage.fromData(img['thumb'])
@@ -217,6 +227,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self._slideshow = SlideshowWindow(sd_id, img_serial)
             self._slideshow.setWindowFlags(QtCore.Qt.CustomizeWindowHint | QtCore.Qt.FramelessWindowHint)
             self._slideshow.showFullScreen()
+
+    @pyqtSlot(QModelIndex)
+    def on_thumb_clicked(self, mindex):
+        selected = self.treeView_scandirs.selectedIndexes()
+        sd_id = selected[0].data(QtCore.Qt.UserRole + 1)
+        si_id = mindex.data(QtCore.Qt.UserRole + 1)
+        img_props = self._meta_files_mgr.get_img_properties(si_id, sd_id)
+        print(img_props)
 
     @pyqtSlot(QModelIndex)
     def on_scan_dir_treeView_clicked(self, index):

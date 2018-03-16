@@ -7,7 +7,10 @@ __copyright__ = '2017, Julien Dcurz <juliendcruz at gmail.com>'
 import io
 import os
 from PIL import Image
+import PIL.ExifTags
+# from iptcinfo import IPTCInfo
 from qpicasa.db import dbmgr
+from .log import LOGGER
 
 
 class MetaFilesManager():
@@ -115,6 +118,68 @@ class MetaFilesManager():
             print(err)
         return thumb_bytes
 
+    def get_img_exif(self, abspath):
+        exif = {}
+        try:
+            with PIL.Image.open(abspath) as image:
+                exif = {
+                    PIL.ExifTags.TAGS[k]: v
+                    for k, v in image._getexif().items()
+                    if k in PIL.ExifTags.TAGS
+                }
+        except Exception as ex:
+            LOGGER.debug("EXIF data for %s could not be loaded." % abspath)
+        return exif
+
+    def get_img_properties(self, si_id, sd_id):
+        self.connect()
+        dr_img = self.get_image_from_id(si_id, sd_id)
+        exif = self.get_img_exif(dr_img['abspath'])
+        self.disconnect()
+
+        properties = {}
+        properties['filename'] = dr_img['name']
+        if exif:
+            if 'DateTime' in exif:
+                properties['DateTime'] = exif['DateTime']
+            if 'ImageWidth' in exif:
+                properties['ImageWidth'] = exif['ImageWidth']
+            if 'ImageLength' in exif:
+                properties['ImageLength'] = exif['ImageLength']
+            if 'Orientation' in exif:
+                properties['Orientation'] = exif['Orientation']
+            if 'XPKeywords' in exif:
+                properties['XPKeywords'] = exif['XPKeywords'].decode("utf-16")
+            if 'ImageUniqueID' in exif:
+                properties['ImageUniqueID'] = exif['ImageUniqueID']
+            if 'ColorSpace' in exif:
+                properties['ColorSpace'] = exif['ColorSpace']
+            if 'BitsPerSample' in exif:
+                properties['BitsPerSample'] = exif['BitsPerSample']
+            if 'PhotometricInterpretation' in exif:
+                properties['PhotometricInterpretation'] = exif['PhotometricInterpretation']
+            if 'ResolutionUnit' in exif:
+                properties['ResolutionUnit'] = exif['ResolutionUnit']
+            if 'Software' in exif:
+                properties['Software'] = exif['Software']
+            if 'SamplesPerPixel' in exif:
+                properties['SamplesPerPixel'] = exif['SamplesPerPixel']
+            if 'XResolution' in exif:
+                properties['XResolution'] = exif['XResolution']
+            if 'YResolution' in exif:
+                properties['YResolution'] = exif['YResolution']
+        else:
+            LOGGER.debug("EXIF data for %s not found." % dr_img['abspath'])
+
+        # TODO: IPTC support
+        # iptc_info = IPTCInfo(dr_img['abspath'])
+        # if len(iptc_info.data) < 4:
+        #     LOGGER.debug("IPTC dat for %s not found." % dr_img['abspath'])
+        # else:
+        #     print(iptc_info)
+
+        return properties
+
     def _add_image_db(self, sdid, abspath, name, blob, mtime, int_check, serial):
         query = "INSERT INTO scan_img (sdid, abspath, name, thumb, mtime, integrity_check, serial) VALUES (?, ?, ?, ?, ?, ?, ?)"
         params = (sdid, abspath, name, blob.getvalue(), mtime, int_check, serial)
@@ -134,6 +199,14 @@ class MetaFilesManager():
     def get_image_id(self, abs_path):
         query = "SELECT id, mtime FROM scan_img WHERE abspath = ?"
         params = (abs_path,)
+        res = self._db.run_select_query(query, params)
+        if not res:
+            return None
+        return res[0]
+
+    def get_image_from_id(self, si_id, sd_id):
+        query = "SELECT * FROM scan_img WHERE id = ? AND sdid  = ?"
+        params = (si_id, sd_id)
         res = self._db.run_select_query(query, params)
         if not res:
             return None
