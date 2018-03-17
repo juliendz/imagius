@@ -653,17 +653,28 @@ font-weight: bold</string>
     <property name="title">
      <string>Fi&amp;le</string>
     </property>
+    <addaction name="actionAdd_Folder_to_Imagius"/>
+    <addaction name="separator"/>
+    <addaction name="actionLocate_on_Disk_2"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
      <string>&amp;Tools</string>
     </property>
     <addaction name="action_FolderManager"/>
+    <addaction name="separator"/>
+    <addaction name="actionOptions"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
-     <string>Abo&amp;ut</string>
+     <string>Help</string>
     </property>
+    <addaction name="actionDocumentation"/>
+    <addaction name="actionCheck_for_Updates"/>
+    <addaction name="separator"/>
+    <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -693,8 +704,24 @@ font-weight: bold</string>
     <addaction name="menuThumbnail_Captions"/>
     <addaction name="menuFolder_View"/>
    </widget>
+   <widget class="QMenu" name="menuFolder">
+    <property name="title">
+     <string>Folder</string>
+    </property>
+    <addaction name="actionView_Slideshow"/>
+    <addaction name="separator"/>
+    <addaction name="actionLocate_on_Disk"/>
+   </widget>
+   <widget class="QMenu" name="menuPicture">
+    <property name="title">
+     <string>Picture</string>
+    </property>
+    <addaction name="actionProperties"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
+   <addaction name="menuFolder"/>
+   <addaction name="menuPicture"/>
    <addaction name="menuTools"/>
    <addaction name="menuAbout"/>
   </widget>
@@ -763,6 +790,56 @@ font-weight: bold</string>
    </property>
    <property name="text">
     <string>Flat Folder View</string>
+   </property>
+  </action>
+  <action name="actionOptions">
+   <property name="text">
+    <string>Options</string>
+   </property>
+  </action>
+  <action name="actionProperties">
+   <property name="text">
+    <string>Properties</string>
+   </property>
+  </action>
+  <action name="actionView_Slideshow">
+   <property name="text">
+    <string>View Slideshow</string>
+   </property>
+  </action>
+  <action name="actionLocate_on_Disk">
+   <property name="text">
+    <string>Locate on Disk</string>
+   </property>
+  </action>
+  <action name="actionAdd_Folder_to_Imagius">
+   <property name="text">
+    <string>Add Folder to Imagius</string>
+   </property>
+  </action>
+  <action name="actionLocate_on_Disk_2">
+   <property name="text">
+    <string>Locate on Disk</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionDocumentation">
+   <property name="text">
+    <string>Documentation</string>
+   </property>
+  </action>
+  <action name="actionCheck_for_Updates">
+   <property name="text">
+    <string>Check for Updates</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>

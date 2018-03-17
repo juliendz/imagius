@@ -28,7 +28,7 @@ class Ui_PropertiesWidget(object):
     def retranslateUi(self, PropertiesWidget):
         _translate = QtCore.QCoreApplication.translate
         PropertiesWidget.setWindowTitle(_translate("PropertiesWidget", "Form"))
-        self.gbox_properties.setTitle(_translate("PropertiesWidget", "Properties of"))
+        self.gbox_properties.setTitle(_translate("PropertiesWidget", "Select and item to show the properties"))
 
 
 if __name__ == "__main__":
