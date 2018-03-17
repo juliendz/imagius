@@ -21,6 +21,7 @@ from .foldermanager_window import FolderManagerWindow
 from .slideshow_window import SlideshowWindow
 from .properties_widget import PropertiesWidget
 from .qgraphics_thumb_item import QGraphicsThumbnailItem
+from .thumbs_listview import ThumbsListView
 
 from .watcher import Watcher
 from .log import LOGGER
@@ -53,14 +54,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._meta_files_mgr = MetaFilesManager()
         self._watch = Watcher()
 
+        self.listView_thumbs = ThumbsListView(self.frame_thumbs)
+        self.vlayout_frame_thumbs.addWidget(self.listView_thumbs)
+
         # connections
         self._setup_connections()
 
         self._setup_scan_dir_list_model()
-
-        self.listView_thumbs.setIconSize(QSize(128, 128))
-        self.listView_thumbs.setGridSize(QSize(148, 148))
-        # self.listView_thumbs.setSpacing(16)
 
         # Properties widget
         self.vlayout_properties = QtWidgets.QVBoxLayout(self.toolbox_metadata_properties)
@@ -109,6 +109,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Thumbs view
         self.listView_thumbs.clicked.connect(self.on_thumb_clicked)
+        self.listView_thumbs.empty_area_clicked.connect(self.on_thumb_listview_empty_area_clicked)
 
         self.buttonGroup_metadata.buttonClicked.connect(self.on_buttongroup_metadata_clicked)
 
@@ -278,12 +279,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         sd_id = selected[0].data(QtCore.Qt.UserRole + 1)
         si_id = mindex.data(QtCore.Qt.UserRole + 1)
         img_props = self._meta_files_mgr.get_img_properties(si_id, sd_id)
-        self.lbl_selection_summary.setText(self.get_selection_summary(img_props))
+        self.lbl_selection_summary.setText(self.get_thumb_selection_summary(img_props))
 
         if self.action_properties.isChecked():
             self.properties_widget.setup_properties(img_props)
 
-    def get_selection_summary(self, props):
+    @pyqtSlot()
+    def on_thumb_listview_empty_area_clicked(self):
+        selected_thumb = self.listView_thumbs.selectedIndexes()
+        if len(selected_thumb) == 0:
+            selected = self.treeView_scandirs.selectedIndexes()
+            sd_id = selected[0].data(QtCore.Qt.UserRole + 1)
+            props = self._meta_files_mgr.get_dir_properties(sd_id)
+            self.lbl_selection_summary.setText(self.get_dir_selection_summary(props))
+
+    def get_dir_selection_summary(self, props):
+        img_count = props['img_count']
+        modified = props['modified'].toString('dd MMMM yyyy')
+        size = props['size']
+        return "%s pictures        %s        %s on disk" % (img_count, modified, size)
+
+    def get_thumb_selection_summary(self, props):
         filename = props['filename']
         modified = props['DateTime'] if 'DateTime' in props else ''
         dimensions = props['dimensions']
@@ -293,6 +309,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSlot(QModelIndex)
     def on_scan_dir_treeView_clicked(self, index):
         sd_id = index.data(QtCore.Qt.UserRole + 1)
+        props = self._meta_files_mgr.get_dir_properties(sd_id)
+        self.lbl_selection_summary.setText(self.get_dir_selection_summary(props))
         # Categories tree nodes will not contain 'data'
         if sd_id:
             self._clear_thumbs()

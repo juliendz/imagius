@@ -133,6 +133,19 @@ class MetaFilesManager():
             LOGGER.debug("EXIF data for %s could not be loaded." % abspath)
         return exif
 
+    def get_dir_properties(self, sd_id):
+        self.connect()
+        dr_dir = self.get_scan_dir(sd_id)
+        self.disconnect()
+        dir_info = QtCore.QFileInfo(dr_dir['abspath'])
+        print(dir_info.size())
+        properties = {}
+        properties['img_count'] = dr_dir['img_count']
+        properties['modified'] = dir_info.lastModified()
+        properties['size'] = self.format_size(self.get_dir_size(dr_dir['abspath']))
+
+        return properties
+
     def get_img_properties(self, si_id, sd_id):
         self.connect()
         dr_img = self.get_image_from_id(si_id, sd_id)
@@ -274,4 +287,12 @@ class MetaFilesManager():
                 return "%3.1f %s%s" % (num, unit, suffix)
             num /= 1024.0
         return "%.1f %s%s" % (num, 'Gi', suffix)
-
+    
+    def get_dir_size(self, abspath):
+        start_path = abspath
+        total_size = 0
+        for dirpath, dirnames, filenames in os.walk(start_path):
+            for f in filenames:
+                fp = os.path.join(dirpath, f)
+                total_size += os.path.getsize(fp)
+        return total_size
