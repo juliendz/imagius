@@ -95,6 +95,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Btns
         self.btn_slideshow.clicked.connect(self.start_slideshow)
+        self.hslider_thumb_size.valueChanged.connect(self.on_hslider_thumb_size_value_changed)
 
         # Watcher
         self._dir_watcher_start.connect(self._watch.watch_all)
@@ -187,6 +188,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.action_tags.trigger()
         elif button.objectName() == 'toolbutton_properties':
             self.action_properties.trigger()
+
+    def on_hslider_thumb_size_value_changed(self, value):
+        self.listView_thumbs.setIconSize(QSize(value, value))
+        self.listView_thumbs.setGridSize(QSize(value + 20, value + 20))
 
     def _load_dir_images(self, sd_id):
         LOGGER.debug("Folder(%s) loading starting...." % sd_id)
