@@ -336,6 +336,12 @@
               </layout>
              </widget>
              <widget class="QFrame" name="frame_metadata">
+              <property name="maximumSize">
+               <size>
+                <width>300</width>
+                <height>16777215</height>
+               </size>
+              </property>
               <property name="font">
                <font>
                 <family>Noto Sans</family>
@@ -366,15 +372,7 @@
                </property>
                <item row="0" column="0">
                 <widget class="QToolBox" name="toolBox_metadata">
-                 <widget class="QWidget" name="toolBox_metadata_properties">
-                  <property name="geometry">
-                   <rect>
-                    <x>0</x>
-                    <y>0</y>
-                    <width>218</width>
-                    <height>308</height>
-                   </rect>
-                  </property>
+                 <widget class="QWidget" name="toolbox_metadata_properties">
                   <attribute name="icon">
                    <iconset resource="../../resources/qpicasa.qrc">
                     <normaloff>:/images/icon_folder</normaloff>:/images/icon_folder</iconset>
@@ -388,8 +386,8 @@
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>200</width>
-                    <height>290</height>
+                    <width>195</width>
+                    <height>308</height>
                    </rect>
                   </property>
                   <attribute name="icon">

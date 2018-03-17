@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>418</width>
-    <height>283</height>
+    <width>270</width>
+    <height>465</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,17 +19,12 @@
      <property name="font">
       <font>
        <family>Noto Sans</family>
-       <pointsize>14</pointsize>
+       <pointsize>10</pointsize>
       </font>
      </property>
      <property name="title">
       <string>Properties of</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item>
-       <widget class="QListWidget" name="listWidget_properties"/>
-      </item>
-     </layout>
     </widget>
    </item>
   </layout>
