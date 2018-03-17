@@ -6,11 +6,13 @@ __copyright__ = '2017, Julien Dcurz <juliendcruz at gmail.com>'
 
 import io
 import os
+from PyQt5 import QtCore
 from PIL import Image
 import PIL.ExifTags
-# from iptcinfo import IPTCInfo
+from iptcinfo import IPTCInfo
 from qpicasa.db import dbmgr
 from .log import LOGGER
+import exifread
 
 
 class MetaFilesManager():
@@ -135,17 +137,27 @@ class MetaFilesManager():
         self.connect()
         dr_img = self.get_image_from_id(si_id, sd_id)
         exif = self.get_img_exif(dr_img['abspath'])
+        # print(exif)
         self.disconnect()
 
         properties = {}
+        properties['abspath'] = dr_img['abspath']
         properties['filename'] = dr_img['name']
+        properties['filesize'] = self.format_size(QtCore.QFileInfo(dr_img['abspath']).size())
+        properties['dimensions'] = ''
         if exif:
             if 'DateTime' in exif:
                 properties['DateTime'] = exif['DateTime']
+            if 'DateTimeDigitized' in exif:
+                properties['DateTimeDigitized'] = exif['DateTimeDigitized']
             if 'ImageWidth' in exif:
                 properties['ImageWidth'] = exif['ImageWidth']
             if 'ImageLength' in exif:
                 properties['ImageLength'] = exif['ImageLength']
+            if 'ExifImageWidth' in exif:
+                properties['ExifImageWidth'] = exif['ExifImageWidth']
+            if 'ExifImageHeight' in exif:
+                properties['ExifImageHeight'] = exif['ExifImageHeight']
             if 'Orientation' in exif:
                 properties['Orientation'] = exif['Orientation']
             if 'XPKeywords' in exif:
@@ -168,6 +180,11 @@ class MetaFilesManager():
                 properties['XResolution'] = exif['XResolution']
             if 'YResolution' in exif:
                 properties['YResolution'] = exif['YResolution']
+
+            if 'ImageWidth' in exif:
+                properties['dimensions'] = "%sx%s" % (properties['ImageWidth'], properties['ImageLength'])
+            elif 'ExifImageWidth' in exif:
+                properties['dimensions'] = "%sx%s" % (properties['ExifImageWidth'], properties['ExifImageHeight'])
         else:
             LOGGER.debug("EXIF data for %s not found." % dr_img['abspath'])
 
@@ -250,4 +267,11 @@ class MetaFilesManager():
         res = self._db.run_select_query(query, params)
         print(res)
         return res[0]['img_count']
+
+    def format_size(self, num, suffix='B'):
+        for unit in ['', 'Ki', 'Mi']:
+            if abs(num) < 1024.0:
+                return "%3.1f %s%s" % (num, unit, suffix)
+            num /= 1024.0
+        return "%.1f %s%s" % (num, 'Gi', suffix)
 

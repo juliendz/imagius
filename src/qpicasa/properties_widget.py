@@ -3,18 +3,55 @@ Description: Image Properties widget module
 author: Julien Dcruz
 """
 
-import sys
-import os
-from PyQt5.QtWidgets import QWidget
-from PyQt5 import QtCore
-from PyQt5.QtCore import QDir, QStandardPaths
-from .folder_manager import FolderManager
+from PyQt5 import QtCore, QtGui, QtWidgets
 from .ui.ui_propertieswidget import Ui_PropertiesWidget
-from .log import LOGGER
+from .propertiesitem_widget import PropertiesItemWidget
 
 
-class PropertiesWidget(QWidget, Ui_PropertiesWidget):
+class PropertiesWidget(QtWidgets.QWidget, Ui_PropertiesWidget):
 
-    def __init__(self, slideshow_interval, parent=None):
+    def __init__(self, parent=None):
         super(PropertiesWidget, self).__init__(parent)
         self.setupUi(self)
+
+        self.vlayout = QtWidgets.QVBoxLayout(self.gbox_properties)
+
+    def setup_properties(self, props):
+        for i in reversed(range(self.vlayout.count())):
+            self.vlayout.itemAt(i).widget().setParent(None)
+
+        title = "Properties of %s" % props['filename']
+        self.gbox_properties.setTitle(title)
+
+        for key, value in props.items():
+            title = self.get_title(key)
+            self.vlayout.addWidget(PropertiesItemWidget(key, value))
+
+    def get_title(self, tag):
+        if tag == 'abspath':
+            return 'Location'
+        elif tag == 'filesize':
+            return 'File Size'
+        elif tag == 'dimensions':
+            return 'Dimensions'
+        elif tag == 'DateTimeDigitized':
+            return 'Digitized Date'
+        elif tag == 'DateTime':
+            return 'Modified Date'
+        elif tag == 'ColorSpace':
+            return 'Color Space'
+        elif tag == 'ImageUniqueID':
+            return 'Unique ID'
+        elif tag == 'BitsPerSample':
+            return 'Bits Per Sample'
+        elif tag == 'XResolution':
+            return 'X Resolution'
+        elif tag == 'YResolution':
+            return 'Y Resolution'
+        elif tag == 'ResolutionUnit':
+            return 'Resolution Unit'
+        return tag
+
+
+
+

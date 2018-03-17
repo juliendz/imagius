@@ -6,6 +6,7 @@ last edited: 7th December 2016
 
 import sys
 from PyQt5 import QtCore
+from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSize, QThread, QModelIndex
 from PyQt5.QtCore import QItemSelectionModel, QItemSelection, QSize, QPointF
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont, QIcon
@@ -18,6 +19,7 @@ from .meta_files import MetaFilesManager
 from .ui.ui_mainwindow import Ui_MainWindow
 from .foldermanager_window import FolderManagerWindow
 from .slideshow_window import SlideshowWindow
+from .properties_widget import PropertiesWidget
 from .qgraphics_thumb_item import QGraphicsThumbnailItem
 
 from .watcher import Watcher
@@ -59,6 +61,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.listView_thumbs.setIconSize(QSize(128, 128))
         self.listView_thumbs.setGridSize(QSize(148, 148))
         # self.listView_thumbs.setSpacing(16)
+
+        # Properties widget
+        self.vlayout_properties = QtWidgets.QVBoxLayout(self.toolbox_metadata_properties)
+        self.vlayout_properties.setContentsMargins(0, 0, 0, 0)
+        self.vlayout_properties.setSpacing(0)
+        self.properties_widget = PropertiesWidget(self.toolbox_metadata_properties)
+        self.vlayout_properties.addWidget(self.properties_widget)
 
         self.statusBar().showMessage("Ready")
 
@@ -145,6 +154,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def action_properties_clicked(self):
         if self.action_properties.isChecked():
+            selected = self.treeView_scandirs.selectedIndexes()
+            sd_id = selected[0].data(QtCore.Qt.UserRole + 1)
+            selected_thumb = self.listView_thumbs.selectedIndexes()
+            if len(selected_thumb) > 0:
+                si_id = selected_thumb[0].data(QtCore.Qt.UserRole + 1)
+                img_props = self._meta_files_mgr.get_img_properties(si_id, sd_id)
+                self.properties_widget.setup_properties(img_props)
+
             self.frame_metadata.show()
         else:
             self.frame_metadata.hide()
@@ -234,7 +251,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         sd_id = selected[0].data(QtCore.Qt.UserRole + 1)
         si_id = mindex.data(QtCore.Qt.UserRole + 1)
         img_props = self._meta_files_mgr.get_img_properties(si_id, sd_id)
-        print(img_props)
+        self.lbl_selection_summary.setText(self.get_selection_summary(img_props))
+
+        if self.action_properties.isChecked():
+            self.properties_widget.setup_properties(img_props)
+
+    def get_selection_summary(self, props):
+        filename = props['filename']
+        modified = props['DateTime'] if 'DateTime' in props else ''
+        dimensions = props['dimensions']
+        filesize = props['filesize']
+        return "%s %s %s %s" % (filename, modified, dimensions, filesize)
 
     @pyqtSlot(QModelIndex)
     def on_scan_dir_treeView_clicked(self, index):
