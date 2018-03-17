@@ -91,6 +91,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Menu
         self.action_FolderManager.triggered.connect(self.action_FolderManager_Clicked)
         self.action_properties.triggered.connect(self.action_properties_clicked)
+        self.action_tags.triggered.connect(self.action_tags_clicked)
 
         # Btns
         self.btn_slideshow.clicked.connect(self.start_slideshow)
@@ -107,6 +108,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Thumbs view
         self.listView_thumbs.clicked.connect(self.on_thumb_clicked)
+
+        self.buttonGroup_metadata.buttonClicked.connect(self.on_buttongroup_metadata_clicked)
 
     def init_watch_thread(self):
         self._watch.moveToThread(self._dir_watcher_thread)
@@ -162,9 +165,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 img_props = self._meta_files_mgr.get_img_properties(si_id, sd_id)
                 self.properties_widget.setup_properties(img_props)
 
+            self.toolBox_metadata.setCurrentIndex(0)
             self.frame_metadata.show()
+            self.toolbutton_tags.setChecked(False)
+            self.action_tags.setChecked(False)
         else:
             self.frame_metadata.hide()
+
+    def action_tags_clicked(self):
+        print(self.action_tags.isChecked())
+        if self.action_tags.isChecked():
+            self.toolBox_metadata.setCurrentIndex(1)
+            self.frame_metadata.show()
+            self.toolbutton_properties.setChecked(False)
+            self.action_properties.setChecked(False)
+        else:
+            self.frame_metadata.hide()
+
+    def on_buttongroup_metadata_clicked(self, button):
+        if button.objectName() == 'toolbutton_tags':
+            self.action_tags.trigger()
+        elif button.objectName() == 'toolbutton_properties':
+            self.action_properties.trigger()
 
     def _load_dir_images(self, sd_id):
         LOGGER.debug("Folder(%s) loading starting...." % sd_id)
@@ -261,7 +283,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         modified = props['DateTime'] if 'DateTime' in props else ''
         dimensions = props['dimensions']
         filesize = props['filesize']
-        return "%s %s %s %s" % (filename, modified, dimensions, filesize)
+        return "%s        %s        %s        %s" % (filename, modified, dimensions, filesize)
 
     @pyqtSlot(QModelIndex)
     def on_scan_dir_treeView_clicked(self, index):

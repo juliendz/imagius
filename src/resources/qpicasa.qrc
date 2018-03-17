@@ -2,5 +2,7 @@
   <qresource prefix="/images">
     <file alias="icon_folder">images/folder.png</file>
     <file alias="icon_slideshow">images/slideshow.png</file>
+    <file alias="icon_properties">images/properties.png</file>
+    <file alias="icon_tags">images/tags.png</file>
   </qresource>
 </RCC>
