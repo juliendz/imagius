@@ -89,6 +89,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _setup_connections(self):
         # Menu
+        self.action_exit.triggered.connect(self.action_exit_clicked)
         self.action_FolderManager.triggered.connect(self.action_FolderManager_Clicked)
         self.action_properties.triggered.connect(self.action_properties_clicked)
         self.action_tags.triggered.connect(self.action_tags_clicked)
@@ -152,6 +153,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 item.setIcon(QIcon(':/images/icon_folder'))
                 folder_item.appendRow(item)
                 self._TV_FOLDERS_ITEM_MAP[dir['id']] = item
+
+    def action_exit_clicked(self):
+        self.close()
     
     def action_FolderManager_Clicked(self):
         self.w = FolderManagerWindow()

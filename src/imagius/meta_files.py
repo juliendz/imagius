@@ -10,47 +10,48 @@ from PyQt5 import QtCore
 from PIL import Image
 import PIL.ExifTags
 from iptcinfo import IPTCInfo
-from qpicasa.db import dbmgr
+from imagius.db import dbmgr
 from .log import LOGGER
+import settings
 import exifread
 
 
 class MetaFilesManager():
     _thumb_size = (256, 256)
 
-    def __init__(self, dbpath="meta-files.db", dir_dbpath="app.db"):
-        self._db = dbmgr(dbpath)
-        self._dir_db = dbmgr(dir_dbpath)
+    def __init__(self, meta_path=settings.get_meta_db_path(), settings_path=settings.get_settings_db_path()):
+        self._meta_db = dbmgr(meta_path)
+        self._settings_db = dbmgr(settings_path)
 
     def connect(self):
-        self._db.connect()
+        self._meta_db.connect()
 
     def disconnect(self):
-        self._db.disconnect()
+        self._meta_db.disconnect()
 
     def commit(self):
-        self._db.commit()
+        self._meta_db.commit()
 
     def get_watched_dirs(self):
         query = "SELECT * FROM dir"
-        self._dir_db.connect()
-        res = self._dir_db.run_select_query(query)
-        self._dir_db.disconnect()
+        self._settings_db.connect()
+        res = self._settings_db.run_select_query(query)
+        self._settings_db.disconnect()
         return res
 
     def get_scan_dirs(self):
         query = "SELECT * FROM scan_dir"
-        self._db.connect()
-        res = self._db.run_select_query(query)
-        self._db.disconnect()
+        self._meta_db.connect()
+        res = self._meta_db.run_select_query(query)
+        self._meta_db.disconnect()
         return res
 
     def get_scan_dir(self, id):
         query = "SELECT * FROM scan_dir WHERE id = ?"
         params = (id,)
-        self._db.connect()
-        res = self._db.run_select_query(query, params)
-        self._db.disconnect()
+        self._meta_db.connect()
+        res = self._meta_db.run_select_query(query, params)
+        self._meta_db.disconnect()
         if not res:
             return None
         return res[0]
@@ -58,7 +59,7 @@ class MetaFilesManager():
     def get_scan_dir_id(self, abs_path):
         query = "SELECT * FROM scan_dir WHERE abspath = ?"
         params = (abs_path,)
-        res = self._db.run_select_query(query, params)
+        res = self._meta_db.run_select_query(query, params)
         if not res:
             return None
         return res[0]
@@ -69,7 +70,7 @@ class MetaFilesManager():
         """
         query = "INSERT INTO scan_dir (abspath, name) VALUES (?, ?)"
         params = (path, name)
-        sd_id = self._db.run_insert_query(query, params)
+        sd_id = self._meta_db.run_insert_query(query, params)
         return sd_id
 
     def remove_scan_dir(self, id):
@@ -78,7 +79,7 @@ class MetaFilesManager():
         """
         query = "DELETE FROM scan_dir WHERE id = ?"
         params = (id,)
-        return self._db.run_query(query, params)
+        return self._meta_db.run_query(query, params)
 
     def update_scan_dir_mtime(self, sd_id, mtime):
         """
@@ -86,7 +87,7 @@ class MetaFilesManager():
         """
         query = "UPDATE scan_dir SET mtime = ? WHERE id = ?"
         params = (mtime, sd_id)
-        sd_id = self._db.run_query(query, params)
+        sd_id = self._meta_db.run_query(query, params)
         return sd_id
 
     def update_scan_dir_img_count(self, sd_id, count):
@@ -95,7 +96,7 @@ class MetaFilesManager():
         """
         query = "UPDATE scan_dir SET img_count = ? WHERE id = ?"
         params = (count, sd_id)
-        sd_id = self._db.run_query(query, params)
+        sd_id = self._meta_db.run_query(query, params)
         return sd_id
 
     def add_image(self, sdid, abs_path, name, int_check, serial):
@@ -213,23 +214,23 @@ class MetaFilesManager():
     def _add_image_db(self, sdid, abspath, name, blob, mtime, int_check, serial):
         query = "INSERT INTO scan_img (sdid, abspath, name, thumb, mtime, integrity_check, serial) VALUES (?, ?, ?, ?, ?, ?, ?)"
         params = (sdid, abspath, name, blob.getvalue(), mtime, int_check, serial)
-        si_id = self._db.run_insert_query(query, params, False)
+        si_id = self._meta_db.run_insert_query(query, params, False)
         return si_id
 
     def _update_image_db(self, si_id, int_check):
         query = "UPDATE scan_img set integrity_check = ? WHERE id = ?"
         params = (int_check, si_id)
-        self._db.run_query(query, params, False)
+        self._meta_db.run_query(query, params, False)
 
     def _update_image_thumb_db(self, si_id, blob, mtime, int_check):
         query = "UPDATE scan_img set thumb = ?, mtime = ?, integrity_check = ? WHERE id = ?"
         params = (blob.getvalue(), mtime, int_check, si_id)
-        self._db.run_query(query, params, False)
+        self._meta_db.run_query(query, params, False)
 
     def get_image_id(self, abs_path):
         query = "SELECT id, mtime FROM scan_img WHERE abspath = ?"
         params = (abs_path,)
-        res = self._db.run_select_query(query, params)
+        res = self._meta_db.run_select_query(query, params)
         if not res:
             return None
         return res[0]
@@ -237,7 +238,7 @@ class MetaFilesManager():
     def get_image_from_id(self, si_id, sd_id):
         query = "SELECT * FROM scan_img WHERE id = ? AND sdid  = ?"
         params = (si_id, sd_id)
-        res = self._db.run_select_query(query, params)
+        res = self._meta_db.run_select_query(query, params)
         if not res:
             return None
         return res[0]
@@ -245,7 +246,7 @@ class MetaFilesManager():
     def get_scan_dir_image(self, sd_id, serial):
         query = "SELECT * FROM scan_img WHERE sdid = ? AND serial = ?"
         params = (sd_id, serial)
-        res = self._db.run_select_query(query, params)
+        res = self._meta_db.run_select_query(query, params)
         if not res:
             return None
         return res[0]
@@ -253,31 +254,31 @@ class MetaFilesManager():
     def get_scan_dir_images(self, sd_id):
         query = "SELECT * FROM scan_img WHERE sdid = ?"
         params = (sd_id,)
-        self._db.connect()
-        res = self._db.run_select_query(query, params)
-        self._db.disconnect()
+        self._meta_db.connect()
+        res = self._meta_db.run_select_query(query, params)
+        self._meta_db.disconnect()
         return res
 
     def get_unclean_entries(self, int_check):
         query = "SELECT abspath FROM scan_img WHERE integrity_check < ?"
         params = (int_check,)
-        res = self._db.run_select_query(query, params)
+        res = self._meta_db.run_select_query(query, params)
         return res
 
     def clean_db(self, int_check):
         query = "DELETE FROM scan_img WHERE integrity_check < ?"
         params = (int_check,)
-        return self._db.run_query(query, params, True)
+        return self._meta_db.run_query(query, params, True)
 
     def prune_scan_dir(self, sd_id, int_check):
         query = "DELETE FROM scan_img WHERE sdid = ? AND integrity_check < ?"
         params = (sd_id, int_check)
-        return self._db.run_query(query, params, True)
+        return self._meta_db.run_query(query, params, True)
 
     def get_scan_dir_img_count(self, sd_id):
         query = "select COUNT(id) AS 'img_count' from scan_img WHERE sdid = ?"
         params = (sd_id,)
-        res = self._db.run_select_query(query, params)
+        res = self._meta_db.run_select_query(query, params)
         print(res)
         return res[0]['img_count']
 

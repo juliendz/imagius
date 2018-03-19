@@ -4,12 +4,13 @@ author: Julien Dcruz
 """
 from PyQt5.QtCore import QObject, QThread, pyqtSignal, pyqtSlot
 from .db import dbmgr
+import settings
 from .log import LOGGER
 
 
 class FolderManager(QObject):
 
-    def __init__(self, dbpath="app.db"):
+    def __init__(self, dbpath=settings.get_settings_db_path()):
         super(FolderManager, self).__init__()
         self._db = dbmgr(dbpath)
 

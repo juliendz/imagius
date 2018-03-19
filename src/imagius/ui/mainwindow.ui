@@ -657,7 +657,7 @@ font-weight: bold</string>
     <addaction name="separator"/>
     <addaction name="actionLocate_on_Disk_2"/>
     <addaction name="separator"/>
-    <addaction name="actionExit"/>
+    <addaction name="action_exit"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -822,7 +822,7 @@ font-weight: bold</string>
     <string>Locate on Disk</string>
    </property>
   </action>
-  <action name="actionExit">
+  <action name="action_exit">
    <property name="text">
     <string>Exit</string>
    </property>
