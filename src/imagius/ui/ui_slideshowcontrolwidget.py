@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'qpicasa/ui/slideshowcontrolwidget.ui'
+# Form implementation generated from reading ui file 'imagius/ui/slideshowcontrolwidget.ui'
 #
 # Created by: PyQt5 UI code generator 5.10.1
 #

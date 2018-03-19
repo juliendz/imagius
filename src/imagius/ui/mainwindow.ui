@@ -340,7 +340,7 @@
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>195</width>
+                    <width>298</width>
                     <height>308</height>
                    </rect>
                   </property>
@@ -357,7 +357,7 @@
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>195</width>
+                    <width>298</width>
                     <height>308</height>
                    </rect>
                   </property>
@@ -653,9 +653,9 @@ font-weight: bold</string>
     <property name="title">
      <string>Fi&amp;le</string>
     </property>
-    <addaction name="actionAdd_Folder_to_Imagius"/>
+    <addaction name="action_add_folder"/>
     <addaction name="separator"/>
-    <addaction name="actionLocate_on_Disk_2"/>
+    <addaction name="action_file_locate"/>
     <addaction name="separator"/>
     <addaction name="action_exit"/>
    </widget>
@@ -663,7 +663,7 @@ font-weight: bold</string>
     <property name="title">
      <string>&amp;Tools</string>
     </property>
-    <addaction name="action_FolderManager"/>
+    <addaction name="action_folder_manager"/>
     <addaction name="separator"/>
     <addaction name="actionOptions"/>
    </widget>
@@ -710,7 +710,7 @@ font-weight: bold</string>
     </property>
     <addaction name="actionView_Slideshow"/>
     <addaction name="separator"/>
-    <addaction name="actionLocate_on_Disk"/>
+    <addaction name="action_folder_locate"/>
    </widget>
    <widget class="QMenu" name="menuPicture">
     <property name="title">
@@ -726,7 +726,7 @@ font-weight: bold</string>
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="action_FolderManager">
+  <action name="action_folder_manager">
    <property name="text">
     <string>&amp;Folder Manager</string>
    </property>
@@ -807,17 +807,17 @@ font-weight: bold</string>
     <string>View Slideshow</string>
    </property>
   </action>
-  <action name="actionLocate_on_Disk">
+  <action name="action_folder_locate">
    <property name="text">
     <string>Locate on Disk</string>
    </property>
   </action>
-  <action name="actionAdd_Folder_to_Imagius">
+  <action name="action_add_folder">
    <property name="text">
     <string>Add Folder to Imagius</string>
    </property>
   </action>
-  <action name="actionLocate_on_Disk_2">
+  <action name="action_file_locate">
    <property name="text">
     <string>Locate on Disk</string>
    </property>

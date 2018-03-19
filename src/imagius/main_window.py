@@ -5,8 +5,7 @@ last edited: 7th December 2016
 """
 
 import sys
-from PyQt5 import QtCore
-from PyQt5 import QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSize, QThread, QModelIndex
 from PyQt5.QtCore import QItemSelectionModel, QItemSelection, QSize, QPointF
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont, QIcon
@@ -89,8 +88,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _setup_connections(self):
         # Menu
+        self.action_add_folder.triggered.connect(self.action_folder_manager_clicked)
+        self.action_file_locate.triggered.connect(self.handle_action_file_locate_triggered)
         self.action_exit.triggered.connect(self.action_exit_clicked)
-        self.action_FolderManager.triggered.connect(self.action_FolderManager_Clicked)
+        self.action_folder_manager.triggered.connect(self.action_folder_manager_clicked)
         self.action_properties.triggered.connect(self.action_properties_clicked)
         self.action_tags.triggered.connect(self.action_tags_clicked)
 
@@ -154,10 +155,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 folder_item.appendRow(item)
                 self._TV_FOLDERS_ITEM_MAP[dir['id']] = item
 
+    def handle_action_file_locate_triggered(self):
+        curr_sel_ids = self.get_current_selection_ids()
+        if 'sd_id' in curr_sel_ids and 'si_id' in curr_sel_ids:
+            self._meta_files_mgr.connect()
+            dr_img = self._meta_files_mgr.get_image_from_id(curr_sel_ids['si_id'], curr_sel_ids['sd_id'])
+            self._meta_files_mgr.disconnect()
+            explorer_process = QtCore.QProcess()
+            explorer_process.setProgram('explorer.exe')
+            explorer_process.setArguments(['/select,%s' % QtCore.QDir.toNativeSeparators(dr_img['abspath'])])
+            explorer_process.startDetached()
+
     def action_exit_clicked(self):
         self.close()
-    
-    def action_FolderManager_Clicked(self):
+
+    def action_folder_manager_clicked(self):
         self.w = FolderManagerWindow()
         self.w.show()
 
@@ -350,3 +362,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSlot()
     def on_watch_all_done(self):
         self.statusBar().clearMessage()
+
+    def get_current_selection_ids(self):
+        selected_ids = {}
+        selected = self.treeView_scandirs.selectedIndexes()
+        selected_ids['sd_id'] = selected[0].data(QtCore.Qt.UserRole + 1)
+        selected_thumb = self.listView_thumbs.selectedIndexes()
+        if len(selected_thumb) > 0:
+            selected_ids['si_id'] = selected_thumb[0].data(QtCore.Qt.UserRole + 1)
+        return selected_ids
