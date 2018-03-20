@@ -27,6 +27,7 @@ from .types import Thumb_Caption_Type
 from .watcher import Watcher
 from .log import LOGGER
 import settings
+from settings import SettingType
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -42,7 +43,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
-        self.frame_metadata.hide()
 
         self.actiongrp_thumbs_size = QtWidgets.QActionGroup(self)
         self.actiongrp_thumbs_size.addAction(self.action_small_thumbs)
@@ -52,10 +52,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actiongrp_thumbs_caption.addAction(self.action_caption_none)
         self.actiongrp_thumbs_caption.addAction(self.action_caption_filename)
         self.action_caption_none.setChecked(True)
-
-        self._thumb_row_count = 0
-        self._thumb_col_count = 0
-        self._thumb_curr_row_width = 0
 
         # threads
         self._dir_watcher_thread = QThread()
@@ -80,6 +76,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.vlayout_properties.addWidget(self.properties_widget)
 
         self.statusBar().showMessage("Ready")
+
+        # settings
+        self.hslider_thumb_size.setValue(settings.get(SettingType.UI_THUMBS_SIZE, 128, 'int'))
+
+        if settings.get(SettingType.UI_METADATA_SHOW_PROPS, False, 'bool'):
+            self.toolBox_metadata.setCurrentIndex(0)
+            self.toolbutton_properties.setChecked(True)
+            self.toolbutton_tags.setChecked(False)
+            self.action_properties.setChecked(True)
+            self.action_tags.setChecked(False)
+            self.frame_metadata.show()
+        elif settings.get(SettingType.UI_METADATA_SHOW_TAGS, False, 'bool'):
+            self.toolBox_metadata.setCurrentIndex(1)
+            self.toolbutton_properties.setChecked(False)
+            self.toolbutton_tags.setChecked(True)
+            self.action_properties.setChecked(False)
+            self.action_tags.setChecked(True)
+            self.frame_metadata.show()
+        else:
+            self.frame_metadata.hide()
 
     def resizeEvent(self, event):
         if event.spontaneous():
@@ -204,7 +220,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             explorer_process.setProgram('explorer.exe')
             explorer_process.setArguments(['/select,%s' % QtCore.QDir.toNativeSeparators(dr_sd['abspath'])])
             explorer_process.startDetached()
-
     
     def handle_action_small_thumbs_triggered(self):
         if self.action_small_thumbs.isChecked():
@@ -212,8 +227,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def handle_action_normal_thumbs_triggered(self):
         if self.action_normal_thumbs.isChecked():
-            if self.hslider_thumb_size.value() < 128:
+            slider_value = self.hslider_thumb_size.value()
+            if slider_value < 128:
                 self.hslider_thumb_size.triggerAction(self.hslider_thumb_size.SliderPageStepAdd)
+            elif slider_value > 128 and slider_value <= 192:
+                self.hslider_thumb_size.triggerAction(self.hslider_thumb_size.SliderPageStepSub)
+            elif slider_value > 192 and slider_value <= 256:
+                self.hslider_thumb_size.triggerAction(self.hslider_thumb_size.SliderPageStepSub)
+                self.hslider_thumb_size.triggerAction(self.hslider_thumb_size.SliderPageStepSub)
 
     def handle_action_thumbnail_caption_none_triggered(self):
         if self.action_caption_none.isChecked():
@@ -244,21 +265,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.toolbutton_properties.setChecked(True)
             self.toolbutton_tags.setChecked(False)
             self.action_tags.setChecked(False)
+            settings.save(SettingType.UI_METADATA_SHOW_PROPS, True)
+            settings.save(SettingType.UI_METADATA_SHOW_TAGS, False)
         else:
             self.frame_metadata.hide()
             self.toolbutton_properties.setChecked(False)
+            settings.save(SettingType.UI_METADATA_SHOW_PROPS, False)
+            settings.save(SettingType.UI_METADATA_SHOW_TAGS, False)
 
     def action_tags_clicked(self):
-        print(self.action_tags.isChecked())
         if self.action_tags.isChecked():
             self.toolBox_metadata.setCurrentIndex(1)
             self.frame_metadata.show()
             self.toolbutton_tags.setChecked(True)
             self.toolbutton_properties.setChecked(False)
             self.action_properties.setChecked(False)
+            settings.save(SettingType.UI_METADATA_SHOW_PROPS, False)
+            settings.save(SettingType.UI_METADATA_SHOW_TAGS, True)
         else:
             self.frame_metadata.hide()
             self.toolbutton_tags.setChecked(False)
+            settings.save(SettingType.UI_METADATA_SHOW_PROPS, False)
+            settings.save(SettingType.UI_METADATA_SHOW_TAGS, False)
 
     def show_image_properties(self):
         curr_sel_ids = self.get_current_selection_ids()
@@ -295,6 +323,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.listView_thumbs.setIconSize(QSize(value, value))
         self.listView_thumbs.setGridSize(QSize(value + 20, value + 20))
+
+        settings.save(SettingType.UI_THUMBS_SIZE, value)
 
     def _load_dir_images(self, sd_id, thumb_caption_type=Thumb_Caption_Type.NoCaption):
         self._clear_thumbs()

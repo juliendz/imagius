@@ -2,7 +2,7 @@
 Types module
 author: Julien Dcruz
 """
-from enum import Enum
+from enum import Enum, auto
 
 
 class Thumb_Caption_Type(Enum):
@@ -12,12 +12,14 @@ class Thumb_Caption_Type(Enum):
 
 class SettingType(Enum):
 
-    CHECK_UPDATE_ON_STARTUP = 0
+    CHECK_UPDATE_ON_STARTUP = auto()
+    FILETYPE_PNG = auto()
+    FILETYPE_BMP = auto()
+    LOOP_SLIDESHOW = auto()
 
-    FILETYPE_PNG = 100
-    FILETYPE_BMP = 101
-
-    LOOP_SLIDESHOW = 200
+    UI_THUMBS_SIZE = auto()
+    UI_METADATA_SHOW_PROPS = auto()
+    UI_METADATA_SHOW_TAGS = auto()
 
 
 IMAGE_FILETYPES = {

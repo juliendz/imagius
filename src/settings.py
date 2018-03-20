@@ -61,10 +61,13 @@ def load_settings():
 
 def get(setting_type, default='', type='str'):
     if setting_type.name in SETTINGS:
-        if type == 'bool' and (SETTINGS[setting_type.name] == '1' or SETTINGS[setting_type.name] is True):
-            SETTINGS[setting_type.name] = True
-        else:
-            SETTINGS[setting_type.name] = False
+        if type == 'bool':
+            if SETTINGS[setting_type.name] == '1' or SETTINGS[setting_type.name] is True:
+                SETTINGS[setting_type.name] = True
+            else:
+                SETTINGS[setting_type.name] = False
+        if type == 'int':
+            SETTINGS[setting_type.name] = int(SETTINGS[setting_type.name])
         return SETTINGS[setting_type.name]
     return default
 
@@ -88,15 +91,15 @@ def persist_to_disk():
     settings_db_file = QtCore.QFileInfo("%s/%s/%s" % (roaming_dir_path, app_name, settings_db_name))
     db = dbmgr(settings_db_file.absoluteFilePath())
     db.connect()
+    print(SETTINGS)
 
     select_query = 'SELECT key FROM settings WHERE key = ?'
     update_query = 'UPDATE settings set value = ? WHERE key = ?'
     insert_query = 'INSERT INTO settings (key, value) VALUES (?, ?)'
-    # print(SETTINGS)
     for key, value in SETTINGS.items():
         res = db.run_select_query(select_query, (key,))
         if len(res) > 0:
-            db.run_query(update_query, (key, value))
+            db.run_query(update_query, (value, key))
         else:
             db.run_insert_query(insert_query, (key, value))
 
