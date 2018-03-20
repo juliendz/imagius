@@ -264,7 +264,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.toolbutton_tags.setChecked(False)
 
     def show_image_properties(self):
-        pass
+        curr_sel_ids = self.get_current_selection_ids()
+        if 'sd_id' in curr_sel_ids and 'si_id' in curr_sel_ids:
+            img_props = self._meta_files_mgr.get_img_properties(curr_sel_ids['si_id'], curr_sel_ids['sd_id'])
+            self.properties_widget.setup_properties(img_props)
+
+        self.toolBox_metadata.setCurrentIndex(0)
+        self.frame_metadata.show()
+        self.toolbutton_properties.setChecked(True)
+        self.toolbutton_tags.setChecked(False)
+        self.action_properties.setChecked(True)
+        self.action_tags.setChecked(False)
 
     def on_buttongroup_metadata_clicked(self, button):
         if button.objectName() == 'toolbutton_tags':
