@@ -41,6 +41,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.frame_metadata.hide()
 
+        self.actiongrp_thumbs_size = QtWidgets.QActionGroup(self)
+        self.actiongrp_thumbs_size.addAction(self.action_small_thumbs)
+        self.actiongrp_thumbs_size.addAction(self.action_normal_thumbs)
+
         self.w = None
         self._thumb_row_count = 0
         self._thumb_col_count = 0
@@ -88,12 +92,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _setup_connections(self):
         # Menu
+        # File
         self.action_add_folder.triggered.connect(self.action_folder_manager_clicked)
         self.action_file_locate.triggered.connect(self.handle_action_file_locate_triggered)
         self.action_exit.triggered.connect(self.action_exit_clicked)
-        self.action_folder_manager.triggered.connect(self.action_folder_manager_clicked)
+
+        # View
+        self.action_small_thumbs.triggered.connect(self.handle_action_small_thumbs_triggered)
+        self.action_normal_thumbs.triggered.connect(self.handle_action_normal_thumbs_triggered)
         self.action_properties.triggered.connect(self.action_properties_clicked)
         self.action_tags.triggered.connect(self.action_tags_clicked)
+
+        self.action_folder_manager.triggered.connect(self.action_folder_manager_clicked)
 
         # Btns
         self.btn_slideshow.clicked.connect(self.start_slideshow)
@@ -168,7 +178,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def action_exit_clicked(self):
         self.close()
+    
+    def handle_action_small_thumbs_triggered(self):
+        if self.action_small_thumbs.isChecked():
+            self.hslider_thumb_size.triggerAction(self.hslider_thumb_size.SliderToMinimum)
 
+    def handle_action_normal_thumbs_triggered(self):
+        if self.action_normal_thumbs.isChecked():
+            if self.hslider_thumb_size.value() < 128:
+                self.hslider_thumb_size.triggerAction(self.hslider_thumb_size.SliderPageStepAdd)
+        
     def action_folder_manager_clicked(self):
         self.w = FolderManagerWindow()
         self.w.show()
@@ -207,6 +226,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.action_properties.trigger()
 
     def on_hslider_thumb_size_value_changed(self, value):
+        if self.hslider_thumb_size.value() == 64:
+            self.action_small_thumbs.setChecked(True)
+        elif self.hslider_thumb_size.value() == 128:
+            self.action_normal_thumbs.setChecked(True)
+        else:
+            self.action_small_thumbs.setChecked(False)
+            self.action_normal_thumbs.setChecked(False)
+
         self.listView_thumbs.setIconSize(QSize(value, value))
         self.listView_thumbs.setGridSize(QSize(value + 20, value + 20))
 

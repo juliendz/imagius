@@ -357,8 +357,8 @@
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>298</width>
-                    <height>308</height>
+                    <width>98</width>
+                    <height>28</height>
                    </rect>
                   </property>
                   <attribute name="icon">
@@ -693,8 +693,8 @@ font-weight: bold</string>
      </property>
      <addaction name="actionFlat_View"/>
     </widget>
-    <addaction name="actionSmall_Thumbnails"/>
-    <addaction name="actionNormal_Thumbnails"/>
+    <addaction name="action_small_thumbs"/>
+    <addaction name="action_normal_thumbs"/>
     <addaction name="separator"/>
     <addaction name="action_properties"/>
     <addaction name="action_tags"/>
@@ -731,7 +731,7 @@ font-weight: bold</string>
     <string>&amp;Folder Manager</string>
    </property>
   </action>
-  <action name="actionSmall_Thumbnails">
+  <action name="action_small_thumbs">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -739,7 +739,7 @@ font-weight: bold</string>
     <string>Small Thumbnails</string>
    </property>
   </action>
-  <action name="actionNormal_Thumbnails">
+  <action name="action_normal_thumbs">
    <property name="checkable">
     <bool>true</bool>
    </property>
