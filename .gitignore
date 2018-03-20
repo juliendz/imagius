@@ -5,5 +5,4 @@ ui/__pycache__/*
 *.log
 *.pyc
 /src/*.db-journal
-/src/qpicasa/ui/ui_foldermanager.py
-/src/qpicasa/ui/ui_mainwindow.py
+/src/imagius/ui/*.py
