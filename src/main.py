@@ -19,6 +19,7 @@ if __name__ == '__main__':
     LOGGER.info('======================================qPicasa starting up=======================================')
 
     settings.init_app_data()
+    settings.load_settings()
 
     app = QApplication(sys.argv)
     w = MainWindow()

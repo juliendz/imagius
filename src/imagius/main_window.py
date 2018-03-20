@@ -17,6 +17,7 @@ from PyQt5.QtWidgets import QGraphicsDropShadowEffect, QGraphicsGridLayout, QScr
 from .meta_files import MetaFilesManager
 from .ui.ui_mainwindow import Ui_MainWindow
 from .foldermanager_window import FolderManagerWindow
+from .settings_window import SettingsWindow
 from .slideshow_window import SlideshowWindow
 from .properties_widget import PropertiesWidget
 from .qgraphics_thumb_item import QGraphicsThumbnailItem
@@ -25,6 +26,7 @@ from .thumbs_listview import ThumbsListView
 from .types import Thumb_Caption_Type
 from .watcher import Watcher
 from .log import LOGGER
+import settings
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -46,16 +48,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actiongrp_thumbs_size.addAction(self.action_small_thumbs)
         self.actiongrp_thumbs_size.addAction(self.action_normal_thumbs)
 
-        # self.actiongrp_metadata = QtWidgets.QActionGroup(self)
-        # self.actiongrp_metadata.addAction(self.action_properties)
-        # self.actiongrp_metadata.addAction(self.action_tags)
-
         self.actiongrp_thumbs_caption = QtWidgets.QActionGroup(self)
         self.actiongrp_thumbs_caption.addAction(self.action_caption_none)
         self.actiongrp_thumbs_caption.addAction(self.action_caption_filename)
         self.action_caption_none.setChecked(True)
 
-        self.w = None
         self._thumb_row_count = 0
         self._thumb_col_count = 0
         self._thumb_curr_row_width = 0
@@ -120,6 +117,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Picture
         self.action_picture_properties.triggered.connect(self.show_image_properties)
         # Tools
+        self.action_settings.triggered.connect(self.handle_action_settings_triggered)
         self.action_folder_manager.triggered.connect(self.action_folder_manager_clicked)
 
         # Btns
@@ -207,9 +205,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             explorer_process.setArguments(['/select,%s' % QtCore.QDir.toNativeSeparators(dr_sd['abspath'])])
             explorer_process.startDetached()
 
-    def action_exit_clicked(self):
-        self.close()
-
+    
     def handle_action_small_thumbs_triggered(self):
         if self.action_small_thumbs.isChecked():
             self.hslider_thumb_size.triggerAction(self.hslider_thumb_size.SliderToMinimum)
@@ -232,8 +228,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self._load_dir_images(curr_sel_ids['sd_id'], Thumb_Caption_Type.FileName)
  
     def action_folder_manager_clicked(self):
-        self.w = FolderManagerWindow()
-        self.w.show()
+        self.folder_mgr_window = FolderManagerWindow(self)
+        self.folder_mgr_window.setModal(True)
+        self.folder_mgr_window.show()
 
     def action_properties_clicked(self):
         if self.action_properties.isChecked():
@@ -275,6 +272,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.toolbutton_tags.setChecked(False)
         self.action_properties.setChecked(True)
         self.action_tags.setChecked(False)
+    
+    def handle_action_settings_triggered(self):
+        self.settings_window = SettingsWindow(self)
+        self.settings_window.setModal(True)
+        self.settings_window.show()
 
     def on_buttongroup_metadata_clicked(self, button):
         if button.objectName() == 'toolbutton_tags':
@@ -430,3 +432,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if len(selected_thumb) > 0:
             selected_ids['si_id'] = selected_thumb[0].data(QtCore.Qt.UserRole + 1)
         return selected_ids
+
+    def action_exit_clicked(self):
+        self.close()
+
+    def closeEvent(self, event):
+        settings.persist_to_disk()

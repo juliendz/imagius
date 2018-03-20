@@ -665,7 +665,7 @@ font-weight: bold</string>
     </property>
     <addaction name="action_folder_manager"/>
     <addaction name="separator"/>
-    <addaction name="actionOptions"/>
+    <addaction name="action_settings"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -788,9 +788,9 @@ font-weight: bold</string>
     <string>Flat Folder View</string>
    </property>
   </action>
-  <action name="actionOptions">
+  <action name="action_settings">
    <property name="text">
-    <string>Options</string>
+    <string>Settings</string>
    </property>
   </action>
   <action name="action_picture_properties">

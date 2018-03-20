@@ -7,8 +7,11 @@ import os
 import time
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QDirIterator
 from PyQt5.QtCore import QDir, QFileInfo, qDebug
+
+import settings
 from .log import LOGGER
 from .meta_files import MetaFilesManager
+from .types import SettingType, IMAGE_FILETYPES
 
 
 class Watcher(QObject):
@@ -25,7 +28,9 @@ class Watcher(QObject):
 
         self._meta_files_mgr = MetaFilesManager()
 
-        self._img_ext_filter = ["*.jpg", "*.jpeg", "*.png"]
+        self._img_ext_filter = settings.get_allowed_image_formats()
+
+        print(self._img_ext_filter)
 
     @pyqtSlot()
     def watch_all(self):
