@@ -133,6 +133,7 @@ class SlideshowWindow(QWidget, Ui_SlideshowWindow):
         img = QImage(abspath)
         pixmap = QPixmap(img)
         pixmap = pixmap.scaled(self.gfx_slide.size(), QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
+        self._control_widget_proxy.setX((pixmap.width() / 2) - (self._control_widget_proxy.size().width() / 2))
         self._gfx_item.setPixmap(pixmap)
 
         self._gfx_scene.addItem(self._gfx_item)
