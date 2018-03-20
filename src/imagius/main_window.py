@@ -46,6 +46,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actiongrp_thumbs_size.addAction(self.action_small_thumbs)
         self.actiongrp_thumbs_size.addAction(self.action_normal_thumbs)
 
+        # self.actiongrp_metadata = QtWidgets.QActionGroup(self)
+        # self.actiongrp_metadata.addAction(self.action_properties)
+        # self.actiongrp_metadata.addAction(self.action_tags)
+
         self.actiongrp_thumbs_caption = QtWidgets.QActionGroup(self)
         self.actiongrp_thumbs_caption.addAction(self.action_caption_none)
         self.actiongrp_thumbs_caption.addAction(self.action_caption_filename)
@@ -102,7 +106,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_add_folder.triggered.connect(self.action_folder_manager_clicked)
         self.action_file_locate.triggered.connect(self.handle_action_file_locate_triggered)
         self.action_exit.triggered.connect(self.action_exit_clicked)
-
         # View
         self.action_small_thumbs.triggered.connect(self.handle_action_small_thumbs_triggered)
         self.action_normal_thumbs.triggered.connect(self.handle_action_normal_thumbs_triggered)
@@ -111,11 +114,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_slideshow.triggered.connect(self.start_slideshow)
         self.action_caption_none.triggered.connect(self.handle_action_thumbnail_caption_none_triggered)
         self.action_caption_filename.triggered.connect(self.handle_action_thumbnail_caption_filename_triggered)
-
         # Folder
         self.action_folder_slideshow.triggered.connect(self.start_slideshow)
         self.action_folder_locate.triggered.connect(self.handle_action_folder_locate_triggered)
-
+        # Picture
+        self.action_picture_properties.triggered.connect(self.show_image_properties)
         # Tools
         self.action_folder_manager.triggered.connect(self.action_folder_manager_clicked)
 
@@ -234,30 +237,34 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def action_properties_clicked(self):
         if self.action_properties.isChecked():
-            selected = self.treeView_scandirs.selectedIndexes()
-            sd_id = selected[0].data(QtCore.Qt.UserRole + 1)
-            selected_thumb = self.listView_thumbs.selectedIndexes()
-            if len(selected_thumb) > 0:
-                si_id = selected_thumb[0].data(QtCore.Qt.UserRole + 1)
-                img_props = self._meta_files_mgr.get_img_properties(si_id, sd_id)
+            curr_sel_ids = self.get_current_selection_ids()
+            if 'sd_id' in curr_sel_ids and 'si_id' in curr_sel_ids:
+                img_props = self._meta_files_mgr.get_img_properties(curr_sel_ids['si_id'], curr_sel_ids['sd_id'])
                 self.properties_widget.setup_properties(img_props)
 
             self.toolBox_metadata.setCurrentIndex(0)
             self.frame_metadata.show()
+            self.toolbutton_properties.setChecked(True)
             self.toolbutton_tags.setChecked(False)
             self.action_tags.setChecked(False)
         else:
             self.frame_metadata.hide()
+            self.toolbutton_properties.setChecked(False)
 
     def action_tags_clicked(self):
         print(self.action_tags.isChecked())
         if self.action_tags.isChecked():
             self.toolBox_metadata.setCurrentIndex(1)
             self.frame_metadata.show()
+            self.toolbutton_tags.setChecked(True)
             self.toolbutton_properties.setChecked(False)
             self.action_properties.setChecked(False)
         else:
             self.frame_metadata.hide()
+            self.toolbutton_tags.setChecked(False)
+
+    def show_image_properties(self):
+        pass
 
     def on_buttongroup_metadata_clicked(self, button):
         if button.objectName() == 'toolbutton_tags':

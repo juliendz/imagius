@@ -709,7 +709,7 @@ font-weight: bold</string>
     <property name="title">
      <string>Picture</string>
     </property>
-    <addaction name="actionProperties"/>
+    <addaction name="action_picture_properties"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -793,7 +793,7 @@ font-weight: bold</string>
     <string>Options</string>
    </property>
   </action>
-  <action name="actionProperties">
+  <action name="action_picture_properties">
    <property name="text">
     <string>Properties</string>
    </property>
