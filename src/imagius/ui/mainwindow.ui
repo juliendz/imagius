@@ -357,8 +357,8 @@
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>98</width>
-                    <height>28</height>
+                    <width>298</width>
+                    <height>308</height>
                    </rect>
                   </property>
                   <attribute name="icon">
@@ -684,8 +684,8 @@ font-weight: bold</string>
      <property name="title">
       <string>Thumbnail Captions</string>
      </property>
-     <addaction name="actionFilename"/>
-     <addaction name="actionFilename_2"/>
+     <addaction name="action_caption_none"/>
+     <addaction name="action_caption_filename"/>
     </widget>
     <widget class="QMenu" name="menuFolder_View">
      <property name="title">
@@ -699,7 +699,7 @@ font-weight: bold</string>
     <addaction name="action_properties"/>
     <addaction name="action_tags"/>
     <addaction name="separator"/>
-    <addaction name="actionSlideshow"/>
+    <addaction name="action_slideshow"/>
     <addaction name="separator"/>
     <addaction name="menuThumbnail_Captions"/>
     <addaction name="menuFolder_View"/>
@@ -766,12 +766,12 @@ font-weight: bold</string>
     <string>Tags</string>
    </property>
   </action>
-  <action name="actionSlideshow">
+  <action name="action_slideshow">
    <property name="text">
     <string>Slideshow</string>
    </property>
   </action>
-  <action name="actionFilename">
+  <action name="action_caption_none">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -779,7 +779,10 @@ font-weight: bold</string>
     <string>None</string>
    </property>
   </action>
-  <action name="actionFilename_2">
+  <action name="action_caption_filename">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Filename</string>
    </property>

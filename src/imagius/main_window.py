@@ -22,6 +22,7 @@ from .properties_widget import PropertiesWidget
 from .qgraphics_thumb_item import QGraphicsThumbnailItem
 from .thumbs_listview import ThumbsListView
 
+from .types import Thumb_Caption_Type
 from .watcher import Watcher
 from .log import LOGGER
 
@@ -44,6 +45,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actiongrp_thumbs_size = QtWidgets.QActionGroup(self)
         self.actiongrp_thumbs_size.addAction(self.action_small_thumbs)
         self.actiongrp_thumbs_size.addAction(self.action_normal_thumbs)
+
+        self.actiongrp_thumbs_caption = QtWidgets.QActionGroup(self)
+        self.actiongrp_thumbs_caption.addAction(self.action_caption_none)
+        self.actiongrp_thumbs_caption.addAction(self.action_caption_filename)
+        self.action_caption_none.setChecked(True)
 
         self.w = None
         self._thumb_row_count = 0
@@ -102,7 +108,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_normal_thumbs.triggered.connect(self.handle_action_normal_thumbs_triggered)
         self.action_properties.triggered.connect(self.action_properties_clicked)
         self.action_tags.triggered.connect(self.action_tags_clicked)
+        self.action_slideshow.triggered.connect(self.start_slideshow)
+        self.action_caption_none.triggered.connect(self.handle_action_thumbnail_caption_none_triggered)
+        self.action_caption_filename.triggered.connect(self.handle_action_thumbnail_caption_filename_triggered)
 
+        # Folder
         self.action_folder_manager.triggered.connect(self.action_folder_manager_clicked)
 
         # Btns
@@ -155,6 +165,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.treeView_scandirs.setSelectionModel(self._dirs_list_selection_model)
         self.treeView_scandirs.expandAll()
 
+        self.listView_thumbs.setModel(self._thumbs_view_model)
+        self.listView_thumbs.setSelectionModel(self._thumbs_selection_model)
+
         if scan_dirs:
             for idx, dir in enumerate(scan_dirs):
                 item_title = "%s(%s)" % (dir['name'], dir['img_count'])
@@ -178,7 +191,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def action_exit_clicked(self):
         self.close()
-    
+
     def handle_action_small_thumbs_triggered(self):
         if self.action_small_thumbs.isChecked():
             self.hslider_thumb_size.triggerAction(self.hslider_thumb_size.SliderToMinimum)
@@ -187,7 +200,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.action_normal_thumbs.isChecked():
             if self.hslider_thumb_size.value() < 128:
                 self.hslider_thumb_size.triggerAction(self.hslider_thumb_size.SliderPageStepAdd)
-        
+
+    def handle_action_thumbnail_caption_none_triggered(self):
+        if self.action_caption_none.isChecked():
+            curr_sel_ids = self.get_current_selection_ids()
+            if 'sd_id' in curr_sel_ids:
+                self._load_dir_images(curr_sel_ids['sd_id'])
+
+    def handle_action_thumbnail_caption_filename_triggered(self):
+        if self.action_caption_filename.isChecked():
+            curr_sel_ids = self.get_current_selection_ids()
+            if 'sd_id' in curr_sel_ids:
+                self._load_dir_images(curr_sel_ids['sd_id'], Thumb_Caption_Type.FileName)
+ 
     def action_folder_manager_clicked(self):
         self.w = FolderManagerWindow()
         self.w.show()
@@ -237,52 +262,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.listView_thumbs.setIconSize(QSize(value, value))
         self.listView_thumbs.setGridSize(QSize(value + 20, value + 20))
 
-    def _load_dir_images(self, sd_id):
-        LOGGER.debug("Folder(%s) loading starting...." % sd_id)
+    def _load_dir_images(self, sd_id, thumb_caption_type=Thumb_Caption_Type.NoCaption):
+        self._clear_thumbs()
 
         dir_info = self._meta_files_mgr.get_scan_dir(sd_id)
         self.lbl_dir_name.setText(dir_info['name'])
 
         images = self._meta_files_mgr.get_scan_dir_images(sd_id)
-        tot_img_count = len(images)
-        batch_counter = 0
-        img_batch = []
 
         for img in images:
             img['thumb'] = QImage.fromData(img['thumb'])
-            self.add_img_to_scene_graph(img)
-            img_batch.append(img)
-            batch_counter = batch_counter + 1
+            item = QStandardItem()
 
-            # Call processEvents() every <BATCH_COUNT> images
-            # The first condition covers both cases:
-            #   1. When <tot_img_count> < <BATCH_COUNT>
-            #   2. When <tot_img_count> is not a multiple of <BATCH_COUNT>
-            #      thereby leaving a batch of images less than <BATCH_COUNT> at the end
-            if batch_counter >= tot_img_count or batch_counter % self._batch_count == 0:
-                QApplication.processEvents()
+            if thumb_caption_type == Thumb_Caption_Type.FileName:
+                item.setText(img['name'])
 
-        self.listView_thumbs.setModel(self._thumbs_view_model)
-        self.listView_thumbs.setSelectionModel(self._thumbs_selection_model)
+            item.setData(img['id'], QtCore.Qt.UserRole + 1)
+            item.setData(img['serial'], QtCore.Qt.UserRole + 2)
+            item.setIcon(QIcon(QPixmap.fromImage(img['thumb'])))
+            self._thumbs_view_model.appendRow(item)
 
         QScroller.grabGesture(self.listView_thumbs.viewport(),
                               QScroller.LeftMouseButtonGesture)
-        LOGGER.debug("Folder(%s) loading ended." % sd_id)
-        # print(self.listView_thumbs.iconSize())
 
-    def add_img_to_scene_graph(self, img):
-        LOGGER.debug("Adding Image(%s) to scene graph." % img['name'])
-        item = QStandardItem()
-        item.setText(img['name'])
-        item.setData(img['id'], QtCore.Qt.UserRole + 1)
-        item.setData(img['serial'], QtCore.Qt.UserRole + 2)
-        item.setIcon(QIcon(QPixmap.fromImage(img['thumb'])))
-
-        # thumb_shadow_effect = QGraphicsDropShadowEffect()
-        # thumb_shadow_effect.setOffset(1.5)
-        # thumb_shadow_effect.setColor(QColor(232, 232, 232))
-        # item.setGraphicsEffect(thumb_shadow_effect)
-        self._thumbs_view_model.appendRow(item)
+    def _clear_thumbs(self):
+        self._thumbs_view_model.clear()
 
     def _tv_add_scan_dir(self, dir_info, highlight=False):
         item_title = "%s(%s)" % (dir_info['name'], dir_info['img_count'])
@@ -297,9 +301,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         folder_item = self._TV_FOLDERS_ITEM_MAP[0]
         folder_item.appendRow(item)
         self._TV_FOLDERS_ITEM_MAP[dir_info['id']] = item
-
-    def _clear_thumbs(self):
-        self._thumbs_view_model.clear()
 
     @pyqtSlot()
     def start_slideshow(self):
@@ -356,7 +357,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.lbl_selection_summary.setText(self.get_dir_selection_summary(props))
         # Categories tree nodes will not contain 'data'
         if sd_id:
-            self._clear_thumbs()
             self._load_dir_images(sd_id)
 
     @pyqtSlot(object)
