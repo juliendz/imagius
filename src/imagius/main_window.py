@@ -113,6 +113,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_caption_filename.triggered.connect(self.handle_action_thumbnail_caption_filename_triggered)
 
         # Folder
+        self.action_folder_slideshow.triggered.connect(self.start_slideshow)
+        self.action_folder_locate.triggered.connect(self.handle_action_folder_locate_triggered)
+
+        # Tools
         self.action_folder_manager.triggered.connect(self.action_folder_manager_clicked)
 
         # Btns
@@ -187,6 +191,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             explorer_process = QtCore.QProcess()
             explorer_process.setProgram('explorer.exe')
             explorer_process.setArguments(['/select,%s' % QtCore.QDir.toNativeSeparators(dr_img['abspath'])])
+            explorer_process.startDetached()
+
+    def handle_action_folder_locate_triggered(self):
+        curr_sel_ids = self.get_current_selection_ids()
+        if 'sd_id' in curr_sel_ids:
+            self._meta_files_mgr.connect()
+            dr_sd = self._meta_files_mgr.get_scan_dir(curr_sel_ids['sd_id'])
+            self._meta_files_mgr.disconnect()
+            explorer_process = QtCore.QProcess()
+            explorer_process.setProgram('explorer.exe')
+            explorer_process.setArguments(['/select,%s' % QtCore.QDir.toNativeSeparators(dr_sd['abspath'])])
             explorer_process.startDetached()
 
     def action_exit_clicked(self):

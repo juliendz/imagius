@@ -687,12 +687,6 @@ font-weight: bold</string>
      <addaction name="action_caption_none"/>
      <addaction name="action_caption_filename"/>
     </widget>
-    <widget class="QMenu" name="menuFolder_View">
-     <property name="title">
-      <string>Folder View</string>
-     </property>
-     <addaction name="actionFlat_View"/>
-    </widget>
     <addaction name="action_small_thumbs"/>
     <addaction name="action_normal_thumbs"/>
     <addaction name="separator"/>
@@ -702,13 +696,12 @@ font-weight: bold</string>
     <addaction name="action_slideshow"/>
     <addaction name="separator"/>
     <addaction name="menuThumbnail_Captions"/>
-    <addaction name="menuFolder_View"/>
    </widget>
    <widget class="QMenu" name="menuFolder">
     <property name="title">
      <string>Folder</string>
     </property>
-    <addaction name="actionView_Slideshow"/>
+    <addaction name="action_folder_slideshow"/>
     <addaction name="separator"/>
     <addaction name="action_folder_locate"/>
    </widget>
@@ -805,7 +798,7 @@ font-weight: bold</string>
     <string>Properties</string>
    </property>
   </action>
-  <action name="actionView_Slideshow">
+  <action name="action_folder_slideshow">
    <property name="text">
     <string>View Slideshow</string>
    </property>
