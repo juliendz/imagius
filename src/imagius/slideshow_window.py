@@ -19,6 +19,8 @@ from .meta_files import MetaFilesManager
 from .slideshow_graphicsview import SlideshowGraphicsView
 from .slideshowcontrol_widget import SlideshowControlWidget
 from .log import LOGGER
+import settings
+from settings import SettingType
 
 
 class SlideshowWindow(QWidget, Ui_SlideshowWindow):
@@ -29,7 +31,8 @@ class SlideshowWindow(QWidget, Ui_SlideshowWindow):
 
         self._curr_sd_id = sd_id
         self._curr_img_serial = img_serial
-        self._slideshow_iterval = 1000
+        self._is_slideshow_looped = settings.get(SettingType.SLIDESHOW_LOOP, False, 'bool')
+        self._slideshow_iterval = settings.get(SettingType.SLIDESHOW_INTERVAL, 1000, 'int')
         self._mouse_idle_interval = 1000
         self._is_slideshow = True
         self._gfx_item = None
@@ -96,8 +99,12 @@ class SlideshowWindow(QWidget, Ui_SlideshowWindow):
         self._curr_img_serial += 1
         dr_img = self._meta_files_mgr.get_scan_dir_image(self._curr_sd_id, self._curr_img_serial)
         if not dr_img:
-            self._curr_img_serial -= 1
-            self._timer.stop()
+            if self._is_slideshow_looped:
+                self._curr_img_serial = 0
+                self._timer.start(self._slideshow_iterval)
+            else:
+                self._curr_img_serial -= 1
+                self._timer.stop()
         else:
             self.load_image(dr_img['abspath'])
             if self._is_slideshow:

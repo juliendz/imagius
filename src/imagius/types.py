@@ -15,11 +15,13 @@ class SettingType(Enum):
     CHECK_UPDATE_ON_STARTUP = auto()
     FILETYPE_PNG = auto()
     FILETYPE_BMP = auto()
-    LOOP_SLIDESHOW = auto()
 
     UI_THUMBS_SIZE = auto()
     UI_METADATA_SHOW_PROPS = auto()
     UI_METADATA_SHOW_TAGS = auto()
+    
+    SLIDESHOW_LOOP = auto()
+    SLIDESHOW_INTERVAL = auto()
 
 
 IMAGE_FILETYPES = {

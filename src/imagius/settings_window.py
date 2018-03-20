@@ -27,7 +27,7 @@ class SettingsWindow(QDialog, Ui_SettingsWindow):
         self.chkbox_formats_bmp.setChecked(settings.get(settings.SettingType.FILETYPE_BMP, False, 'bool'))
         self.chkbox_formats_png.setChecked(settings.get(settings.SettingType.FILETYPE_PNG, False, 'bool'))
 
-        self.chkbox_loop_slideshow.setChecked(settings.get(settings.SettingType.LOOP_SLIDESHOW, False, 'bool'))
+        self.chkbox_loop_slideshow.setChecked(settings.get(settings.SettingType.SLIDESHOW_LOOP, False, 'bool'))
 
         self.btnBox_AcceptCancel.accepted.connect(self.settings_accepted)
 
@@ -38,7 +38,7 @@ class SettingsWindow(QDialog, Ui_SettingsWindow):
         settings.save(settings.SettingType.FILETYPE_BMP, self.chkbox_formats_bmp.isChecked())
         settings.save(settings.SettingType.FILETYPE_PNG, self.chkbox_formats_png.isChecked())
 
-        settings.save(settings.SettingType.LOOP_SLIDESHOW, self.chkbox_loop_slideshow.isChecked())
+        settings.save(settings.SettingType.SLIDESHOW_LOOP, self.chkbox_loop_slideshow.isChecked())
 
         print(settings.SETTINGS)
 

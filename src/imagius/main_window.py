@@ -32,8 +32,6 @@ from settings import SettingType
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
-    _batch_count = 50
-
     _TV_FOLDERS_ITEM_MAP = {}
 
     # signals
