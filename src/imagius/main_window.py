@@ -78,6 +78,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # settings
         self.hslider_thumb_size.setValue(settings.get(SettingType.UI_THUMBS_SIZE, 128, 'int'))
 
+        thumb_caption_type = settings.get(SettingType.UI_THUMBS_CAPTION_DISPLAY_MODE, Thumb_Caption_Type.NoCaption.name)
+        if thumb_caption_type == Thumb_Caption_Type.FileName.name:
+            self.action_caption_filename.setChecked(True)
+
         if settings.get(SettingType.UI_METADATA_SHOW_PROPS, False, 'bool'):
             self.toolBox_metadata.setCurrentIndex(0)
             self.toolbutton_properties.setChecked(True)
@@ -236,15 +240,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def handle_action_thumbnail_caption_none_triggered(self):
         if self.action_caption_none.isChecked():
+            settings.save(SettingType.UI_THUMBS_CAPTION_DISPLAY_MODE, Thumb_Caption_Type.NoCaption.name)
             curr_sel_ids = self.get_current_selection_ids()
             if 'sd_id' in curr_sel_ids:
                 self._load_dir_images(curr_sel_ids['sd_id'])
 
     def handle_action_thumbnail_caption_filename_triggered(self):
         if self.action_caption_filename.isChecked():
+            settings.save(SettingType.UI_THUMBS_CAPTION_DISPLAY_MODE, Thumb_Caption_Type.FileName.name)
             curr_sel_ids = self.get_current_selection_ids()
             if 'sd_id' in curr_sel_ids:
-                self._load_dir_images(curr_sel_ids['sd_id'], Thumb_Caption_Type.FileName)
+                self._load_dir_images(curr_sel_ids['sd_id'])
  
     def action_folder_manager_clicked(self):
         self.folder_mgr_window = FolderManagerWindow(self)
@@ -324,7 +330,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         settings.save(SettingType.UI_THUMBS_SIZE, value)
 
-    def _load_dir_images(self, sd_id, thumb_caption_type=Thumb_Caption_Type.NoCaption):
+    def _load_dir_images(self, sd_id):
         self._clear_thumbs()
 
         dir_info = self._meta_files_mgr.get_scan_dir(sd_id)
@@ -336,7 +342,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             img['thumb'] = QImage.fromData(img['thumb'])
             item = QStandardItem()
 
-            if thumb_caption_type == Thumb_Caption_Type.FileName:
+            thumb_caption_type = settings.get(SettingType.UI_THUMBS_CAPTION_DISPLAY_MODE, Thumb_Caption_Type.NoCaption.name)
+            if thumb_caption_type == Thumb_Caption_Type.FileName.name:
                 item.setText(img['name'])
 
             item.setData(img['id'], QtCore.Qt.UserRole + 1)

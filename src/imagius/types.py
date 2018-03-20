@@ -6,8 +6,8 @@ from enum import Enum, auto
 
 
 class Thumb_Caption_Type(Enum):
-    NoCaption = 0
-    FileName = 1
+    NoCaption = auto()
+    FileName = auto()
 
 
 class SettingType(Enum):
@@ -17,6 +17,7 @@ class SettingType(Enum):
     FILETYPE_BMP = auto()
 
     UI_THUMBS_SIZE = auto()
+    UI_THUMBS_CAPTION_DISPLAY_MODE = auto()
     UI_METADATA_SHOW_PROPS = auto()
     UI_METADATA_SHOW_TAGS = auto()
     
