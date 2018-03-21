@@ -25,6 +25,7 @@ class SlideshowControlWidget(QWidget, Ui_SlideshowControlWidget):
     def __init__(self, slideshow_interval, parent=None):
         super(SlideshowControlWidget, self).__init__(parent)
         self.setupUi(self)
+        self.setMouseTracking(True)
 
         self._slideshow_interval = slideshow_interval
         self.setSlideshowIntervalLabel()

@@ -38,6 +38,7 @@ class SlideshowWindow(QWidget, Ui_SlideshowWindow):
         self._gfx_item = None
         self._last_mouse_pos = QtCore.QPoint()
         self._curr_mouse_pos = QtCore.QPoint()
+        self._is_mouse_inside_controls = False
 
         self._shortcut_exit = QShortcut(QKeySequence(QtCore.Qt.Key_Escape), self)
         self._shortcut_exit.activated.connect(self.closeWindow)
@@ -58,18 +59,18 @@ class SlideshowWindow(QWidget, Ui_SlideshowWindow):
         self.gfx_slide.setScene(self._gfx_scene)
         self.gfx_slide.setAlignment(QtCore.Qt.AlignCenter)
 
+        self._control_widget = SlideshowControlWidget(self._slideshow_iterval)
+        self._control_widget.stop_slideshow.connect(self.closeWindow)
+        self._control_widget.start_slideshow.connect(self.slideshow_start)
+        self._control_widget.next_slide.connect(self.slide_next_img)
+        self._control_widget.prev_slide.connect(self.slide_prev_img)
+        self._control_widget.slideshow_interval_changed.connect(self.on_slideshow_interval_changed)
+
         self._meta_files_mgr = MetaFilesManager()
         self._meta_files_mgr.connect()
 
     def resizeEvent(self, event):
         if event.spontaneous():
-            self._control_widget = SlideshowControlWidget(self._slideshow_iterval)
-            self._control_widget.stop_slideshow.connect(self.closeWindow)
-            self._control_widget.start_slideshow.connect(self.slideshow_start)
-            self._control_widget.next_slide.connect(self.slide_next_img)
-            self._control_widget.prev_slide.connect(self.slide_prev_img)
-            self._control_widget.slideshow_interval_changed.connect(self.on_slideshow_interval_changed)
-
             self._control_widget_proxy = self._gfx_scene.addWidget(self._control_widget)
             self._control_widget_proxy.setY(self.gfx_slide.size().height() - self._control_widget_proxy.size().height())
             self._control_widget_proxy.setZValue(1)
@@ -79,6 +80,11 @@ class SlideshowWindow(QWidget, Ui_SlideshowWindow):
 
     @pyqtSlot(object)
     def on_mouse_moved(self, mouse_pos):
+        if self.gfx_slide.mapFromScene(self._control_widget_proxy.geometry()).boundingRect().contains(mouse_pos):
+            self._is_mouse_inside_controls = True
+        else:
+            self._is_mouse_inside_controls = False
+  
         self.show_slideshow_controls()
         self.slideshow_stop()
         self._idle_timer.stop()
@@ -142,12 +148,14 @@ class SlideshowWindow(QWidget, Ui_SlideshowWindow):
     @pyqtSlot()
     def show_slideshow_controls(self):
         self.setCursor(QtCore.Qt.ArrowCursor)
+        self._control_widget.setMouseTracking(True)
         self._control_widget.show()
 
     @pyqtSlot()
     def hide_slideshow_controls(self):
-        self.setCursor(QtCore.Qt.BlankCursor)
-        self._control_widget.hide()
+        if not self._is_mouse_inside_controls:
+            self.setCursor(QtCore.Qt.BlankCursor)
+            self._control_widget.hide()
 
     @QtCore.pyqtSlot()
     def closeWindow(self):

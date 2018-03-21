@@ -10,6 +10,9 @@
     <height>72</height>
    </rect>
   </property>
+  <property name="mouseTracking">
+   <bool>true</bool>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -32,10 +35,13 @@
    <item>
     <widget class="QFrame" name="frame">
      <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
+      <enum>QFrame::Panel</enum>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
+     </property>
+     <property name="lineWidth">
+      <number>2</number>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <property name="spacing">
@@ -60,6 +66,9 @@
           <width>86</width>
           <height>16777215</height>
          </size>
+        </property>
+        <property name="mouseTracking">
+         <bool>true</bool>
         </property>
         <property name="text">
          <string>Exit</string>
@@ -90,6 +99,9 @@
           <height>16777215</height>
          </size>
         </property>
+        <property name="mouseTracking">
+         <bool>true</bool>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -112,6 +124,9 @@
           <width>48</width>
           <height>16777215</height>
          </size>
+        </property>
+        <property name="mouseTracking">
+         <bool>true</bool>
         </property>
         <property name="text">
          <string/>
@@ -136,6 +151,9 @@
           <height>16777215</height>
          </size>
         </property>
+        <property name="mouseTracking">
+         <bool>true</bool>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -153,6 +171,9 @@
       </item>
       <item>
        <widget class="QGroupBox" name="groupBox">
+        <property name="mouseTracking">
+         <bool>true</bool>
+        </property>
         <property name="title">
          <string>Display Time (seconds)</string>
         </property>
@@ -180,6 +201,9 @@
              <height>16</height>
             </size>
            </property>
+           <property name="mouseTracking">
+            <bool>true</bool>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -203,6 +227,9 @@
              <pointsize>12</pointsize>
             </font>
            </property>
+           <property name="mouseTracking">
+            <bool>true</bool>
+           </property>
            <property name="text">
             <string>0</string>
            </property>
@@ -215,6 +242,9 @@
              <width>16</width>
              <height>16</height>
             </size>
+           </property>
+           <property name="mouseTracking">
+            <bool>true</bool>
            </property>
            <property name="text">
             <string/>
