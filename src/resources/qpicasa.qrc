@@ -4,5 +4,12 @@
     <file alias="icon_slideshow">images/slideshow.png</file>
     <file alias="icon_properties">images/properties.png</file>
     <file alias="icon_tags">images/tags.png</file>
+    <file alias="icon_search">images/search.png</file>
+    <file alias="icon_exit">images/exit.png</file>
+    <file alias="icon_left">images/left.png</file>
+    <file alias="icon_right">images/right.png</file>
+    <file alias="icon_play">images/play.png</file>
+    <file alias="icon_plus">images/plus.png</file>
+    <file alias="icon_minus">images/minus.png</file>
   </qresource>
 </RCC>

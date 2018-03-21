@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>592</width>
+    <width>385</width>
     <height>72</height>
    </rect>
   </property>
@@ -55,29 +55,99 @@
       </property>
       <item>
        <widget class="QPushButton" name="btn_exit">
+        <property name="maximumSize">
+         <size>
+          <width>86</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="text">
          <string>Exit</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../../resources/qpicasa.qrc">
+          <normaloff>:/images/icon_exit</normaloff>:/images/icon_exit</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="btn_prev_slide">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>48</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="text">
-         <string>Prev</string>
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../../resources/qpicasa.qrc">
+          <normaloff>:/images/icon_left</normaloff>:/images/icon_left</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="btn_start_slideshow">
+        <property name="maximumSize">
+         <size>
+          <width>48</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="text">
-         <string>Start</string>
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../../resources/qpicasa.qrc">
+          <normaloff>:/images/icon_play</normaloff>:/images/icon_play</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="btn_next_slide">
+        <property name="maximumSize">
+         <size>
+          <width>48</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="text">
-         <string>Next</string>
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../../resources/qpicasa.qrc">
+          <normaloff>:/images/icon_right</normaloff>:/images/icon_right</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
         </property>
        </widget>
       </item>
@@ -104,13 +174,29 @@
          </property>
          <item>
           <widget class="QPushButton" name="btn_decre_interval">
+           <property name="maximumSize">
+            <size>
+             <width>16</width>
+             <height>16</height>
+            </size>
+           </property>
            <property name="text">
-            <string>-</string>
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="../../resources/qpicasa.qrc">
+             <normaloff>:/images/icon_minus</normaloff>:/images/icon_minus</iconset>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QLabel" name="lbl_display_time">
+           <property name="maximumSize">
+            <size>
+             <width>16</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="font">
             <font>
              <family>Noto Sans</family>
@@ -124,8 +210,18 @@
          </item>
          <item>
           <widget class="QPushButton" name="btn_incre_interval">
+           <property name="maximumSize">
+            <size>
+             <width>16</width>
+             <height>16</height>
+            </size>
+           </property>
            <property name="text">
-            <string>+</string>
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="../../resources/qpicasa.qrc">
+             <normaloff>:/images/icon_plus</normaloff>:/images/icon_plus</iconset>
            </property>
           </widget>
          </item>
@@ -137,6 +233,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../../resources/qpicasa.qrc"/>
+ </resources>
  <connections/>
 </ui>

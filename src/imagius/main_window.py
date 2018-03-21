@@ -59,6 +59,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._watch = Watcher()
 
         self.listView_thumbs = ThumbsListView(self.frame_thumbs)
+        self.listView_thumbs.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.vlayout_frame_thumbs.addWidget(self.listView_thumbs)
 
         # connections
@@ -98,6 +99,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.frame_metadata.show()
         else:
             self.frame_metadata.hide()
+
+        # Set event filters
+        self.btn_slideshow.installEventFilter(self)
 
     def resizeEvent(self, event):
         if event.spontaneous():
@@ -200,6 +204,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 item.setIcon(QIcon(':/images/icon_folder'))
                 folder_item.appendRow(item)
                 self._TV_FOLDERS_ITEM_MAP[dir['id']] = item
+        
+        # self.treeView_scandirs.setSortingEnabled(True)
+        # self.treeView_scandirs.sortByColumn(1, QtCore.Qt.DescendingOrder)
+        self.treeView_scandirs.setRootIsDecorated(False)
+
+    def eventFilter(self, widget, event):
+        if widget.objectName() == 'btn_slideshow':
+            if event.type() == QtCore.QEvent.Enter:
+                self.label_thumbs_toolbar_tooltip.setText("Play Fullscreen Slideshow")
+            elif event.type() == QtCore.QEvent.Leave:
+                self.label_thumbs_toolbar_tooltip.setText("")
+        return QtWidgets.QWidget.eventFilter(self, widget, event)
 
     def handle_action_file_locate_triggered(self):
         curr_sel_ids = self.get_current_selection_ids()
