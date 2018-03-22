@@ -156,10 +156,10 @@ class Watcher(QObject):
         self._meta_files_mgr.commit()
 
         if is_new_or_modified is True:
-            self._meta_files_mgr.prune_scan_img(sd_id, self._img_integrity_ts)
+            img_del_count = self._meta_files_mgr.prune_scan_img(sd_id, self._img_integrity_ts)
             img_count = self._meta_files_mgr.get_scan_dir_img_count(sd_id)
             self._meta_files_mgr.update_scan_dir_img_count(sd_id, img_count)
-            if has_new_images:
+            if has_new_images or img_del_count > 0:
                 self.dir_added_or_updated.emit({'id': sd_id, 'name': dir_name, 'img_count': img_count})
             # Only update `mtime` if the scan_dir is new or modified
             if img_count > 0:
