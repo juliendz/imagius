@@ -64,12 +64,12 @@ class MetaFilesManager():
             return None
         return res[0]
 
-    def add_scan_dir(self, path, name):
+    def add_scan_dir(self, parent_id, path, name):
         """
         <TODO>
         """
-        query = "INSERT INTO scan_dir (abspath, name) VALUES (?, ?)"
-        params = (path, name)
+        query = "INSERT INTO scan_dir (parent_dir_id, abspath, name) VALUES (?, ?, ?)"
+        params = (parent_id, path, name)
         sd_id = self._meta_db.run_insert_query(query, params)
         return sd_id
 
@@ -279,8 +279,15 @@ class MetaFilesManager():
         query = "select COUNT(id) AS 'img_count' from scan_img WHERE sdid = ?"
         params = (sd_id,)
         res = self._meta_db.run_select_query(query, params)
-        print(res)
         return res[0]['img_count']
+
+    def get_scan_dir_img_next_serial(self, sd_id):
+        query = "select MAX(serial) AS last_serial FROM scan_img where sdid = ?"
+        params = (sd_id,)
+        res = self._meta_db.run_select_query(query, params)
+        if res[0]['last_serial'] is None:
+            return 1
+        return (res[0]['last_serial'] + 1)
 
     def format_size(self, num, suffix='B'):
         for unit in ['', 'Ki', 'Mi']:

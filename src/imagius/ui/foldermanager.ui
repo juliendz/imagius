@@ -150,9 +150,9 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QPushButton" name="btn_Close">
-        <property name="text">
-         <string>Close</string>
+       <widget class="QDialogButtonBox" name="btnbox_acceptcancel">
+        <property name="standardButtons">
+         <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
         </property>
        </widget>
       </item>

@@ -10,9 +10,10 @@ from .log import LOGGER
 
 class FolderManager(QObject):
 
-    def __init__(self, dbpath=settings.get_settings_db_path()):
+    def __init__(self, dbpath=settings.get_settings_db_path(), meta_dbpath=settings.get_meta_db_path()):
         super(FolderManager, self).__init__()
         self._db = dbmgr(dbpath)
+        self._meta_db = dbmgr(meta_dbpath)
 
     def get_watched_dirs(self):
         query = "SELECT * FROM dir"
@@ -43,4 +44,11 @@ class FolderManager(QObject):
         self._db.run_query(query, params)
         self._db.disconnect()
 
-    
+        self._meta_db.connect()
+        scan_dirs = self._meta_db.run_select_query('SELECT * FROM scan_dir WHERE parent_dir_id = ?', (fid,))
+        si_query = "DELETE FROM scan_img WHERE sdid = ?"
+        sd_query = "DELETE FROM scan_dir WHERE id = ?"
+        for scan_dir in scan_dirs:
+            self._meta_db.run_query(si_query, (scan_dir['id'],))
+            self._meta_db.run_query(sd_query, (scan_dir['id'],))
+        self._meta_db.disconnect()

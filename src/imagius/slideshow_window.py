@@ -102,6 +102,7 @@ class SlideshowWindow(QWidget, Ui_SlideshowWindow):
 
     @pyqtSlot()
     def slide_next_img(self):
+        print(self._curr_img_serial)
         self._curr_img_serial += 1
         dr_img = self._meta_files_mgr.get_scan_dir_image(self._curr_sd_id, self._curr_img_serial)
         if not dr_img:

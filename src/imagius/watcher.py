@@ -49,7 +49,7 @@ class Watcher(QObject):
 
         # Scan the watched directories.
         for idx, folder in enumerate(watched_folders):
-            self.scan_folder(folder['abspath'], folder['name'])
+            self.scan_folder(folder['id'], folder['abspath'], folder['name'])
 
         # TODO: Emit list of unclean entries for notification
         # self._meta_files_mgr.get_unclean_entries
@@ -61,7 +61,7 @@ class Watcher(QObject):
 
         LOGGER.debug("Folder scan completed.")
 
-    def scan_folder(self, abs_path, dir_name):
+    def scan_folder(self, parent_id, abs_path, dir_name):
         """
         <TODO>
         """
@@ -70,8 +70,7 @@ class Watcher(QObject):
         sd_id = 0
         sd_info = self._meta_files_mgr.get_scan_dir_id(abs_path)
         if not sd_info or sd_info['id'] <= 0:
-            sd_id = self._meta_files_mgr.add_scan_dir(abs_path,
-                                                      dir_name)
+            sd_id = self._meta_files_mgr.add_scan_dir(parent_id, abs_path, dir_name)
             sd_info = self._meta_files_mgr.get_scan_dir_id(abs_path)
             is_new_or_modified = True
         else:
@@ -93,8 +92,7 @@ class Watcher(QObject):
                                     QDir.NoDotAndDotDot,
                                     QDirIterator.FollowSymlinks)
         has_new_images = False
-        img_count = self._meta_files_mgr.get_scan_dir_img_count(sd_id)
-        img_serial = img_count + 1
+        img_serial = self._meta_files_mgr.get_scan_dir_img_next_serial(sd_id)
         while dir_iter.hasNext():
             dir_iter.next()
             file_info = dir_iter.fileInfo()
@@ -102,7 +100,7 @@ class Watcher(QObject):
             if file_info.isDir():
                 LOGGER.debug("Found Directory: %s" %
                              file_info.absoluteFilePath())
-                self.scan_folder(file_info.absoluteFilePath(),
+                self.scan_folder(parent_id, file_info.absoluteFilePath(),
                                  file_info.fileName())
             else:
 

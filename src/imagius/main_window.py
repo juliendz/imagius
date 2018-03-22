@@ -38,6 +38,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     _dir_load_start = pyqtSignal(object)
     _dir_watcher_start = pyqtSignal()
 
+    _is_watcher_running = False
+
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
@@ -166,6 +168,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._watch.moveToThread(self._dir_watcher_thread)
         self._dir_watcher_thread.start()
         LOGGER.info('Watcher thread started.')
+        self._is_watcher_running = True
+        self._dir_watcher_start.emit()
+
+    def run_watcher(self):
+        LOGGER.info('Watcher thread started.')
+        self._is_watcher_running = True
         self._dir_watcher_start.emit()
 
     def _setup_scan_dir_list_model(self):
@@ -270,6 +278,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
  
     def action_folder_manager_clicked(self):
         self.folder_mgr_window = FolderManagerWindow(self)
+        self.folder_mgr_window.accepted.connect(self.run_watcher)
         self.folder_mgr_window.setModal(True)
         self.folder_mgr_window.show()
 
@@ -474,6 +483,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSlot()
     def on_watch_all_done(self):
         self.statusBar().clearMessage()
+        self._is_watcher_running = False
 
     def get_current_selection_ids(self):
         selected_ids = {}

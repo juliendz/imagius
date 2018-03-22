@@ -26,7 +26,9 @@ class FolderManagerWindow(QDialog, Ui_FolderManagerWindow):
         self.btn_AddFolder.clicked.connect(self.add_folder)
         self.btn_EditFolder.clicked.connect(self.edit_folder)
         self.btn_DeleteFolder.clicked.connect(self.delete_folder)
-        self.btn_Close.clicked.connect(self.close)
+
+        self.btnbox_acceptcancel.accepted.connect(self.close_ok)
+        self.btnbox_acceptcancel.rejected.connect(self.close_cancel)
 
         self.populate_folder_tree()
 
@@ -84,9 +86,12 @@ class FolderManagerWindow(QDialog, Ui_FolderManagerWindow):
         else:
             QMessageBox.about(self, "No selection", "Please select an entry to delete")
 
+    def close_ok(self):
+        self.accept()
+        self.close()
 
-
-    def closeWindow(self):
+    def close_cancel(self):
+        self.reject()
         self.close()
 
 
