@@ -148,11 +148,11 @@ class MetaFilesManager():
         return properties
 
     def get_img_properties(self, si_id, sd_id):
-        self.connect()
+        if not self._meta_db.is_open:
+            self.connect()
         dr_img = self.get_image_from_id(si_id, sd_id)
         exif = self.get_img_exif(dr_img['abspath'])
         # print(exif)
-        self.disconnect()
 
         properties = {}
         properties['abspath'] = dr_img['abspath']

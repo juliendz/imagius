@@ -58,6 +58,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # helpers
         self._meta_files_mgr = MetaFilesManager()
+        self._meta_files_mgr.connect()
         self._watch = Watcher()
 
         self.listView_thumbs = ThumbsListView(self.frame_thumbs)
@@ -165,6 +166,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.buttonGroup_metadata.buttonClicked.connect(self.on_buttongroup_metadata_clicked)
 
+        self.txtbox_search.textEdited.connect(self.handle_search)
+
     def init_watch_thread(self):
         self._watch.moveToThread(self._dir_watcher_thread)
         self._dir_watcher_thread.start()
@@ -225,13 +228,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             elif event.type() == QtCore.QEvent.Leave:
                 self.label_thumbs_toolbar_tooltip.setText("")
         return QtWidgets.QWidget.eventFilter(self, widget, event)
+    
+    def handle_search(self, search_term):
+        pass
 
     def handle_action_file_locate_triggered(self):
         curr_sel_ids = self.get_current_selection_ids()
         if 'sd_id' in curr_sel_ids and 'si_id' in curr_sel_ids:
-            self._meta_files_mgr.connect()
             dr_img = self._meta_files_mgr.get_image_from_id(curr_sel_ids['si_id'], curr_sel_ids['sd_id'])
-            self._meta_files_mgr.disconnect()
             explorer_process = QtCore.QProcess()
             explorer_process.setProgram('explorer.exe')
             explorer_process.setArguments(['/select,%s' % QtCore.QDir.toNativeSeparators(dr_img['abspath'])])
@@ -240,9 +244,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def handle_action_folder_locate_triggered(self):
         curr_sel_ids = self.get_current_selection_ids()
         if 'sd_id' in curr_sel_ids:
-            self._meta_files_mgr.connect()
             dr_sd = self._meta_files_mgr.get_scan_dir(curr_sel_ids['sd_id'])
-            self._meta_files_mgr.disconnect()
             explorer_process = QtCore.QProcess()
             explorer_process.setProgram('explorer.exe')
             explorer_process.setArguments(['/select,%s' % QtCore.QDir.toNativeSeparators(dr_sd['abspath'])])
@@ -499,4 +501,5 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.close()
 
     def closeEvent(self, event):
+        self._meta_files_mgr.disconnect()
         settings.persist_to_disk()

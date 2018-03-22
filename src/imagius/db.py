@@ -22,6 +22,7 @@ class dbmgr(object):
     errcode = None
     dbpath = None
     conn = None
+    is_open = False
 
     schema_settings = """
         CREATE TABLE IF NOT EXISTS "dir" ("id" INTEGER PRIMARY KEY ,"abspath" TEXT NOT NULL  DEFAULT (null) ,"name" TEXT NOT NULL ,"image_count" INTEGER DEFAULT (0) );
@@ -69,9 +70,11 @@ class dbmgr(object):
 
     def connect(self):
         self.conn = sqlite3.connect(self.dbpath)
+        self.is_open = True
 
     def disconnect(self):
         self.conn.close()
+        self.is_open = False
 
     def commit(self):
         self.conn.commit()
