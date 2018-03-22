@@ -126,7 +126,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Menu
         # File
         self.action_add_folder.triggered.connect(self.action_folder_manager_clicked)
-        self.action_rescan.triggered.connect(self.run_watcher)
+        self.action_rescan.triggered.connect(self._run_watcher)
         self.action_file_locate.triggered.connect(self.handle_action_file_locate_triggered)
         self.action_exit.triggered.connect(self.action_exit_clicked)
         # View
@@ -175,7 +175,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._is_watcher_running = True
         self._dir_watcher_start.emit()
 
-    def run_watcher(self):
+    def _run_watcher(self):
         self._is_watcher_running = True
         self._dir_watcher_start.emit()
     
@@ -219,6 +219,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.listView_thumbs.setModel(self._thumbs_view_model)
         self.listView_thumbs.setSelectionModel(self._thumbs_selection_model)
 
+        scan_dirs = self._meta_files_mgr.get_scan_dirs()
+        self._populate_dirs_tree_view(0, scan_dirs)
+
+    def _repopulate_scan_dir_list_model(self):
+        self._clear_folders_tree_view()
         scan_dirs = self._meta_files_mgr.get_scan_dirs()
         self._populate_dirs_tree_view(0, scan_dirs)
 
@@ -300,9 +305,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
  
     def action_folder_manager_clicked(self):
         self.folder_mgr_window = FolderManagerWindow(self)
-        self.folder_mgr_window.accepted.connect(self.run_watcher)
+        self.folder_mgr_window.accepted.connect(self._on_folder_manager_window_accepted)
         self.folder_mgr_window.setModal(True)
         self.folder_mgr_window.show()
+    
+    def _on_folder_manager_window_accepted(self):
+        self._repopulate_scan_dir_list_model()
+        self._run_watcher()
 
     def action_properties_clicked(self):
         if self.action_properties.isChecked():
@@ -323,7 +332,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.toolbutton_properties.setChecked(False)
             settings.save(SettingType.UI_METADATA_SHOW_PROPS, False)
             settings.save(SettingType.UI_METADATA_SHOW_TAGS, False)
-            # Forces the list view to re-render after the props window is hidden
+            # Forces the list view to re-render after the metadata window is hidden
             self._thumbs_view_model.layoutChanged.emit()
 
     def action_tags_clicked(self):
@@ -340,7 +349,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.toolbutton_tags.setChecked(False)
             settings.save(SettingType.UI_METADATA_SHOW_PROPS, False)
             settings.save(SettingType.UI_METADATA_SHOW_TAGS, False)
-            # Forces the list view to re-render after the props window is hidden
+            # Forces the list view to re-render after the metadata window is hidden
             self._thumbs_view_model.layoutChanged.emit()
 
     def show_image_properties(self):
@@ -532,6 +541,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if 'search' in self._TV_FOLDERS_ITEM_MAP:
             search_item = self._TV_FOLDERS_ITEM_MAP['search']
             search_item.removeRows(0, search_item.rowCount())
+    
+    def _clear_folders_tree_view(self):
+        folder_item = self._TV_FOLDERS_ITEM_MAP[0]
+        self._TV_FOLDERS_ITEM_MAP.clear()
+        self._TV_FOLDERS_ITEM_MAP[0] = folder_item
+        folder_item.removeRows(0, folder_item.rowCount())
 
     def _remove_search_tree_view(self):
         if 'search' in self._TV_FOLDERS_ITEM_MAP:
