@@ -14,7 +14,7 @@ class PropertiesWidget(QtWidgets.QWidget, Ui_PropertiesWidget):
         super(PropertiesWidget, self).__init__(parent)
         self.setupUi(self)
 
-        self.vlayout = QtWidgets.QVBoxLayout(self.gbox_properties)
+        self.vlayout = QtWidgets.QFormLayout(self.gbox_properties)
 
     def setup_properties(self, props):
         for i in reversed(range(self.vlayout.count())):
@@ -22,6 +22,7 @@ class PropertiesWidget(QtWidgets.QWidget, Ui_PropertiesWidget):
 
         title = "Properties of %s" % props['filename']
         self.gbox_properties.setTitle(title)
+        self.gbox_properties.setToolTip(title)
 
         for key, value in props.items():
             title = self.get_title(key)

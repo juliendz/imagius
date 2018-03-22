@@ -19,5 +19,7 @@ class PropertiesItemWidget(QWidget, Ui_PropertiesItemWidget):
         super(PropertiesItemWidget, self).__init__(parent)
         self.setupUi(self)
 
+        self.setToolTip(str(value))
+
         self.lbl_title.setText(title)
         self.lbl_value.setText(str(value))

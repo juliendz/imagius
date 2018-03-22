@@ -102,7 +102,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.frame_metadata.show()
         else:
             self.frame_metadata.hide()
-
+        
         # Set event filters
         self.btn_slideshow.installEventFilter(self)
 

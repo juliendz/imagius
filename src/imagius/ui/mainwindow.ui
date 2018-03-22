@@ -420,7 +420,7 @@
              <widget class="QFrame" name="frame_metadata">
               <property name="maximumSize">
                <size>
-                <width>300</width>
+                <width>290</width>
                 <height>16777215</height>
                </size>
               </property>
@@ -459,7 +459,7 @@
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>298</width>
+                    <width>288</width>
                     <height>386</height>
                    </rect>
                   </property>
@@ -476,7 +476,7 @@
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>298</width>
+                    <width>278</width>
                     <height>386</height>
                    </rect>
                   </property>
