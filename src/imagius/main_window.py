@@ -125,6 +125,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Menu
         # File
         self.action_add_folder.triggered.connect(self.action_folder_manager_clicked)
+        self.action_rescan.triggered.connect(self.run_watcher)
         self.action_file_locate.triggered.connect(self.handle_action_file_locate_triggered)
         self.action_exit.triggered.connect(self.action_exit_clicked)
         # View

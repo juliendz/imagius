@@ -785,10 +785,12 @@ font-weight: bold</string>
      <string>Fi&amp;le</string>
     </property>
     <addaction name="action_add_folder"/>
+    <addaction name="action_rescan"/>
     <addaction name="separator"/>
     <addaction name="action_file_locate"/>
     <addaction name="separator"/>
     <addaction name="action_exit"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -967,6 +969,11 @@ font-weight: bold</string>
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="action_rescan">
+   <property name="text">
+    <string>Rescan Added Folders</string>
    </property>
   </action>
  </widget>
