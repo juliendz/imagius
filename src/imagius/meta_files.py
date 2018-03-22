@@ -70,12 +70,12 @@ class MetaFilesManager():
             return None
         return res[0]
 
-    def add_scan_dir(self, parent_id, path, name):
+    def add_scan_dir(self, parent_id, path, name, integrity_check):
         """
         <TODO>
         """
-        query = "INSERT INTO scan_dir (parent_dir_id, abspath, name) VALUES (?, ?, ?)"
-        params = (parent_id, path, name)
+        query = "INSERT INTO scan_dir (parent_dir_id, abspath, name, integrity_check) VALUES (?, ?, ?, ?)"
+        params = (parent_id, path, name, integrity_check)
         sd_id = self._meta_db.run_insert_query(query, params)
         return sd_id
 
@@ -86,6 +86,15 @@ class MetaFilesManager():
         query = "DELETE FROM scan_dir WHERE id = ?"
         params = (id,)
         return self._meta_db.run_query(query, params)
+
+    def update_scan_dir_integrity_check(self, sd_id, ts):
+        """
+        <TODO>
+        """
+        query = "UPDATE scan_dir SET integrity_check = ? WHERE id = ?"
+        params = (ts, sd_id)
+        sd_id = self._meta_db.run_query(query, params)
+        return sd_id
 
     def update_scan_dir_mtime(self, sd_id, mtime):
         """
@@ -276,7 +285,17 @@ class MetaFilesManager():
         params = (int_check,)
         return self._meta_db.run_query(query, params, True)
 
-    def prune_scan_dir(self, sd_id, int_check):
+    def get_orphaned_scan_dirs(self, int_check):
+        query = "SELECT * FROM scan_dir WHERE integrity_check < ?"
+        params = (int_check,)
+        return self._meta_db.run_select_query(query, params)
+
+    def prune_scan_dir(self, sd_id):
+        query = "DELETE FROM scan_dir WHERE id = ?"
+        params = (sd_id,)
+        return self._meta_db.run_query(query, params)
+
+    def prune_scan_img(self, sd_id, int_check):
         query = "DELETE FROM scan_img WHERE sdid = ? AND integrity_check < ?"
         params = (sd_id, int_check)
         return self._meta_db.run_query(query, params, True)

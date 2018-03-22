@@ -37,23 +37,32 @@ class Watcher(QObject):
         """
         <TODO>
         """
+        self._img_integrity_ts = start_time = time.time()
+
         LOGGER.info('Watch all started.')
-        start_time = time.time()
+
+        self._meta_files_mgr.connect()
+
         self.scan_folders()
+
         elapsed = round(time.time() - start_time, 2)
         suffix = 'seconds'
         if elapsed > 60:
             elapsed /= 60
             suffix = 'minutes'
         LOGGER.info('Watch all completed in %.2f %s.' % (elapsed, suffix))
+
         self.watch_all_done.emit(elapsed, suffix)
+
+        orphaned_scan_dirs = self._meta_files_mgr.get_orphaned_scan_dirs(self._img_integrity_ts)
+        for dir in orphaned_scan_dirs:
+            self.dir_empty_or_deleted.emit({'id': dir['id']})
+            self._meta_files_mgr.prune_scan_dir(dir['id'])
+
+        self._meta_files_mgr.disconnect()
 
     def scan_folders(self):
         watched_folders = self._meta_files_mgr.get_watched_dirs()
-
-        self._img_integrity_ts = time.time()
-
-        self._meta_files_mgr.connect()
 
         # Scan the watched directories.
         for idx, folder in enumerate(watched_folders):
@@ -64,8 +73,6 @@ class Watcher(QObject):
 
         # Finally, remove the non-existent files
         # self._meta_files_mgr.clean_db(self._img_integrity_ts)
-
-        self._meta_files_mgr.disconnect()
 
         LOGGER.debug("Folder scan completed.")
 
@@ -78,11 +85,12 @@ class Watcher(QObject):
         sd_id = 0
         sd_info = self._meta_files_mgr.get_scan_dir_id(abs_path)
         if not sd_info or sd_info['id'] <= 0:
-            sd_id = self._meta_files_mgr.add_scan_dir(parent_id, abs_path, dir_name)
+            sd_id = self._meta_files_mgr.add_scan_dir(parent_id, abs_path, dir_name, self._img_integrity_ts)
             sd_info = self._meta_files_mgr.get_scan_dir_id(abs_path)
             is_new_or_modified = True
         else:
             sd_id = sd_info['id']
+            self._meta_files_mgr.update_scan_dir_integrity_check(sd_id, self._img_integrity_ts)
             if not sd_info['mtime'] or (modified_time > sd_info['mtime']):
                 LOGGER.debug("Folder(%s):(%s) has changed since last scan." %
                              (sd_id, sd_info['abspath']))
@@ -148,7 +156,7 @@ class Watcher(QObject):
         self._meta_files_mgr.commit()
 
         if is_new_or_modified is True:
-            self._meta_files_mgr.prune_scan_dir(sd_id, self._img_integrity_ts)
+            self._meta_files_mgr.prune_scan_img(sd_id, self._img_integrity_ts)
             img_count = self._meta_files_mgr.get_scan_dir_img_count(sd_id)
             self._meta_files_mgr.update_scan_dir_img_count(sd_id, img_count)
             if has_new_images:
