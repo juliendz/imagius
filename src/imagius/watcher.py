@@ -18,7 +18,7 @@ class Watcher(QObject):
     """
     <TODO>
     """
-    watch_all_done = pyqtSignal()
+    watch_all_done = pyqtSignal(object, object)
     new_img_found = pyqtSignal(object)
     dir_added_or_updated = pyqtSignal(object)
     dir_empty_or_deleted = pyqtSignal(object)
@@ -37,8 +37,16 @@ class Watcher(QObject):
         """
         <TODO>
         """
+        LOGGER.info('Watch all started.')
+        start_time = time.time()
         self.scan_folders()
-        self.watch_all_done.emit()
+        elapsed = round(time.time() - start_time, 2)
+        suffix = 'seconds'
+        if elapsed > 60:
+            elapsed /= 60
+            suffix = 'minutes'
+        LOGGER.info('Watch all completed in %.2f %s.' % (elapsed, suffix))
+        self.watch_all_done.emit(elapsed, suffix)
 
     def scan_folders(self):
         watched_folders = self._meta_files_mgr.get_watched_dirs()

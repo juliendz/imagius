@@ -176,7 +176,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._dir_watcher_start.emit()
 
     def run_watcher(self):
-        LOGGER.info('Watcher thread started.')
         self._is_watcher_running = True
         self._dir_watcher_start.emit()
     
@@ -503,9 +502,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self._dirs_list_model.removeRow(item_index.row(), parent_index)
             self._TV_FOLDERS_ITEM_MAP.pop(dir_info['id'])
 
-    @pyqtSlot()
-    def on_watch_all_done(self):
+    @pyqtSlot(object, object)
+    def on_watch_all_done(self, elapsed, suffix):
         self.statusBar().clearMessage()
+        self.statusBar().showMessage("Folder scan completed in %.2f %s" % (elapsed, suffix))
         self._is_watcher_running = False
 
     def get_current_selection_ids(self):
