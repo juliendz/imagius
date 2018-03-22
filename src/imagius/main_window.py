@@ -484,6 +484,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         sd_id = index.data(QtCore.Qt.UserRole + 1)
         # Categories tree nodes will not contain 'data'
         if sd_id:
+            item = self._TV_FOLDERS_ITEM_MAP[sd_id]
+            bold_font = QFont()
+            bold_font.setBold(False)
+            item.setFont(bold_font)
             props = self._meta_files_mgr.get_dir_properties(sd_id)
             self.lbl_selection_summary.setText(self.get_dir_selection_summary(props))
             self._load_dir_images(sd_id)
