@@ -476,7 +476,7 @@
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>278</width>
+                    <width>288</width>
                     <height>386</height>
                    </rect>
                   </property>
@@ -808,7 +808,7 @@ font-weight: bold</string>
      <string>Help</string>
     </property>
     <addaction name="actionDocumentation"/>
-    <addaction name="actionCheck_for_Updates"/>
+    <addaction name="action_check_updates"/>
     <addaction name="separator"/>
     <addaction name="actionAbout"/>
    </widget>
@@ -964,7 +964,7 @@ font-weight: bold</string>
     <string>Documentation</string>
    </property>
   </action>
-  <action name="actionCheck_for_Updates">
+  <action name="action_check_updates">
    <property name="text">
     <string>Check for Updates</string>
    </property>

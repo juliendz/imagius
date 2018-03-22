@@ -13,6 +13,8 @@ class Thumb_Caption_Type(Enum):
 class SettingType(Enum):
 
     CHECK_UPDATE_ON_STARTUP = auto()
+    CHECK_UPDATE_URL = auto()
+
     FILETYPE_PNG = auto()
     FILETYPE_BMP = auto()
 

@@ -8,8 +8,10 @@ author: Julien Dcruz
 from PyQt5 import QtCore
 from imagius.db import dbmgr
 from imagius.types import SettingType, IMAGE_FILETYPES
+from packaging.version import Version
 
 app_name = 'imagius'
+app_version = Version('0.8.0')
 settings_db_name = 'settings.db'
 meta_db_name = 'meta.db'
 roaming_dir_path = QtCore.QStandardPaths.writableLocation(QtCore.QStandardPaths.AppDataLocation)

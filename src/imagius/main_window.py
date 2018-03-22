@@ -26,6 +26,7 @@ from .thumbs_listview import ThumbsListView
 from .types import Thumb_Caption_Type
 from .watcher import Watcher
 from .log import LOGGER
+from .update_manager import UpdateManager
 import settings
 from settings import SettingType
 
@@ -39,6 +40,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     _dir_watcher_start = pyqtSignal()
 
     _is_watcher_running = False
+    _update_mgr = None
 
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
@@ -145,6 +147,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Tools
         self.action_settings.triggered.connect(self.handle_action_settings_triggered)
         self.action_folder_manager.triggered.connect(self.action_folder_manager_clicked)
+        # Help
+        self.action_check_updates.triggered.connect(self._handle_check_for_updates_clicked)
 
         # Btns
         self.btn_slideshow.clicked.connect(self.start_slideshow)
@@ -389,6 +393,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.listView_thumbs.setGridSize(QSize(value + 20, value + 20))
 
         settings.save(SettingType.UI_THUMBS_SIZE, value)
+
+    def _handle_check_for_updates_clicked(self):
+        if not self._update_mgr:
+            self._update_mgr = UpdateManager()
+            self._update_mgr.get_updates()
 
     def _load_dir_images(self, sd_id):
         self._clear_thumbs()
