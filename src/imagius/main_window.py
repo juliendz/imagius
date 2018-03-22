@@ -179,9 +179,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         LOGGER.info('Watcher thread started.')
         self._is_watcher_running = True
         self._dir_watcher_start.emit()
+    
+    def _populate_dirs_tree_view(self, parent_key, folders):
+        parent_item = self._TV_FOLDERS_ITEM_MAP[parent_key]
+        if folders:
+            for idx, dir in enumerate(folders):
+                item_title = "%s(%s)" % (dir['name'], dir['img_count'])
+                item = QStandardItem(item_title)
+                item.setData(dir['id'], QtCore.Qt.UserRole + 1)
+                item.setSizeHint(QSize(item.sizeHint().width(), 24))
+                item.setIcon(QIcon(':/images/icon_folder'))
+                parent_item.appendRow(item)
+                if parent_key == 0:
+                    self._TV_FOLDERS_ITEM_MAP[dir['id']] = item
+        self.treeView_scandirs.expandAll()
 
     def _setup_scan_dir_list_model(self):
-        scan_dirs = self._meta_files_mgr.get_scan_dirs()
         self._dirs_list_model = QStandardItemModel()
         self._dirs_list_selection_model = QItemSelectionModel(self._dirs_list_model)
         self._thumbs_view_model = QStandardItemModel()
@@ -202,24 +215,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.treeView_scandirs.setModel(self._dirs_list_model)
         self.treeView_scandirs.setSelectionModel(self._dirs_list_selection_model)
-        self.treeView_scandirs.expandAll()
+        # self.treeView_scandirs.setRootIsDecorated(False)
 
         self.listView_thumbs.setModel(self._thumbs_view_model)
         self.listView_thumbs.setSelectionModel(self._thumbs_selection_model)
 
-        if scan_dirs:
-            for idx, dir in enumerate(scan_dirs):
-                item_title = "%s(%s)" % (dir['name'], dir['img_count'])
-                item = QStandardItem(item_title)
-                item.setData(dir['id'], QtCore.Qt.UserRole + 1)
-                item.setSizeHint(QSize(item.sizeHint().width(), 24))
-                item.setIcon(QIcon(':/images/icon_folder'))
-                folder_item.appendRow(item)
-                self._TV_FOLDERS_ITEM_MAP[dir['id']] = item
-        
-        # self.treeView_scandirs.setSortingEnabled(True)
-        # self.treeView_scandirs.sortByColumn(1, QtCore.Qt.DescendingOrder)
-        self.treeView_scandirs.setRootIsDecorated(False)
+        scan_dirs = self._meta_files_mgr.get_scan_dirs()
+        self._populate_dirs_tree_view(0, scan_dirs)
+
+    def _populate_search_tree_view(self, results):
+        if 'search' not in self._TV_FOLDERS_ITEM_MAP:
+            self._root_tree_item = self._dirs_list_model.invisibleRootItem()
+            # FOLDERS item
+            search_item = QStandardItem("Search")
+            search_item_font = QFont()
+            search_item_font.setBold(True)
+            search_item.setFont(search_item_font)
+            search_item.setSizeHint(QSize(search_item.sizeHint().width(), 24))
+            self._root_tree_item.insertRow(0, search_item)
+            self._TV_FOLDERS_ITEM_MAP['search'] = search_item
+        self._populate_dirs_tree_view('search', results)
 
     def eventFilter(self, widget, event):
         if widget.objectName() == 'btn_slideshow':
@@ -230,7 +245,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return QtWidgets.QWidget.eventFilter(self, widget, event)
     
     def handle_search(self, search_term):
-        pass
+        self._clear_search()
+        if search_term != '':
+            searches = self._meta_files_mgr.search_scan_dirs(search_term)
+            self._populate_search_tree_view(searches)
+        else:
+            self._remove_search_tree_view()
 
     def handle_action_file_locate_triggered(self):
         curr_sel_ids = self.get_current_selection_ids()
@@ -450,10 +470,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSlot(QModelIndex)
     def on_scan_dir_treeView_clicked(self, index):
         sd_id = index.data(QtCore.Qt.UserRole + 1)
-        props = self._meta_files_mgr.get_dir_properties(sd_id)
-        self.lbl_selection_summary.setText(self.get_dir_selection_summary(props))
         # Categories tree nodes will not contain 'data'
         if sd_id:
+            props = self._meta_files_mgr.get_dir_properties(sd_id)
+            self.lbl_selection_summary.setText(self.get_dir_selection_summary(props))
             self._load_dir_images(sd_id)
 
     @pyqtSlot(object)
@@ -503,3 +523,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def closeEvent(self, event):
         self._meta_files_mgr.disconnect()
         settings.persist_to_disk()
+
+    def _clear_search(self):
+        if 'search' in self._TV_FOLDERS_ITEM_MAP:
+            search_item = self._TV_FOLDERS_ITEM_MAP['search']
+            search_item.removeRows(0, search_item.rowCount())
+
+    def _remove_search_tree_view(self):
+        if 'search' in self._TV_FOLDERS_ITEM_MAP:
+            root_tree_item = self._dirs_list_model.invisibleRootItem()
+            root_tree_item.removeRow(0)
+            self._TV_FOLDERS_ITEM_MAP.pop('search')

@@ -69,8 +69,9 @@ class dbmgr(object):
             LOGGER.critical('[Error while creating meta db ]: %s' % msg)
 
     def connect(self):
-        self.conn = sqlite3.connect(self.dbpath)
-        self.is_open = True
+        if not self.is_open:
+            self.conn = sqlite3.connect(self.dbpath)
+            self.is_open = True
 
     def disconnect(self):
         self.conn.close()

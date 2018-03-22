@@ -46,6 +46,12 @@ class MetaFilesManager():
         self._meta_db.disconnect()
         return res
 
+    def search_scan_dirs(self, search_term):
+        query = "SELECT * FROM scan_dir WHERE name LIKE ?"
+        self._meta_db.connect()
+        res = self._meta_db.run_select_query(query, ("%" + search_term + "%",))
+        return res
+
     def get_scan_dir(self, id):
         query = "SELECT * FROM scan_dir WHERE id = ?"
         params = (id,)
