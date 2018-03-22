@@ -323,6 +323,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.toolbutton_properties.setChecked(False)
             settings.save(SettingType.UI_METADATA_SHOW_PROPS, False)
             settings.save(SettingType.UI_METADATA_SHOW_TAGS, False)
+            # Forces the list view to re-render after the props window is hidden
+            self._thumbs_view_model.layoutChanged.emit()
 
     def action_tags_clicked(self):
         if self.action_tags.isChecked():
@@ -338,6 +340,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.toolbutton_tags.setChecked(False)
             settings.save(SettingType.UI_METADATA_SHOW_PROPS, False)
             settings.save(SettingType.UI_METADATA_SHOW_TAGS, False)
+            # Forces the list view to re-render after the props window is hidden
+            self._thumbs_view_model.layoutChanged.emit()
 
     def show_image_properties(self):
         curr_sel_ids = self.get_current_selection_ids()
