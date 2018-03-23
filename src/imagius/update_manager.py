@@ -3,10 +3,11 @@ Update Manager module
 author: Julien Dcruz
 """
 from PyQt5 import QtCore, QtNetwork
-from imagius.types import SettingType
-import settings
-from .log import LOGGER
 from packaging.version import Version
+
+from imagius_types import SettingType
+import settings
+from log import LOGGER
 
 
 class UpdateManager(QtCore.QObject):

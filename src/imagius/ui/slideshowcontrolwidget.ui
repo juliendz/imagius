@@ -74,8 +74,8 @@
          <string>Exit</string>
         </property>
         <property name="icon">
-         <iconset resource="../../resources/qpicasa.qrc">
-          <normaloff>:/images/icon_exit</normaloff>:/images/icon_exit</iconset>
+         <iconset resource="../qpicasa.qrc">
+          <normaloff>:/images/resources/images/exit.png</normaloff>:/images/resources/images/exit.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -106,8 +106,8 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../../resources/qpicasa.qrc">
-          <normaloff>:/images/icon_left</normaloff>:/images/icon_left</iconset>
+         <iconset resource="../qpicasa.qrc">
+          <normaloff>:/images/resources/images/left.png</normaloff>:/images/resources/images/left.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -132,8 +132,8 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../../resources/qpicasa.qrc">
-          <normaloff>:/images/icon_play</normaloff>:/images/icon_play</iconset>
+         <iconset resource="../qpicasa.qrc">
+          <normaloff>:/images/resources/images/play.png</normaloff>:/images/resources/images/play.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -158,8 +158,8 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../../resources/qpicasa.qrc">
-          <normaloff>:/images/icon_right</normaloff>:/images/icon_right</iconset>
+         <iconset resource="../qpicasa.qrc">
+          <normaloff>:/images/resources/images/right.png</normaloff>:/images/resources/images/right.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -208,8 +208,8 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../../resources/qpicasa.qrc">
-             <normaloff>:/images/icon_minus</normaloff>:/images/icon_minus</iconset>
+            <iconset resource="../qpicasa.qrc">
+             <normaloff>:/images/resources/images/minus.png</normaloff>:/images/resources/images/minus.png</iconset>
            </property>
           </widget>
          </item>
@@ -250,8 +250,8 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../../resources/qpicasa.qrc">
-             <normaloff>:/images/icon_plus</normaloff>:/images/icon_plus</iconset>
+            <iconset resource="../qpicasa.qrc">
+             <normaloff>:/images/resources/images/plus.png</normaloff>:/images/resources/images/plus.png</iconset>
            </property>
           </widget>
          </item>
@@ -264,7 +264,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../../resources/qpicasa.qrc"/>
+  <include location="../qpicasa.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -1,8 +1,10 @@
 import logging
+# import settings
 
 LOGGER = logging.getLogger('imagius')
 LOGGER.setLevel(logging.DEBUG)
 
+# LOG_FILE_HANDLER = logging.FileHandler('%s/%s' % (settings.roaming_dir_path, settings.log_name))
 LOG_FILE_HANDLER = logging.FileHandler('imagius.log')
 LOG_FILE_HANDLER.setLevel(logging.DEBUG)
 

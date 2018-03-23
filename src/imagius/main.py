@@ -10,8 +10,9 @@ last edited: 7th December 2016
 import sys
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication
-from imagius.main_window import MainWindow
-from imagius.log import LOGGER
+from main_window import MainWindow
+
+from log import LOGGER
 import settings
 
 

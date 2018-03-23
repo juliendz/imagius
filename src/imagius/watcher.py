@@ -9,9 +9,9 @@ from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QDirIterator
 from PyQt5.QtCore import QDir, QFileInfo, qDebug
 
 import settings
-from .log import LOGGER
-from .meta_files import MetaFilesManager
-from .types import SettingType, IMAGE_FILETYPES
+from log import LOGGER
+from meta_files import MetaFilesManager
+from imagius_types import SettingType, IMAGE_FILETYPES
 
 
 class Watcher(QObject):

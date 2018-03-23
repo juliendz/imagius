@@ -8,7 +8,7 @@ Contributors: ...
 
 
 import sqlite3
-from imagius.log import LOGGER
+from log import LOGGER
 
 
 def dict_factory(cursor, row):

@@ -8,7 +8,7 @@ from PyQt5 import QtCore
 from PyQt5 import QtGui
 from PyQt5 import QtWidgets
 
-from .log import LOGGER
+from log import LOGGER
 
 
 class SlideshowGraphicsView(QtWidgets.QGraphicsView):

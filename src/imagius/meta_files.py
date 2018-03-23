@@ -10,8 +10,8 @@ from PyQt5 import QtCore
 from PIL import Image
 import PIL.ExifTags
 from iptcinfo import IPTCInfo
-from imagius.db import dbmgr
-from .log import LOGGER
+from db import dbmgr
+from log import LOGGER
 import settings
 import exifread
 

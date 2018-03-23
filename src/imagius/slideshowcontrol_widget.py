@@ -9,9 +9,10 @@ import os
 from PyQt5.QtWidgets import QWidget
 from PyQt5 import QtCore
 from PyQt5.QtCore import QDir, QStandardPaths
-from .folder_manager import FolderManager
-from .ui.ui_slideshowcontrolwidget import Ui_SlideshowControlWidget
-from .log import LOGGER
+
+from folder_manager import FolderManager
+from ui.ui_slideshowcontrolwidget import Ui_SlideshowControlWidget
+from log import LOGGER
 
 
 class SlideshowControlWidget(QWidget, Ui_SlideshowControlWidget):

@@ -14,19 +14,19 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
 from PyQt5.QtWidgets import QGridLayout, QLabel, QWidget, QPushButton
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QListView
 from PyQt5.QtWidgets import QGraphicsDropShadowEffect, QGraphicsGridLayout, QScroller
-from .meta_files import MetaFilesManager
-from .ui.ui_mainwindow import Ui_MainWindow
-from .foldermanager_window import FolderManagerWindow
-from .settings_window import SettingsWindow
-from .slideshow_window import SlideshowWindow
-from .properties_widget import PropertiesWidget
-from .qgraphics_thumb_item import QGraphicsThumbnailItem
-from .thumbs_listview import ThumbsListView
+from meta_files import MetaFilesManager
+from ui.ui_mainwindow import Ui_MainWindow
+from foldermanager_window import FolderManagerWindow
+from settings_window import SettingsWindow
+from slideshow_window import SlideshowWindow
+from properties_widget import PropertiesWidget
+# from qgraphics_thumb_item import QGraphicsThumbnailItem
+from thumbs_listview import ThumbsListView
 
-from .types import Thumb_Caption_Type
-from .watcher import Watcher
-from .log import LOGGER
-from .update_manager import UpdateManager
+from imagius_types import Thumb_Caption_Type
+from watcher import Watcher
+from log import LOGGER
+from update_manager import UpdateManager
 import settings
 from settings import SettingType
 

@@ -4,8 +4,8 @@ author: Julien Dcruz
 """
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from .ui.ui_propertieswidget import Ui_PropertiesWidget
-from .propertiesitem_widget import PropertiesItemWidget
+from ui.ui_propertieswidget import Ui_PropertiesWidget
+from propertiesitem_widget import PropertiesItemWidget
 
 
 class PropertiesWidget(QtWidgets.QWidget, Ui_PropertiesWidget):

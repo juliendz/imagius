@@ -14,11 +14,11 @@ from PyQt5.QtGui import QKeySequence, QPixmap, QImage, QBrush
 from PyQt5.QtWidgets import QWidget, QShortcut
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QGraphicsItem
 
-from .ui.ui_slideshowwindow import Ui_SlideshowWindow
-from .meta_files import MetaFilesManager
-from .slideshow_graphicsview import SlideshowGraphicsView
-from .slideshowcontrol_widget import SlideshowControlWidget
-from .log import LOGGER
+from ui.ui_slideshowwindow import Ui_SlideshowWindow
+from meta_files import MetaFilesManager
+from slideshow_graphicsview import SlideshowGraphicsView
+from slideshowcontrol_widget import SlideshowControlWidget
+from log import LOGGER
 import settings
 from settings import SettingType
 

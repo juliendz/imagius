@@ -3,9 +3,9 @@ Folder Manager module
 author: Julien Dcruz
 """
 from PyQt5.QtCore import QObject, QThread, pyqtSignal, pyqtSlot
-from .db import dbmgr
+from db import dbmgr
 import settings
-from .log import LOGGER
+from log import LOGGER
 
 
 class FolderManager(QObject):

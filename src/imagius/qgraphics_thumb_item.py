@@ -9,7 +9,7 @@ from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSize, QThread, QModelIndex
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QGraphicsPixmapItem, QGraphicsItem
-from .log import LOGGER
+from log import LOGGER
 
 
 class QGraphicsThumbnailItem(QGraphicsPixmapItem):
@@ -19,7 +19,6 @@ class QGraphicsThumbnailItem(QGraphicsPixmapItem):
         self.setAcceptHoverEvents(True)
         self.setFlag(QGraphicsItem.ItemIsSelectable, True)
         self.setFlag(QGraphicsItem.ItemIsFocusable, True)
-
 
     def hoverEnterEvent(self, event):
         super(QGraphicsPixmapItem, self).hoverEnterEvent(event)

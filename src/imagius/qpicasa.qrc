@@ -1,0 +1,15 @@
+<RCC>
+  <qresource prefix="images">
+    <file>../../resources/images/exit.png</file>
+    <file>../../resources/images/folder.png</file>
+    <file>../../resources/images/left.png</file>
+    <file>../../resources/images/minus.png</file>
+    <file>../../resources/images/play.png</file>
+    <file>../../resources/images/plus.png</file>
+    <file>../../resources/images/properties.png</file>
+    <file>../../resources/images/right.png</file>
+    <file>../../resources/images/search.png</file>
+    <file>../../resources/images/slideshow.png</file>
+    <file>../../resources/images/tags.png</file>
+  </qresource>
+</RCC>
