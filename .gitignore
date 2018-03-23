@@ -8,3 +8,4 @@ ui/__pycache__/*
 /src/imagius/ui/*.py
 **/build/*
 **/dist/*
+Output/*
