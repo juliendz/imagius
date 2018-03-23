@@ -23,6 +23,7 @@ if __name__ == '__main__':
     settings.load_settings()
 
     app = QApplication(sys.argv)
+    app.setApplicationName(settings.app_name)
     w = MainWindow()
     w.setWindowTitle('Imagius')
     w.showMaximized()

@@ -1,11 +1,13 @@
+from PyQt5 import QtCore
 import logging
-# import settings
+roaming_dir_path = QtCore.QStandardPaths.writableLocation(QtCore.QStandardPaths.AppDataLocation)
+log_name = 'imagius.log'
 
 LOGGER = logging.getLogger('imagius')
 LOGGER.setLevel(logging.DEBUG)
 
-# LOG_FILE_HANDLER = logging.FileHandler('%s/%s' % (settings.roaming_dir_path, settings.log_name))
-LOG_FILE_HANDLER = logging.FileHandler('imagius.log')
+print()
+LOG_FILE_HANDLER = logging.FileHandler('%s/imagius/%s' % (roaming_dir_path, log_name))
 LOG_FILE_HANDLER.setLevel(logging.DEBUG)
 
 LOG_FORMATTER = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
