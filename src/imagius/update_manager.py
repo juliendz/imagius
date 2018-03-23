@@ -38,3 +38,5 @@ class UpdateManager(QtCore.QObject):
                 LOGGER.info("No updates found....")
         else:
             LOGGER.error("Error while making update check request!")
+        # elif reply.error() == QtNetwork.QNetworkReply.HostNotFoundError:
+
