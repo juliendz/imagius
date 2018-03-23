@@ -6,3 +6,5 @@ ui/__pycache__/*
 *.pyc
 /src/*.db-journal
 /src/imagius/ui/*.py
+**/build/*
+**/dist/*
