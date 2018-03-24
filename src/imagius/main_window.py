@@ -397,7 +397,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def _handle_check_for_updates_clicked(self):
         if not self._update_mgr:
             self._update_mgr = UpdateManager()
-            self._update_mgr.get_updates()
+        self._update_mgr.get_updates()
 
     def _load_dir_images(self, sd_id):
         self._clear_thumbs()
