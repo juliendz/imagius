@@ -9,3 +9,4 @@ ui/__pycache__/*
 **/build/*
 **/dist/*
 Output/*
+**/imagius_rc.py

@@ -1,1 +1,1 @@
-pyrcc5.exe -o src/imagius/qpicasa_rc.py src/imagius/qpicasa.qrc
+pyrcc5.exe -o src/imagius/imagius_rc.py src/imagius/imagius.qrc
