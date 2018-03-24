@@ -472,8 +472,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if len(selected_thumb) == 0:
             selected = self.treeView_scandirs.selectedIndexes()
             sd_id = selected[0].data(QtCore.Qt.UserRole + 1)
-            props = self._meta_files_mgr.get_dir_properties(sd_id)
-            self.lbl_selection_summary.setText(self.get_dir_selection_summary(props))
+            if sd_id:
+                props = self._meta_files_mgr.get_dir_properties(sd_id)
+                self.lbl_selection_summary.setText(self.get_dir_selection_summary(props))
 
     def get_dir_selection_summary(self, props):
         img_count = props['img_count']

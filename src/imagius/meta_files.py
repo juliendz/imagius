@@ -129,11 +129,16 @@ class MetaFilesManager():
     def _generate_thumb(self, abspath, thumb_size):
         thumb_bytes = io.BytesIO()
         try:
+            ext = QtCore.QFileInfo(abspath).suffix()
+            if ext == 'png':
+                with Image.open(abspath) as image:
+                    image.verify()
+
             with Image.open(abspath) as image:
                 image.thumbnail(thumb_size, Image.ANTIALIAS)
                 image.save(thumb_bytes, image.format)
-        except IOError as err:
-            print(err)
+        except Exception as err:
+            LOGGER.error('Error while generating thumbs: %s' % err)
         return thumb_bytes
 
     def get_img_exif(self, abspath):
