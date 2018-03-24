@@ -23,7 +23,8 @@ exe = EXE(pyz,
           debug=False,
           strip=False,
           upx=True,
-          console=False )
+          console=False,
+          icon='D:\\Dev\\projects\\imagius\\resources\\images\\logo.ico')
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,
