@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../qpicasa.qrc">
+   <iconset resource="../imagius.qrc">
     <normaloff>:/images/resources/images/logo.png</normaloff>:/images/resources/images/logo.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -86,7 +86,7 @@
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap resource="../qpicasa.qrc">:/images/resources/images/search.png</pixmap>
+          <pixmap resource="../imagius.qrc">:/images/resources/images/search.png</pixmap>
          </property>
          <property name="scaledContents">
           <bool>true</bool>
@@ -350,7 +350,7 @@
                            <string/>
                           </property>
                           <property name="pixmap">
-                           <pixmap resource="../qpicasa.qrc">:/images/resources/images/folder.png</pixmap>
+                           <pixmap resource="../imagius.qrc">:/images/resources/images/folder.png</pixmap>
                           </property>
                           <property name="scaledContents">
                            <bool>true</bool>
@@ -411,7 +411,7 @@
                      <string/>
                     </property>
                     <property name="icon">
-                     <iconset resource="../qpicasa.qrc">
+                     <iconset resource="../imagius.qrc">
                       <normaloff>:/images/resources/images/slideshow.png</normaloff>:/images/resources/images/slideshow.png</iconset>
                     </property>
                    </widget>
@@ -468,7 +468,7 @@
                    </rect>
                   </property>
                   <attribute name="icon">
-                   <iconset resource="../qpicasa.qrc">
+                   <iconset resource="../imagius.qrc">
                     <normaloff>:/images/resources/images/properties.png</normaloff>:/images/resources/images/properties.png</iconset>
                   </attribute>
                   <attribute name="label">
@@ -480,12 +480,12 @@
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>288</width>
-                    <height>386</height>
+                    <width>98</width>
+                    <height>28</height>
                    </rect>
                   </property>
                   <attribute name="icon">
-                   <iconset resource="../qpicasa.qrc">
+                   <iconset resource="../imagius.qrc">
                     <normaloff>:/images/resources/images/tags.png</normaloff>:/images/resources/images/tags.png</iconset>
                   </attribute>
                   <attribute name="label">
@@ -715,7 +715,7 @@ font-weight: bold</string>
                 <string>...</string>
                </property>
                <property name="icon">
-                <iconset resource="../qpicasa.qrc">
+                <iconset resource="../imagius.qrc">
                  <normaloff>:/images/resources/images/tags.png</normaloff>:/images/resources/images/tags.png</iconset>
                </property>
                <property name="iconSize">
@@ -741,7 +741,7 @@ font-weight: bold</string>
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="../qpicasa.qrc">
+                <iconset resource="../imagius.qrc">
                  <normaloff>:/images/resources/images/properties.png</normaloff>:/images/resources/images/properties.png</iconset>
                </property>
                <property name="iconSize">
@@ -985,7 +985,8 @@ font-weight: bold</string>
   </action>
  </widget>
  <resources>
-  <include location="../qpicasa.qrc"/>
+  <include location="../imagius.qrc"/>
+  <include location="../imagius.qrc"/>
  </resources>
  <connections/>
  <buttongroups>
