@@ -1,6 +1,7 @@
 ; Imagius Inno Setup Script.
 
 #define MyAppName "Imagius"
+#define MyAppIconName "imagius.ico"
 #define MyAppVersion "0.8.0"
 #define MyAppPublisher "Julien Dcruz"
 #define MyAppURL "http://www.example.com/"
@@ -39,7 +40,7 @@ Source: "D:\Dev\projects\imagius\dist\imagius\*"; DestDir: "{app}"; Flags: ignor
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\{#MyAppIconName}"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
