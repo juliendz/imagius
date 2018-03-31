@@ -29,7 +29,6 @@ class ImageLoader(QObject):
 
         self._meta_files_mgr = MetaFilesManager()
         self._img_ext_filter = settings.get_allowed_image_formats()
-        self._meta_files_mgr.connect()
 
     @pyqtSlot(object)
     def load_scandir(self, sd_id):
@@ -37,6 +36,7 @@ class ImageLoader(QObject):
         <TODO>
         """
         self._img_integrity_ts = start_time = time.time()
+        self._meta_files_mgr.connect()
 
         LOGGER.debug('Load Scan Dir started.')
 
