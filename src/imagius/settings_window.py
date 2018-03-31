@@ -42,5 +42,7 @@ class SettingsWindow(QDialog, Ui_SettingsWindow):
 
         print(settings.SETTINGS)
 
+        settings.persist_to_disk()
+
     def closeWindow(self):
         self.close()
