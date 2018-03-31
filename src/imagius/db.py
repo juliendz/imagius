@@ -25,16 +25,29 @@ class dbmgr(object):
     is_open = False
 
     schema_settings = """
-        CREATE TABLE IF NOT EXISTS "dir" ("id" INTEGER PRIMARY KEY ,"abspath" TEXT NOT NULL  DEFAULT (null) ,"name" TEXT NOT NULL ,"image_count" INTEGER DEFAULT (0) );
+        PRAGMA journal_mode=WAL;
+        CREATE TABLE IF NOT EXISTS "dir" (
+                    "id" INTEGER PRIMARY KEY ,
+                    "abspath" TEXT NOT NULL  DEFAULT (null) ,
+                    "name" TEXT NOT NULL ,
+                    "image_count" INTEGER DEFAULT (0)
+        );
+        CREATE TABLE `settings` ( 
+                    `key` TEXT UNIQUE,
+                    `value` TEXT 
+        );
     """
 
     schema_meta = """
+        PRAGMA journal_mode=WAL;
         CREATE TABLE IF NOT EXISTS "scan_dir" (
         `id`    INTEGER NOT NULL,
+        `parent_dir_id` INTEGER,
         `abspath`       TEXT NOT NULL DEFAULT (null),
         `name`  TEXT NOT NULL,
         `img_count`     INTEGER,
         `mtime` INTEGER,
+        `integrity_check`       INTEGER,
         PRIMARY KEY(`id`)
         );
         CREATE TABLE IF NOT EXISTS "scan_img" (
