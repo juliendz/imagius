@@ -6,7 +6,7 @@
         {
             "taskName": "Run QPicasa",
             "type": "shell",
-            "command": "python D:\\Dev\\projects\\${workspaceRootFolderName}\\src\\main.py"
+            "command": "python D:\\Dev\\projects\\${workspaceRootFolderName}\\src\\imagius\\main.py"
         }
     ]
 }

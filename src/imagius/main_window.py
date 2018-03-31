@@ -25,6 +25,7 @@ from thumbs_listview import ThumbsListView
 
 from imagius_types import Thumb_Caption_Type
 from watcher import Watcher
+from loader import ImageLoader
 from log import LOGGER
 from update_manager import UpdateManager
 import settings
@@ -38,6 +39,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     # signals
     _dir_load_start = pyqtSignal(object)
     _dir_watcher_start = pyqtSignal()
+
+    _loader_load_scandir = pyqtSignal(object)
 
     _is_watcher_running = False
     _update_mgr = None
@@ -57,11 +60,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # threads
         self._dir_watcher_thread = QThread()
+        self._img_loader_thread = QThread()
 
         # helpers
         self._meta_files_mgr = MetaFilesManager()
         self._meta_files_mgr.connect()
         self._watch = Watcher()
+        self._img_loader = ImageLoader()
 
         self.listView_thumbs = ThumbsListView(self.frame_thumbs)
         self.listView_thumbs.setFrameShape(QtWidgets.QFrame.NoFrame)
@@ -123,6 +128,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self._load_dir_images(sd_id)
             # Start the dir watcher thread
             self.init_watch_thread()
+            # Start the loader thread
+            self.init_loader_thread()
 
     def _setup_connections(self):
         # Menu
@@ -161,6 +168,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._watch.dir_added_or_updated.connect(self.on_dir_added_or_updated)
         self._watch.dir_empty_or_deleted.connect(self.on_dir_empty_deleted)
 
+        # Loader
+        self._loader_load_scandir.connect(self._img_loader.load_scandir)
+        self._img_loader.load_scan_dir_info_success.connect(self._handle_load_scan_dir_info_success)
+        self._img_loader.load_images_success.connect(self._handle_load_images_sucess)
+
         # Tree View
         self.treeView_scandirs.clicked.connect(self.on_scan_dir_treeView_clicked)
 
@@ -175,9 +187,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def init_watch_thread(self):
         self._watch.moveToThread(self._dir_watcher_thread)
         self._dir_watcher_thread.start()
-        LOGGER.info('Watcher thread started.')
+        LOGGER.debug('Watcher thread started.')
         self._is_watcher_running = True
         self._dir_watcher_start.emit()
+
+    def init_loader_thread(self):
+        self._img_loader.moveToThread(self._img_loader_thread)
+        self._img_loader_thread.start()
+        LOGGER.debug('Loader thread started.')
 
     def _run_watcher(self):
         self._is_watcher_running = True
@@ -401,12 +418,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _load_dir_images(self, sd_id):
         self._clear_thumbs()
-
-        dir_info = self._meta_files_mgr.get_scan_dir(sd_id)
+        self._loader_load_scandir.emit(sd_id)
+        QScroller.grabGesture(self.listView_thumbs.viewport(),
+                              QScroller.LeftMouseButtonGesture)
+    
+    def _handle_load_scan_dir_info_success(self, dir_info):
         self.lbl_dir_name.setText(dir_info['name'])
-
-        images = self._meta_files_mgr.get_scan_dir_images(sd_id)
-
+    
+    def _handle_load_images_sucess(self, images):
+        LOGGER.debug('Recevied %s images' % len(images))
         for img in images:
             img['thumb'] = QImage.fromData(img['thumb'])
             item = QStandardItem()
@@ -419,9 +439,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             item.setData(img['serial'], QtCore.Qt.UserRole + 2)
             item.setIcon(QIcon(QPixmap.fromImage(img['thumb'])))
             self._thumbs_view_model.appendRow(item)
-
-        QScroller.grabGesture(self.listView_thumbs.viewport(),
-                              QScroller.LeftMouseButtonGesture)
 
     def _clear_thumbs(self):
         self._thumbs_view_model.clear()
