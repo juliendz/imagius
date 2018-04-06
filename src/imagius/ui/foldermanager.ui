@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>570</width>
-    <height>527</height>
+    <height>531</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,7 +36,10 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
-          <widget class="QFrame" name="frame_3">
+          <widget class="QFrame" name="frame_folder_list_buttons">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="frameShape">
             <enum>QFrame::StyledPanel</enum>
            </property>
@@ -139,7 +142,7 @@
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>60</height>
+       <height>75</height>
       </size>
      </property>
      <property name="frameShape">
@@ -149,6 +152,19 @@
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QLabel" name="lbl_disabled_msg">
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 0, 0);</string>
+        </property>
+        <property name="text">
+         <string>Adding, editing and deleting is disabled due to a currently running folder scan. Please wait for the scan to complete.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
       <item>
        <widget class="QDialogButtonBox" name="btnbox_acceptcancel">
         <property name="standardButtons">

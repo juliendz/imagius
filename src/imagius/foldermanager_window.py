@@ -32,6 +32,10 @@ class FolderManagerWindow(QDialog, Ui_FolderManagerWindow):
 
         self.populate_folder_tree()
 
+        self.frame_folder_list_buttons.setEnabled(not parent.is_watcher_running())
+        if not parent.is_watcher_running():
+            self.lbl_disabled_msg.hide()
+
     def populate_folder_tree(self):
         """
         <TODO>

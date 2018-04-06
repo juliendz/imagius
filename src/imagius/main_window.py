@@ -187,9 +187,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def init_watch_thread(self):
         self._watch.moveToThread(self._dir_watcher_thread)
         self._dir_watcher_thread.start()
+        self._run_watcher()
         LOGGER.debug('Watcher thread started.')
-        self._is_watcher_running = True
-        self._dir_watcher_start.emit()
 
     def init_loader_thread(self):
         self._img_loader.moveToThread(self._img_loader_thread)
@@ -198,6 +197,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _run_watcher(self):
         self._is_watcher_running = True
+        self.action_rescan.setEnabled(False)
         self._dir_watcher_start.emit()
     
     def _populate_dirs_tree_view(self, parent_key, folders):
@@ -549,8 +549,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSlot(object, object)
     def on_watch_all_done(self, elapsed, suffix):
         self.statusBar().clearMessage()
-        self.statusBar().showMessage("Folder scan completed in %.2f %s" % (elapsed, suffix))
         self._is_watcher_running = False
+        self.action_rescan.setEnabled(True)
+        self.statusBar().showMessage("Folder scan completed in %.2f %s" % (elapsed, suffix))
 
     def get_current_selection_ids(self):
         selected_ids = {}
@@ -584,3 +585,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             root_tree_item = self._dirs_list_model.invisibleRootItem()
             root_tree_item.removeRow(0)
             self._TV_FOLDERS_ITEM_MAP.pop('search')
+        
+    def is_watcher_running(self):
+        return self._is_watcher_running
