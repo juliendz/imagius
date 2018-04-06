@@ -4,9 +4,10 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "taskName": "Run QPicasa",
+            "taskName": "Run Imagius",
             "type": "shell",
-            "command": "python D:\\Dev\\projects\\${workspaceRootFolderName}\\src\\imagius\\main.py"
+            "command": "python D:\\Dev\\projects\\${workspaceRootFolderName}\\src\\imagius\\main.py",
+            "problemMatcher": []
         }
     ]
 }
