@@ -109,27 +109,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.frame_metadata.show()
         else:
             self.frame_metadata.hide()
-        
+
         # Set event filters
         self.btn_slideshow.installEventFilter(self)
 
     def resizeEvent(self, event):
         if event.spontaneous():
             # Begin loading the currently selected dir
-            folders_index = self._dirs_list_model.indexFromItem(self._TV_FOLDERS_ITEM_MAP[0])
-            if self._dirs_list_model.rowCount(folders_index) > 0:
-                self._dirs_list_selection_model.select(
-                    self._dirs_list_model.index(0, 0).child(0, 0),
-                    QItemSelectionModel.Select | QItemSelectionModel.Rows
-                )
-                selected = self.treeView_scandirs.selectedIndexes()
-                sd_id = selected[0].data(QtCore.Qt.UserRole + 1)
-                if sd_id > 0:
-                    self._load_dir_images(sd_id)
+            self._make_default_dir_list_selection()
+            cur_sel_ids = self.get_current_selection_ids()
+            if 'sd_id' in cur_sel_ids:
+                self._load_dir_images(cur_sel_ids['sd_id'])
             # Start the dir watcher thread
             self.init_watch_thread()
             # Start the loader thread
             self.init_loader_thread()
+
+    def _make_default_dir_list_selection(self):
+        folders_index = self._dirs_list_model.indexFromItem(self._TV_FOLDERS_ITEM_MAP[0])
+        if self._dirs_list_model.rowCount(folders_index) > 0:
+            self._dirs_list_selection_model.select(
+                self._dirs_list_model.index(0, 0).child(0, 0),
+                QItemSelectionModel.Select | QItemSelectionModel.Rows
+            )
 
     def _setup_connections(self):
         # Menu
@@ -167,6 +169,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._watch.watch_all_done.connect(self.on_watch_all_done)
         self._watch.dir_added_or_updated.connect(self.on_dir_added_or_updated)
         self._watch.dir_empty_or_deleted.connect(self.on_dir_empty_deleted)
+        self._watch.watch_empty_or_deleted_done.connect(self.on_watch_dir_empty_deleted_done)
 
         # Loader
         self._loader_load_scandir.connect(self._img_loader.load_scandir)
@@ -199,7 +202,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._is_watcher_running = True
         self.action_rescan.setEnabled(False)
         self._dir_watcher_start.emit()
-    
+
     def _populate_dirs_tree_view(self, parent_key, folders):
         parent_item = self._TV_FOLDERS_ITEM_MAP[parent_key]
         if folders:
@@ -268,7 +271,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             elif event.type() == QtCore.QEvent.Leave:
                 self.label_thumbs_toolbar_tooltip.setText("")
         return QtWidgets.QWidget.eventFilter(self, widget, event)
-    
+
     def handle_search(self, search_term):
         self._clear_search()
         if search_term != '':
@@ -294,7 +297,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             explorer_process.setProgram('explorer.exe')
             explorer_process.setArguments(['/select,%s' % QtCore.QDir.toNativeSeparators(dr_sd['abspath'])])
             explorer_process.startDetached()
-    
+
     def handle_action_small_thumbs_triggered(self):
         if self.action_small_thumbs.isChecked():
             self.hslider_thumb_size.triggerAction(self.hslider_thumb_size.SliderToMinimum)
@@ -323,13 +326,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             curr_sel_ids = self.get_current_selection_ids()
             if 'sd_id' in curr_sel_ids:
                 self._load_dir_images(curr_sel_ids['sd_id'])
- 
+
     def action_folder_manager_clicked(self):
         self.folder_mgr_window = FolderManagerWindow(self)
         self.folder_mgr_window.accepted.connect(self._on_folder_manager_window_accepted)
         self.folder_mgr_window.setModal(True)
         self.folder_mgr_window.show()
-    
+
     def _on_folder_manager_window_accepted(self):
         self._repopulate_scan_dir_list_model()
         self._run_watcher()
@@ -385,7 +388,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.toolbutton_tags.setChecked(False)
         self.action_properties.setChecked(True)
         self.action_tags.setChecked(False)
-    
+
     def handle_action_settings_triggered(self):
         self.settings_window = SettingsWindow(self)
         self.settings_window.setModal(True)
@@ -421,10 +424,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._loader_load_scandir.emit(sd_id)
         QScroller.grabGesture(self.listView_thumbs.viewport(),
                               QScroller.LeftMouseButtonGesture)
-    
+
     def _handle_load_scan_dir_info_success(self, dir_info):
         self.lbl_dir_name.setText(dir_info['name'])
-    
+
     def _handle_load_images_sucess(self, images):
         LOGGER.debug('Recevied %s images' % len(images))
         for img in images:
@@ -442,6 +445,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _clear_thumbs(self):
         self._thumbs_view_model.clear()
+        self.lbl_dir_name.setText('')
 
     def _tv_add_scan_dir(self, dir_info, highlight=False):
         item_title = "%s(%s)" % (dir_info['name'], dir_info['img_count'])
@@ -546,6 +550,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self._dirs_list_model.removeRow(item_index.row(), parent_index)
             self._TV_FOLDERS_ITEM_MAP.pop(dir_info['id'])
 
+    @pyqtSlot()
+    def on_watch_dir_empty_deleted_done(self):
+        # Here we make sure a folder is always selected if one more folders
+        # ever get deleted by the watcher thread. If no folders exits, just
+        # display an empty thumbs list
+        cur_sel_ids = self.get_current_selection_ids()
+        print(cur_sel_ids)
+        if 'sd_id' not in cur_sel_ids:
+            self._make_default_dir_list_selection()
+            cur_sel_ids = self.get_current_selection_ids()
+            if 'sd_id' in cur_sel_ids:
+                self._load_dir_images(cur_sel_ids['sd_id'])
+            else:
+                self._clear_thumbs()
+
     @pyqtSlot(object, object)
     def on_watch_all_done(self, elapsed, suffix):
         self.statusBar().clearMessage()
@@ -556,10 +575,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def get_current_selection_ids(self):
         selected_ids = {}
         selected = self.treeView_scandirs.selectedIndexes()
+        if len(selected) <= 0:
+            return selected_ids
         selected_ids['sd_id'] = selected[0].data(QtCore.Qt.UserRole + 1)
         selected_thumb = self.listView_thumbs.selectedIndexes()
-        if len(selected_thumb) > 0:
-            selected_ids['si_id'] = selected_thumb[0].data(QtCore.Qt.UserRole + 1)
+        if len(selected_thumb) <= 0:
+            return selected_ids
+        selected_ids['si_id'] = selected_thumb[0].data(QtCore.Qt.UserRole + 1)
         return selected_ids
 
     def action_exit_clicked(self):
@@ -573,7 +595,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if 'search' in self._TV_FOLDERS_ITEM_MAP:
             search_item = self._TV_FOLDERS_ITEM_MAP['search']
             search_item.removeRows(0, search_item.rowCount())
-    
+
     def _clear_folders_tree_view(self):
         folder_item = self._TV_FOLDERS_ITEM_MAP[0]
         self._TV_FOLDERS_ITEM_MAP.clear()
@@ -585,6 +607,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             root_tree_item = self._dirs_list_model.invisibleRootItem()
             root_tree_item.removeRow(0)
             self._TV_FOLDERS_ITEM_MAP.pop('search')
-        
+
     def is_watcher_running(self):
         return self._is_watcher_running

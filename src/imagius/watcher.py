@@ -22,6 +22,7 @@ class Watcher(QObject):
     new_img_found = pyqtSignal(object)
     dir_added_or_updated = pyqtSignal(object)
     dir_empty_or_deleted = pyqtSignal(object)
+    watch_empty_or_deleted_done = pyqtSignal()
 
     def __init__(self):
         super(Watcher, self).__init__()
@@ -58,6 +59,7 @@ class Watcher(QObject):
         for dir in orphaned_scan_dirs:
             self.dir_empty_or_deleted.emit({'id': dir['id']})
             self._meta_files_mgr.prune_scan_dir(dir['id'])
+        self.watch_empty_or_deleted_done.emit()
 
         self._meta_files_mgr.disconnect()
 
@@ -81,6 +83,8 @@ class Watcher(QObject):
         <TODO>
         """
         is_new_or_modified = False
+        if not os.path.isdir(abs_path):
+            return
         modified_time = os.path.getmtime(abs_path)
         sd_id = 0
         sd_info = self._meta_files_mgr.get_scan_dir_id(abs_path)

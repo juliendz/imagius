@@ -298,6 +298,9 @@ class MetaFilesManager():
     def prune_scan_dir(self, sd_id):
         query = "DELETE FROM scan_dir WHERE id = ?"
         params = (sd_id,)
+        self._meta_db.run_query(query, params)
+        query = "DELETE FROM scan_img WHERE sdid = ?"
+        params = (sd_id,)
         return self._meta_db.run_query(query, params)
 
     def prune_scan_img(self, sd_id, int_check):
