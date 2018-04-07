@@ -50,7 +50,7 @@ class dbmgr(object):
         `integrity_check`       INTEGER,
         PRIMARY KEY(`id`)
         );
-        CREATE TABLE IF NOT EXISTS "scan_img" ( 
+        CREATE TABLE IF NOT EXISTS "scan_img" (
         `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
         `abspath` TEXT NOT NULL UNIQUE, 
         `name` TEXT NOT NULL, 
