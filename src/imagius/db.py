@@ -84,6 +84,7 @@ class dbmgr(object):
     def connect(self):
         if not self.is_open:
             self.conn = sqlite3.connect(self.dbpath)
+            self.conn.execute("PRAGMA foreign_keys = 1")
             self.is_open = True
 
     def disconnect(self):
@@ -111,7 +112,7 @@ class dbmgr(object):
             LOGGER.error('[DB]: %s : %s' % (msg, params))
         return cursor.lastrowid
 
-    def run_query(self, query, params, commit=True):
+    def run_query(self, query, params=(), commit=True):
         """
         Description: Executes an update/delete sql query using Pythons DB-API (Parameter substitution)
             Arguments: query: The sql query string

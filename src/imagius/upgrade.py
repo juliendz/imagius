@@ -6,13 +6,11 @@ author: Julien Dcruz
 """
 from packaging.version import Version
 from log import LOGGER
-import settings
 from db import dbmgr
 
-meta_db = dbmgr(settings.get_meta_db_path())
 
-
-def upgrade_from_previous_versions(cur_version):
+def upgrade_from_previous_versions(cur_version, meta_db_path):
+    meta_db = dbmgr(meta_db_path)
     meta_db.connect()
     # Upgrade code to Version(0.8.1)
     if cur_version < Version('0.8.1'):

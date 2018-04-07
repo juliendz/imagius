@@ -72,7 +72,7 @@ def load_settings():
     # that means a new version was installed.
     # So run any version specific upgrade code
     if Version(SETTINGS['VERSION']) < Version(app_version):
-        upgrade_from_previous_versions(Version(SETTINGS['VERSION']))
+        upgrade_from_previous_versions(Version(SETTINGS['VERSION']), get_meta_db_path())
     SETTINGS['VERSION'] = app_version
 
 
