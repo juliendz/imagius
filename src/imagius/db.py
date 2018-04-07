@@ -50,16 +50,16 @@ class dbmgr(object):
         `integrity_check`       INTEGER,
         PRIMARY KEY(`id`)
         );
-        CREATE TABLE IF NOT EXISTS "scan_img" (
-                `id`    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                `abspath`       TEXT NOT NULL UNIQUE,
-                `name`  TEXT NOT NULL,
-                `thumb` BLOB NOT NULL,
-                `sdid`  INTEGER NOT NULL DEFAULT 0,
-                `mtime` INTEGER,
-                `integrity_check`       INTEGER,
-                `serial`        INTEGER
-        );
+        CREATE TABLE IF NOT EXISTS "scan_img" ( 
+        `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+        `abspath` TEXT NOT NULL UNIQUE, 
+        `name` TEXT NOT NULL, 
+        `thumb` BLOB NOT NULL, 
+        `sdid` INTEGER NOT NULL DEFAULT 0, 
+        `mtime` INTEGER, 
+        `integrity_check` INTEGER, 
+        `serial` INTEGER, 
+        FOREIGN KEY(`sdid`) REFERENCES `scan_dir`(`id`) ON DELETE CASCADE )
     """
 
     def __init__(self, db_path):
