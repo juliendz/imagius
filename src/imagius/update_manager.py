@@ -21,8 +21,6 @@ class UpdateManager(QtCore.QObject):
 
     def get_updates(self):
         url = settings.get(SettingType.CHECK_UPDATE_URL, 'https://api.github.com/repos/juliendz/imagius/releases/latest')
-        # url = 'https://api.github.com/repos/reactiveui/ReactiveUI/releases/latest'
-        # url = 'https://api.github.com/repos/reactiveui/ReactiveiUI/releases/latest'
         qurl = QtCore.QUrl(url)
         LOGGER.info("Checking for updates....")
         self._net_mgr.get(QtNetwork.QNetworkRequest(qurl))
@@ -50,7 +48,7 @@ class UpdateManager(QtCore.QObject):
                     QtGui.QDesktopServices.openUrl(QtCore.QUrl("https://juliendz.github.io/imagius/#download"))
                 return
 
-            if latest_release > settings.app_version and is_draft is False:
+            if latest_release > Version(settings.app_version) and is_draft is False:
                 LOGGER.info("Update found. New version(%s) is available" % str(latest_release))
                 self._setup_msgbox("Update info !",
                                    'Update found. Latest version is (%s)' % str(latest_release),

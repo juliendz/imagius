@@ -9,9 +9,10 @@ from PyQt5 import QtCore
 from db import dbmgr
 from imagius_types import SettingType, IMAGE_FILETYPES
 from packaging.version import Version
+from upgrade import upgrade_from_previous_versions
 
 app_name = 'imagius'
-app_version = Version('0.8.0')
+app_version = '0.8.1'
 settings_db_name = 'settings.db'
 meta_db_name = 'meta.db'
 log_name = 'imagius.log'
@@ -31,6 +32,14 @@ def init_app_data():
     if not settings_db_file.exists():
         db = dbmgr(settings_db_file.absoluteFilePath())
         db.create_settings_db_from_schema()
+
+        # Add the current version info
+        db = dbmgr(settings_db_file.absoluteFilePath())
+        db.connect()
+        query = 'INSERT INTO settings (key, value) VALUES (?, ?)'
+        params = ('VERSION', app_version)
+        db.run_insert_query(query, params)
+        db.disconnect()
 
     meta_db_file = QtCore.QFileInfo("%s/%s/%s" % (roaming_dir_path, app_name, meta_db_name))
     if not meta_db_file.exists():
@@ -58,8 +67,13 @@ def load_settings():
 
     for row in dr:
         SETTINGS[row['key']] = row['value']
-    
-    print(SETTINGS)
+
+    # If the version in the db is lesser than the in-code version,
+    # that means a new version was installed.
+    # So run any version specific upgrade code
+    if Version(SETTINGS['VERSION']) < Version(app_version):
+        upgrade_from_previous_versions(Version(SETTINGS['VERSION']))
+    SETTINGS['VERSION'] = app_version
 
 
 def get(setting_type, default='', type='str'):
