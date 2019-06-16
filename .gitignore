@@ -10,3 +10,4 @@ ui/__pycache__/*
 **/dist/*
 Output/*
 **/imagius_rc.py
+**/gin-bin.exe
