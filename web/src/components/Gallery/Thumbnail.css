@@ -1,0 +1,25 @@
+.img-thumb {
+    float: left;
+    height: 120px;
+    margin-bottom: 5px;
+    margin-left: 9px;
+    position: relative;
+    width: 147px;
+    border-radius: 3px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.thumb {
+    width: 138px;
+    height: 138px;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid green;
+    white-space: nowrap;
+}
+
+.thumb > * {
+    vertical-align: middle;
+
+}
