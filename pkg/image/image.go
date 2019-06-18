@@ -1,14 +1,18 @@
 package image
 
 import (
+	"bufio"
 	"bytes"
-	"encoding/gob"
+	"encoding/base64"
+	"image/jpeg"
+	"image/png"
 	"imagius/pkg/utils"
 	"os"
 	"path/filepath"
 
 	"github.com/disintegration/imaging"
 	"github.com/jmoiron/sqlx"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -40,13 +44,13 @@ func (mgr ImgManager) ProcessImage(file os.FileInfo, parentPath string, dirId st
 	if imgMeta.ID == 0 {
 
 		log.Info("Generating thumbnail")
-		thumb, err := mgr.GenerateThumb(abspath)
+		thumbB64, err := mgr.GenerateThumbBase64(abspath)
 		if err != nil {
 			log.Errorf("%s", err)
 			return err
 		}
 
-		_, err = mgr.Store.Add(file, dirId, abspath, thumb, last_check_ts)
+		_, err = mgr.Store.Add(file, dirId, abspath, thumbB64, last_check_ts)
 		if err != nil {
 			log.Errorf("%v ", err)
 			return err
@@ -60,11 +64,11 @@ func (mgr ImgManager) ProcessImage(file os.FileInfo, parentPath string, dirId st
 		if mtime.Unix() > imgMeta.Mtime {
 
 			//Renegrate the thumb and update it
-			thumb, err := mgr.GenerateThumb(abspath)
+			thumbB64, err := mgr.GenerateThumbBase64(abspath)
 			if err != nil {
 				return err
 			}
-			imgMeta.Thumbnail = thumb
+			imgMeta.Thumbnail = thumbB64
 			imgMeta.Mtime = mtime.Unix()
 
 			err = mgr.Store.Update(imgMeta)
@@ -87,21 +91,50 @@ func (mgr ImgManager) ProcessImage(file os.FileInfo, parentPath string, dirId st
 	return nil
 }
 
+func (mgr ImgManager) GenerateThumbBase64(abspath string) (string, error) {
+
+	thumbBytes, err := mgr.GenerateThumb(abspath)
+	if err != nil {
+		return "", errors.Wrap(err, "ImgManager.GenerateThumbBase64")
+	}
+
+	encoded := base64.StdEncoding.EncodeToString(thumbBytes)
+	return encoded, nil
+
+}
+
 func (mgr ImgManager) GenerateThumb(abspath string) ([]byte, error) {
+
 	img, err := imaging.Open(abspath)
 	if err != nil {
 		return nil, err
 	}
 
-	thumb := imaging.Thumbnail(img, 256, 256, imaging.NearestNeighbor)
+	thumb := imaging.Resize(img, 256, 0, imaging.Lanczos)
 
 	var buffer bytes.Buffer
-	enc := gob.NewEncoder(&buffer)
+	bufferWriter := bufio.NewWriter(&buffer)
 
-	err = enc.Encode(thumb)
-	if err != nil {
-		return nil, err
+	ext := filepath.Ext(abspath)
+	switch ext {
+	case ".jpeg":
+	case ".jpg":
+		err := jpeg.Encode(bufferWriter, thumb, nil)
+		if err != nil {
+			return nil, errors.Wrap(err, "ImgManager.GenerateThumb")
+		}
+		break
+	case ".png":
+		err := png.Encode(bufferWriter, thumb)
+		if err != nil {
+			return nil, errors.Wrap(err, "ImgManager.GenerateThumb")
+		}
+		break
+	default:
+		return nil, errors.Wrap(err, "ImgManager.GenerateThumb: Unsupported format")
 	}
+
+	bufferWriter.Flush()
 
 	return buffer.Bytes(), nil
 }

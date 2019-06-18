@@ -13,7 +13,7 @@ type ImgMeta struct {
 	ID        int64   `db:"id"`
 	Filename  string  `db:"filename"`
 	AbsPath   string  `db:"abspath"`
-	Thumbnail []byte  `db:"thumb"`
+	Thumbnail string  `db:"thumb"`
 	Mtime     int64   `db:"mtime"`
 	LastCheck int64   `db:"last_check"`
 	Serial    float64 `db:"serial"`
@@ -41,7 +41,7 @@ func (store ImgStore) Get(absPath string) (ImgMeta, error) {
 	return img, nil
 }
 
-func (store ImgStore) Add(file os.FileInfo, dirId string, abspath string, thumb []byte, last_check int64) (int64, error) {
+func (store ImgStore) Add(file os.FileInfo, dirId string, abspath string, thumb string, last_check int64) (int64, error) {
 
 	sqlQuery := `
 	INSERT INTO img_meta 
