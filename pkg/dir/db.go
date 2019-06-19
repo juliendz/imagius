@@ -18,6 +18,12 @@ type DirMeta struct {
 	ImageCount int64  `db:"img_count"`
 }
 
+type WatchedDirMeta struct {
+	ID      string `db:"id"`
+	Name    string `db:"name"`
+	AbsPath string `db:"abspath"`
+}
+
 type DirStore struct {
 	DB *sqlx.DB
 }
@@ -40,6 +46,22 @@ func (store DirStore) Get(absPath string) (DirMeta, error) {
 	return dir, nil
 }
 
+func (store DirStore) GetWatched() (dirs []WatchedDirMeta, err error) {
+
+	sqlQuery := `
+	SELECT id, name, abspath
+	FROM watched_meta`
+
+	err = store.DB.Select(&dirs, sqlQuery)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			return dirs, errors.Wrap(err, "DirStore.GetWatched")
+		}
+	}
+
+	return dirs, nil
+}
+
 func (store DirStore) Add(dirMeta DirMeta) (int64, error) {
 
 	sqlQuery := `
@@ -55,6 +77,25 @@ func (store DirStore) Add(dirMeta DirMeta) (int64, error) {
 		dirMeta.LastCheck,
 		dirMeta.IsModified,
 		dirMeta.ImageCount)
+	if err != nil {
+		return 0, errors.Wrap(err, "DirStore.Add")
+	}
+	lastInsertID, _ := res.LastInsertId()
+
+	return lastInsertID, nil
+}
+
+func (store DirStore) AddWatched(watchedDirMeta WatchedDirMeta) (int64, error) {
+
+	sqlQuery := `
+	INSERT INTO watched_meta
+	(id, name, abspath)
+	VALUES (?, ?)`
+
+	res, err := store.DB.Exec(sqlQuery,
+		watchedDirMeta.ID,
+		watchedDirMeta.Name,
+		watchedDirMeta.AbsPath)
 	if err != nil {
 		return 0, errors.Wrap(err, "DirStore.Add")
 	}

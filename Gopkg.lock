@@ -2,20 +2,20 @@
 
 
 [[projects]]
-  digest = "1:76dc72490af7174349349838f2fe118996381b31ea83243812a97e5a0fd5ed55"
-  name = "github.com/dgrijalva/jwt-go"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "06ea1031745cb8b3dab3f6a236daf2b0aa468b7e"
-  version = "v3.2.0"
-
-[[projects]]
   digest = "1:47cebe27e59e4e0c239d0bf2419d6a46f0364a56efc43be702c32b82710b6ecf"
   name = "github.com/disintegration/imaging"
   packages = ["."]
   pruneopts = "UT"
   revision = "5362c131d56305ce787e79a5b94ffc956df00d62"
   version = "v1.6.0"
+
+[[projects]]
+  digest = "1:7b5c6e2eeaa9ae5907c391a91c132abfd5c9e8a784a341b5625e750c67e6825d"
+  name = "github.com/gorilla/websocket"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "66b9c49e59c6c48f0ffce28c2d8b8a5678502c6d"
+  version = "v1.4.0"
 
 [[projects]]
   digest = "1:6c41d4f998a03b6604227ccad36edaed6126c397e5d78709ef4814a1145a6757"
@@ -37,24 +37,19 @@
   version = "v1.0.2"
 
 [[projects]]
-  digest = "1:efd601ad1d1189884f37ed075fadb5bbd17f1f5acf5862827247c6da56d125ba"
+  digest = "1:bf618941b014c2a86e4a6f39d4a26541c06fc63387fc50d4694d67eac2151f4a"
   name = "github.com/labstack/echo"
-  packages = [
-    ".",
-    "middleware",
-  ]
+  packages = ["."]
   pruneopts = "UT"
   revision = "38772c686c76b501f94bd6cd5b77f5842e93b559"
   version = "v3.3.10"
 
 [[projects]]
-  digest = "1:6e15357cae900fa1a8015c7fc9efdb406f72b644549a3422f3f1b7f465836a84"
+  digest = "1:9bc108827ac1d8783dea294f1ef07732fa4ca7d6e20518c04888a85828eba4ce"
   name = "github.com/labstack/gommon"
   packages = [
-    "bytes",
     "color",
     "log",
-    "random",
   ]
   pruneopts = "UT"
   revision = "ab0bfd9a5eba33a8c364bf3390d809ed23c31f97"
@@ -149,9 +144,12 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:15a159ca3e34c429f800dd822cbb37707e98552c9523b8d07fdd244dba62f04b"
+  digest = "1:ef151399f80f91873b74e1741370d6146a1976e5060fe3b41068e4e664388fd6"
   name = "golang.org/x/net"
-  packages = ["idna"]
+  packages = [
+    "idna",
+    "websocket",
+  ]
   pruneopts = "UT"
   revision = "d28f0bde5980168871434b95cfc858db9f2a7a99"
 
@@ -193,13 +191,14 @@
   analyzer-version = 1
   input-imports = [
     "github.com/disintegration/imaging",
+    "github.com/gorilla/websocket",
     "github.com/jmoiron/sqlx",
     "github.com/labstack/echo",
-    "github.com/labstack/echo/middleware",
     "github.com/mattn/go-sqlite3",
     "github.com/pkg/errors",
     "github.com/rs/xid",
     "github.com/sirupsen/logrus",
+    "golang.org/x/net/websocket",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

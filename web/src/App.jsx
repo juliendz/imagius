@@ -1,4 +1,4 @@
-import React from "react";
+import React, {Component} from "react";
 import "./App.css";
 
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -8,9 +8,31 @@ import FolderManager from "./components/FolderManager/FolderManager";
 import Header from "./components/Header/Header.jsx";
 import Gallery from "./components/Gallery/Gallery";
 
-function App() {
-  return (
-    <div class="App">
+class App extends Component {
+
+   constructor(props){
+       super(props)
+    }
+
+    componentDidMount() {
+        const socket = new WebSocket("ws://localhost:1323/ws")
+        socket.onopen = function(event){
+            console.log("OPEN")
+            socket.send("GETWATCHED")
+        }
+        socket.onmessage = function(event){
+            console.log("MESSAGE: ", event.data)
+        }
+        socket.onclose = function(event){
+            console.log("CLOSE")
+        }
+        socket.onerror = function(event){
+            console.log("ERROR:", event.message)
+        }
+    }
+
+  render (){
+    return <div class="App">
         <div class="container-fluid">
           <div class="row">
             <div class="col">
@@ -35,8 +57,9 @@ function App() {
             </div>
           </div>
         </div>
+        <FolderManager />
     </div>
-  );
+  }
 }
 
 export default App;

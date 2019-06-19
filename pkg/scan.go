@@ -6,10 +6,17 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/labstack/gommon/log"
+	"golang.org/x/net/websocket"
+
+	log "github.com/sirupsen/logrus"
 )
 
-func ScanDirs() error {
+func ScanDirs(ws *websocket.Conn) error {
+
+	log.Info("Beginning scanning of dirs")
+
+	lastCheckTs := time.Now().Unix()
+	// websocket.Message.Send(ws, strconv.FormatInt(lastCheckTs, 10))
 
 	//Get the list of all folders to scan
 	FoldersToScan := []string{filepath.FromSlash("C:/Users/Julien/Downloads/test")}
@@ -18,10 +25,9 @@ func ScanDirs() error {
 	if err != nil {
 		panic(err)
 	}
+	defer db.Close()
 
 	dirMgr := dir.GetDirManager(db)
-
-	lastCheckTs := time.Now().Unix()
 
 	//Begin the scan
 	for _, dir := range FoldersToScan {
@@ -35,7 +41,7 @@ func ScanDirs() error {
 		panic(err)
 	}
 
-	db.Close()
+	log.Info("End of scanning of dirs")
 
 	return nil
 }

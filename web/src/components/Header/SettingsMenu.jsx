@@ -1,5 +1,4 @@
 import React from "react";
-import {Link} from "react-router-dom"
 
 function SettingsMenu() {
     return (
@@ -8,7 +7,7 @@ function SettingsMenu() {
           Settings
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#">Folder Manager</a>
+          <a class="dropdown-item" data-toggle="modal" href="#foldermanager-modal">Folder Manager</a>
         </div>
       </li>
     )
