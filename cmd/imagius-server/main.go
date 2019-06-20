@@ -34,6 +34,11 @@ func main() {
 	log.Fatal(http.ListenAndServe(":1323", nil))
 }
 
+type Operation struct {
+	Command string `json:"cmd"`
+	Payload string `json:"payload"`
+}
+
 func wshandler(w http.ResponseWriter, r *http.Request) {
 
 	upgrader.CheckOrigin = func(r *http.Request) bool {
@@ -48,31 +53,36 @@ func wshandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	var bytes []byte
-	_, bytes, err = c.ReadMessage()
-	if err != nil {
-		log.Error(err)
-	}
-
-	msg := string(bytes)
-	switch msg {
-	case "STARTSCAN":
-		// pkg.ScanDirs(ws)
-		c.WriteJSON(time.Now())
-		log.Info("STARTSCAN DONE")
-		break
-
-	case "GETWATCHED":
-		log.Info("GETWATCHED")
-		dirs, err := pkg.GetWatchedDirs()
-		log.Info(dirs)
+	var counter int
+	for {
+		log.Infof("LOOP %d", counter)
+		counter++
+		var op Operation
+		err = c.ReadJSON(&op)
 		if err != nil {
-			c.WriteJSON(err)
+			log.Error(err)
 		}
-		c.WriteJSON(dirs)
-		break
 
-	default:
-		break
+		// msg := string(bytes)
+		switch op.Command {
+		case "START_SCAN":
+			// pkg.ScanDirs(ws)
+			c.WriteJSON(time.Now())
+			log.Info("STARTSCAN DONE")
+			break
+
+		case "GET_WATCHED":
+			log.Info("GET_WATCHED")
+			dirs, err := pkg.GetWatchedDirs()
+			log.Info(dirs)
+			if err != nil {
+				c.WriteJSON(err)
+			}
+			c.WriteJSON(dirs)
+			break
+
+		default:
+			break
+		}
 	}
 }

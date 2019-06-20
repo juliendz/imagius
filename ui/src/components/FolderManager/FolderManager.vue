@@ -40,6 +40,9 @@
 
 <script>
 export default {
-    name: "FolderManager"
+    name: "FolderManager",
+    data: function() {
+        return {}
+    },
 }
 </script>

@@ -5,13 +5,23 @@
             Settings
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" data-toggle="modal" href="#foldermanager-modal">Folder Manager</a>
+            <a class="dropdown-item" v-on:click="showFolderManagerModal" href="#">Folder Manager</a>
         </div>
     </li>
 </template>
 
 <script>
+
 export default {
-    name: "SettingsMenu"
+    name: "SettingsMenu",
+    data: function() {
+        return {}
+    },
+    methods: {
+        showFolderManagerModal: function() {
+            this.$store.commit("GET_WATCHED")
+            JQuery('#foldermanager-modal').modal()
+        }
+    }
 }
 </script>
