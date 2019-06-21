@@ -4,6 +4,7 @@ import (
 	"imagius/pkg"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -34,11 +35,6 @@ func main() {
 	log.Fatal(http.ListenAndServe(":1323", nil))
 }
 
-type Operation struct {
-	Command string `json:"cmd"`
-	Payload string `json:"payload"`
-}
-
 func wshandler(w http.ResponseWriter, r *http.Request) {
 
 	upgrader.CheckOrigin = func(r *http.Request) bool {
@@ -57,14 +53,14 @@ func wshandler(w http.ResponseWriter, r *http.Request) {
 	for {
 		log.Infof("LOOP %d", counter)
 		counter++
-		var op Operation
+		var op pkg.Operation
 		err = c.ReadJSON(&op)
 		if err != nil {
 			log.Error(err)
 		}
 
-		// msg := string(bytes)
 		switch op.Command {
+
 		case "START_SCAN":
 			// pkg.ScanDirs(ws)
 			c.WriteJSON(time.Now())
@@ -73,12 +69,54 @@ func wshandler(w http.ResponseWriter, r *http.Request) {
 
 		case "GET_WATCHED":
 			log.Info("GET_WATCHED")
+
 			dirs, err := pkg.GetWatchedDirs()
-			log.Info(dirs)
 			if err != nil {
 				c.WriteJSON(err)
 			}
-			c.WriteJSON(dirs)
+
+			resOp := pkg.Operation{
+				Command: "DATA_WATCHED",
+				Payload: dirs,
+			}
+			c.WriteJSON(resOp)
+			break
+
+		case "ADD_WATCHED":
+			log.Info("ADD_WATCHED")
+			err := pkg.AddWatchedDir(op.Payload.(string))
+			if err != nil {
+				c.WriteJSON(err)
+			}
+			dirs, err := pkg.GetWatchedDirs()
+			if err != nil {
+				c.WriteJSON(err)
+			}
+
+			resOp := pkg.Operation{
+				Command: "DATA_WATCHED",
+				Payload: dirs,
+			}
+			c.WriteJSON(resOp)
+			break
+
+		case "DEL_WATCHED":
+			log.Info("DEL_WATCHED")
+			removeDirID, _ := strconv.ParseInt(op.Payload.(string), 10, 64)
+			err := pkg.DeleteWatchedDir(removeDirID)
+			if err != nil {
+				c.WriteJSON(err)
+			}
+			dirs, err := pkg.GetWatchedDirs()
+			if err != nil {
+				c.WriteJSON(err)
+			}
+
+			resOp := pkg.Operation{
+				Command: "DATA_WATCHED",
+				Payload: dirs,
+			}
+			c.WriteJSON(resOp)
 			break
 
 		default:

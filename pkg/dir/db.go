@@ -20,7 +20,6 @@ type DirMeta struct {
 
 type WatchedDirMeta struct {
 	ID      string `db:"id"`
-	Name    string `db:"name"`
 	AbsPath string `db:"abspath"`
 }
 
@@ -49,7 +48,7 @@ func (store DirStore) Get(absPath string) (DirMeta, error) {
 func (store DirStore) GetWatched() (dirs []WatchedDirMeta, err error) {
 
 	sqlQuery := `
-	SELECT id, name, abspath
+	SELECT id, abspath
 	FROM watched_meta`
 
 	err = store.DB.Select(&dirs, sqlQuery)
@@ -85,17 +84,14 @@ func (store DirStore) Add(dirMeta DirMeta) (int64, error) {
 	return lastInsertID, nil
 }
 
-func (store DirStore) AddWatched(watchedDirMeta WatchedDirMeta) (int64, error) {
+func (store DirStore) AddWatched(abspath string) (int64, error) {
 
 	sqlQuery := `
 	INSERT INTO watched_meta
-	(id, name, abspath)
-	VALUES (?, ?)`
+	(abspath)
+	VALUES (?)`
 
-	res, err := store.DB.Exec(sqlQuery,
-		watchedDirMeta.ID,
-		watchedDirMeta.Name,
-		watchedDirMeta.AbsPath)
+	res, err := store.DB.Exec(sqlQuery, abspath)
 	if err != nil {
 		return 0, errors.Wrap(err, "DirStore.Add")
 	}
@@ -154,6 +150,20 @@ func (store DirStore) Prune(lastCheck int64) (int64, error) {
 	res, err := store.DB.Exec(sqlQuery, lastCheck)
 	if err != nil {
 		return 0, errors.Wrap(err, "DirStore.Prune")
+	}
+	ret, _ := res.RowsAffected()
+
+	return ret, nil
+}
+
+func (store DirStore) DeleteWatched(watchedDirID int64) (int64, error) {
+
+	sqlQuery := `
+	DELETE FROM watched_meta WHERE ID = ?`
+
+	res, err := store.DB.Exec(sqlQuery, watchedDirID)
+	if err != nil {
+		return 0, errors.Wrap(err, "DirStore.DeleteWatched")
 	}
 	ret, _ := res.RowsAffected()
 

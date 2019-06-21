@@ -1,3 +1,4 @@
+import Helpers from "./helpers"
 
 export default function webSocketPlugin (socket) {
     return store => {
@@ -23,14 +24,31 @@ export default function webSocketPlugin (socket) {
             console.log("ERROR:", event.message)
         }
 
-        store.subscribe(mutation => {
-            if(mutation.type == 'GET_WATCHED') {
-                console.log("GET_WATCHED")
-                var cmd = {
-                    "cmd": "GET_WATCHED",
+        store.subscribe((mutation, state) => {
+
+            console.log(mutation)
+            switch(mutation.type) {
+
+                case "GET_WATCHED":
+                    console.log("====> GET_WATCHED")
+                    var cmd = {
+                        "cmd": "GET_WATCHED",
                     "payload":  []
-                }
-                socket.send(JSON.stringify(cmd))
+                    }
+                    socket.send(JSON.stringify(cmd))
+                    break
+
+                case "ADD_WATCHED":
+                    var op = Helpers.makeOperation("ADD_WATCHED", mutation.payload)
+                    console.log("====> ADD_WATCHED ", op)
+                    socket.send(op)
+                    break
+
+                case "DEL_WATCHED":
+                    var op = Helpers.makeOperation("DEL_WATCHED", mutation.payload)
+                    console.log("====> DEL_WATCHED ", op)
+                    socket.send(op)
+                    break
             }
         })
 

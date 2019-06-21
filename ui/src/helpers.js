@@ -9,6 +9,15 @@ var Helpers = {
         }
         return result;
     },
+
+    makeOperation: function(type, payload={}){
+        var op = {
+            "cmd": type,
+            "payload": payload
+        }
+ 
+        return JSON.stringify(op)
+    }
 }
 
 export default Helpers;

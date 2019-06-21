@@ -20,6 +20,8 @@ export default new Vuex.Store({
         SET_WATCHED(state, watchedDirs) {
             state.WatchedFolders = watchedDirs
         },
+        ADD_WATCHED(state, newDir){ },
+        DEL_WATCHED(state, dirId){ },
     },
     actions: {
     },

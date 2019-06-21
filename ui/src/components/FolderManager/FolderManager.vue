@@ -18,14 +18,25 @@
                                 <div class="card">
                                     <div class="card-header">Watched folders</div>
                                     <div class="card-body">
-                                        <ul class="list-group">
-                                            <li v-for="f in watchedFolders" v-bind:key="f.ID" class="list-group-item">
-                                                {{f.Name}}</li>
-                                        </ul>
+                                        <div class="list-group">
+                                            <a href="#"
+                                                class="list-group-item list-group-item-action flex-column align-items-start"
+                                                v-for="f in watchedFolders" v-bind:key="f.ID">
+                                                <div class="d-flex w-100 justify-content-between">
+                                                    <h6 class="mb-1">{{f.AbsPath}}</h6>
+                                                    <a v-on:click="removeFolder(f.ID)" href="#"
+                                                        class="badge badge-default"><img width="16em"
+                                                            src="../../assets/svg/circle-x.svg" alt="icon name" /></a>
+                                                </div>
+                                            </a>
+                                        </div>
+
                                         <div>
-                                            <button v-on:click="addFolder" type="button" class="btn btn-primary btn-sm">Add Folder</button>
-                                            <button type="button" class="btn btn-secondary btn-sm">Remove Folder</button>
-                                            <input v-on:change="onSelectedFolder" type="file" style="display:none" id="addFolderInput" webkitdirectory/>
+                                            <button v-on:click="addFolder" type="button"
+                                                class="btn btn-primary btn-sm">Add Folder</button>
+
+                                            <input v-on:change="onSelectedFolder" type="file" style="display:none"
+                                                id="addFolderInput" webkitdirectory />
                                         </div>
                                     </div>
                                 </div>
@@ -43,8 +54,7 @@
     export default {
         name: "FolderManager",
         data: function () {
-            return {
-            }
+            return {}
         },
         computed: {
             watchedFolders() {
@@ -53,12 +63,14 @@
         },
         methods: {
             addFolder() {
-                console.log("sdf")
                 document.getElementById("addFolderInput").click()
             },
             onSelectedFolder(e) {
-                console.log(e.target.files[0].path)
-            }
+                this.$store.commit("ADD_WATCHED", e.target.files[0].path)
+            },
+            removeFolder(dirId) {
+                this.$store.commit("DEL_WATCHED", dirId)
+            },
         }
     }
 </script>
