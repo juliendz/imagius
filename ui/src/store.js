@@ -12,13 +12,13 @@ export default new Vuex.Store({
 
         errors: {
         },
-        "WATCHEDFOLDERS": [],
+        "WatchedFolders": [],
     },
     mutations: {
         GET_WATCHED(state) {
         }, 
         SET_WATCHED(state, watchedDirs) {
-            WATCHEDFOLDERS = watchedDirs
+            state.WatchedFolders = watchedDirs
         },
     },
     actions: {

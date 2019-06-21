@@ -6,7 +6,15 @@ export default function webSocketPlugin (socket) {
             console.log("OPEN")
         }
         socket.onmessage = function(event){
-            console.log("MESSAGE: ", event.data)
+
+            var operation = JSON.parse(event.data)
+            console.log("MESSAGE: ", operation)
+
+            switch(operation.cmd) {
+                case "DATA_WATCHED":
+                    store.commit("SET_WATCHED", operation.payload)
+            }
+
         }
         socket.onclose = function(event){
             console.log("CLOSE", event.code)

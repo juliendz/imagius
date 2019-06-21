@@ -12,24 +12,25 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="container-fluid">
-                                <div class="row no-gutters">
-                                    <div class="col-4">
-                                        <div class="card">
-                                            <div class="card-header">Watched folders</div>
-                                            <div class="card-body">
-                                                <ul class="list-group">
-                                                    <li class="list-group-item">Test</li>
-                                                </ul>
-                                            </div>
+                    <div class="container-fluid">
+                        <div class="row no-gutters">
+                            <div class="col-6">
+                                <div class="card">
+                                    <div class="card-header">Watched folders</div>
+                                    <div class="card-body">
+                                        <ul class="list-group">
+                                            <li v-for="f in watchedFolders" v-bind:key="f.ID" class="list-group-item">
+                                                {{f.Name}}</li>
+                                        </ul>
+                                        <div>
+                                            <button v-on:click="addFolder" type="button" class="btn btn-primary btn-sm">Add Folder</button>
+                                            <button type="button" class="btn btn-secondary btn-sm">Remove Folder</button>
+                                            <input v-on:change="onSelectedFolder" type="file" style="display:none" id="addFolderInput" webkitdirectory/>
                                         </div>
                                     </div>
-                                    <div class="col-4" />
-                                    <div class="col-4" />
                                 </div>
                             </div>
+                            <div class="col-6" />
                         </div>
                     </div>
                 </div>
@@ -39,10 +40,25 @@
 </template>
 
 <script>
-export default {
-    name: "FolderManager",
-    data: function() {
-        return {}
-    },
-}
+    export default {
+        name: "FolderManager",
+        data: function () {
+            return {
+            }
+        },
+        computed: {
+            watchedFolders() {
+                return this.$store.state.WatchedFolders
+            }
+        },
+        methods: {
+            addFolder() {
+                console.log("sdf")
+                document.getElementById("addFolderInput").click()
+            },
+            onSelectedFolder(e) {
+                console.log(e.target.files[0].path)
+            }
+        }
+    }
 </script>
