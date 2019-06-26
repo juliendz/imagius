@@ -4,6 +4,8 @@ import JQuery from 'jquery'
 
 import store from './store'
 
+import './assets/css/navbar-fixed-right.min.css'
+
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap/dist/js/bootstrap.bundle'
 
