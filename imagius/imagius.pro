@@ -25,16 +25,23 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-        src/image.cpp \
         src/main.cpp \
         src/mainwindow.cpp
 
 HEADERS += \
-        src/image.h \
         src/mainwindow.h
 
 FORMS += \
         src/ui/mainwindow.ui
+
+INCLUDEPATH += \
+        C:\Users\Julien\Dev\libs\vips-dev-w64-web-8.8.0\vips-dev-8.8\include \
+        C:\Users\Julien\Dev\libs\vips-dev-w64-web-8.8.0\vips-dev-8.8\include\glib-2.0
+
+
+win32:LIBS += \
+      -LC:/Users/Julien/Dev/libs/vips-dev-w64-web-8.8.0/vips-dev-8.8/lib -lvips -lgobject-2.0 -lintl -lglib-2.0
+
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
