@@ -25,10 +25,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        src/image.cpp \
+        src/imagius_utils.cpp \
         src/main.cpp \
         src/mainwindow.cpp
 
 HEADERS += \
+        src/image.h \
+        src/imagius_utils.h \
         src/mainwindow.h
 
 FORMS += \
