@@ -31,7 +31,8 @@ SOURCES += \
         src/image_store.cpp \
         src/imagius_utils.cpp \
         src/main.cpp \
-        src/mainwindow.cpp
+        src/mainwindow.cpp \
+        tests/imagius_utils.cpp
 
 HEADERS += \
         src/dir.h \

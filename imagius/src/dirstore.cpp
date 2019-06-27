@@ -21,9 +21,8 @@ DirStore::DirStore() {
 
         qDebug() << QString("Creating a new connection(%1)").arg(conn_name);
         db_ = QSqlDatabase::addDatabase("QSQLITE", conn_name);
+        db_.setDatabaseName()
     }
-
-
 }
 
 void DirStore::CheckOpen(){

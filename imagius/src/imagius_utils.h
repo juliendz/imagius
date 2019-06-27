@@ -8,6 +8,7 @@ class Imagius_Utils {
         Imagius_Utils();
         static const char* ToCString(QString);
         static QString FromCString(const char*);
+        static QString UserAppDataDir();
 };
 
 #endif // IMAGIUS_UTILS_H

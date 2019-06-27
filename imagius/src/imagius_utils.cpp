@@ -9,3 +9,7 @@ const char* Imagius_Utils::ToCString(QString qstr) {
 QString Imagius_Utils::FromCString(const char * cstr){
     return QString::fromUtf8(cstr);
 }
+
+QString Imagius_Utils::UserAppDataDir() {
+    return "test";
+}
