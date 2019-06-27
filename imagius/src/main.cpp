@@ -3,12 +3,18 @@
 #include <QApplication>
 #include <QDebug>
 #include <QDir>
+#include <QSqlDriver>
+#include <QSqlDatabse>
 #include <vips/vips.h>
 
 int main(int argc, char *argv[])
 {
+    qDebug() << "Starting up Imagius....";
 
-    qDebug() << "Starting up";
+    const QString DRIVER("QSQLITE");
+    if(QSqlDatabase)
+
+
 
     if(VIPS_INIT("imagius")){
         vips_error_exit("unable to start VIPS");
@@ -16,7 +22,7 @@ int main(int argc, char *argv[])
     qDebug() << vips_version(0);
 
     ImageManager imgr;
-    QString a = "C:/Users/Julien/Downloads/test/b.png";
+    QString a = "C:/Users/Julien/Downloads/test/z.jpg";
     QString b = QDir::cleanPath("C:/Users/Julien/Downloads/thumbs");
     if(!imgr.GenerateThumbnail(a, b)){
         qDebug() << "failed";

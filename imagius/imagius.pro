@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -25,15 +25,23 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        src/dir.cpp \
+        src/dirstore.cpp \
         src/image.cpp \
+        src/image_store.cpp \
         src/imagius_utils.cpp \
         src/main.cpp \
         src/mainwindow.cpp
 
 HEADERS += \
+        src/dir.h \
+        src/dirstore.h \
         src/image.h \
+        src/image_store.h \
         src/imagius_utils.h \
-        src/mainwindow.h
+        src/mainwindow.h \
+        src/store.h \
+        src/structs.h
 
 FORMS += \
         src/ui/mainwindow.ui
