@@ -4,7 +4,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QSqlDriver>
-#include <QSqlDatabse>
+#include <QSqlDatabase>
 #include <vips/vips.h>
 
 int main(int argc, char *argv[])
@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     qDebug() << "Starting up Imagius....";
 
     const QString DRIVER("QSQLITE");
-    if(QSqlDatabase)
+//    if(QSqlDatabase)
 
 
 
