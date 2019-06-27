@@ -10,7 +10,7 @@ class DirStore: public IDirStore {
         DirStore();
         void CheckOpen();
 
-        void  Get(QString abs_path, DirMeta* out);
+        void Get(QString abs_path, DirMeta* out);
         void GetWatched(QList<WatchedDirMeta*>& out);
         void Add(const DirMeta*);
         void AddWatched(const WatchedDirMeta*);

@@ -15,7 +15,6 @@ int main(int argc, char *argv[])
 //    if(QSqlDatabase)
 
 
-
     if(VIPS_INIT("imagius")){
         vips_error_exit("unable to start VIPS");
     }

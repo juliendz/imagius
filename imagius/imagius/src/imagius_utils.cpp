@@ -1,4 +1,6 @@
 #include "imagius_utils.h"
+#include <QtDebug>
+#include <QStandardPaths>
 
 Imagius_Utils::Imagius_Utils() {  }
 
@@ -11,5 +13,5 @@ QString Imagius_Utils::FromCString(const char * cstr){
 }
 
 QString Imagius_Utils::UserAppDataDir() {
-    return "test";
+    return QStandardPaths::standardLocations(QStandardPaths::AppDataLocation)[0];
 }
