@@ -38,3 +38,6 @@ yarn-error.log*
 /*.exe
 /*.exe~
 build-*/*
+
+*.pro.user
+*.pro.user.*
