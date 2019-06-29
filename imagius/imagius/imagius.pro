@@ -22,7 +22,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-CONFIG += c++11
+CONFIG += c++11 \
+          link_pkgconfig
 
 SOURCES += \
         src/dir.cpp \
@@ -48,12 +49,11 @@ FORMS += \
         src/ui/mainwindow.ui
 
 INCLUDEPATH += \
-        C:\Users\Julien\Dev\libs\vips-dev-w64-web-8.8.0\vips-dev-8.8\include \
-        C:\Users\Julien\Dev\libs\vips-dev-w64-web-8.8.0\vips-dev-8.8\include\glib-2.0
+        $$PWD/../../../../libs/vips-dev-8.8\include \
+        $$PWD/../../../../libs/vips-dev-8.8\include\glib-2.0
 
 
-win32:LIBS += \
-      -LC:/Users/Julien/Dev/libs/vips-dev-w64-web-8.8.0/vips-dev-8.8/lib -lvips -lgobject-2.0 -lintl -lglib-2.0
+PKGCONFIG += vips
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
