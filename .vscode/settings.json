@@ -1,6 +1,13 @@
 {
-    "python.pythonPath": "C:\\Program Files\\Python36\\python.exe",
+    "python.venvPath": "C:\\Users\\Julien\\Dev\\venvs\\imagius",
+    "python.pythonPath": "C:\\Users\\Julien\\Dev\\venvs\\imagius\\imagius\\Scripts\\python.exe",
     "python.linting.pylintEnabled": false,
-    "python.linting.pep8Enabled": true,
-    "python.linting.enabled": true
+    "python.linting.enabled": true,
+    "editor.formatOnSave": true,
+    "files.exclude": {
+        "**/*.pyc": {
+            "when": "$(basename).py"
+        },
+        "**/__pycache__": true,
+    },
 }
