@@ -3,7 +3,7 @@ Description: Image Properties widget module
 author: Julien Dcruz
 """
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PySide2 import QtCore, QtGui, QtWidgets
 from ui.ui_propertieswidget import Ui_PropertiesWidget
 from propertiesitem_widget import PropertiesItemWidget
 
@@ -52,7 +52,3 @@ class PropertiesWidget(QtWidgets.QWidget, Ui_PropertiesWidget):
         elif tag == 'ResolutionUnit':
             return 'Resolution Unit'
         return tag
-
-
-
-

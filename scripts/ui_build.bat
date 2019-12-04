@@ -1,7 +1,7 @@
-pyuic5 -x src/imagius/ui/mainwindow.ui -o src/imagius/ui/ui_mainwindow.py
-pyuic5 -x src/imagius/ui/foldermanager.ui -o src/imagius/ui/ui_foldermanager.py
-pyuic5 -x src/imagius/ui/slideshowwindow.ui -o src/imagius/ui/ui_slideshowwindow.py
-pyuic5 -x src/imagius/ui/slideshowcontrolwidget.ui -o src/imagius/ui/ui_slideshowcontrolwidget.py
-pyuic5 -x src/imagius/ui/propertieswidget.ui -o src/imagius/ui/ui_propertieswidget.py
-pyuic5 -x src/imagius/ui/propertiesitemwidget.ui -o src/imagius/ui/ui_propertiesitemwidget.py
-pyuic5 -x src/imagius/ui/settingswindow.ui -o src/imagius/ui/ui_settingswindow.py
+pyside2-uic ./../src/imagius/ui/mainwindow.ui >  ./../src/imagius/ui/ui_mainwindow.py
+pyside2-uic ./../src/imagius/ui/foldermanager.ui > ./../src/imagius/ui/ui_foldermanager.py
+pyside2-uic ./../src/imagius/ui/slideshowwindow.ui > ./../src/imagius/ui/ui_slideshowwindow.py
+pyside2-uic ./../src/imagius/ui/slideshowcontrolwidget.ui > ./../src/imagius/ui/ui_slideshowcontrolwidget.py
+pyside2-uic ./../src/imagius/ui/propertieswidget.ui > ./../src/imagius/ui/ui_propertieswidget.py
+pyside2-uic ./../src/imagius/ui/propertiesitemwidget.ui > ./../src/imagius/ui/ui_propertiesitemwidget.py
+pyside2-uic ./../src/imagius/ui/settingswindow.ui > ./../src/imagius/ui/ui_settingswindow.py

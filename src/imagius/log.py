@@ -1,13 +1,21 @@
-from PyQt5 import QtCore
-import logging
-roaming_dir_path = QtCore.QStandardPaths.writableLocation(QtCore.QStandardPaths.AppDataLocation)
-log_name = 'imagius.log'
+# -*- coding: utf-8 -*-
+__license__ = 'GPL v3'
+__copyright__ = '2019, Julien Dcruz juliendcruz@gmail.com'
+__docformat__ = 'restructuredtext en'
 
-LOGGER = logging.getLogger('imagius')
+"""
+Logging setup
+"""
+
+from PySide2 import QtCore
+from constants import USER_APPDATA_DIR, APP_NAME, LOG_FILE
+import logging
+
+LOGGER = logging.getLogger(APP_NAME)
 LOGGER.setLevel(logging.DEBUG)
 
-print()
-LOG_FILE_HANDLER = logging.FileHandler('%s/imagius/%s' % (roaming_dir_path, log_name))
+LOG_FILE_HANDLER = logging.FileHandler(
+    '%s/%s/%s' % (USER_APPDATA_DIR, APP_NAME, LOG_FILE))
 LOG_FILE_HANDLER.setLevel(logging.DEBUG)
 
 LOG_FORMATTER = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')

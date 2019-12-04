@@ -1,0 +1,4 @@
+PySide2
+Pillow
+IPTCInfo3
+exifread

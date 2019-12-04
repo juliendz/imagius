@@ -5,8 +5,8 @@ author: Julien Dcruz
 
 import os
 import time
-from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QDirIterator
-from PyQt5.QtCore import QDir, QFileInfo, qDebug
+from PySide2.QtCore import QObject, Signal, Slot, QDirIterator
+from PySide2.QtCore import QDir, QFileInfo, qDebug
 
 import settings
 from log import LOGGER
@@ -18,9 +18,9 @@ class ImageLoader(QObject):
     """
     <TODO>
     """
-    load_scandir_success = pyqtSignal(object, object)
-    load_scan_dir_info_success = pyqtSignal(object)
-    load_images_success = pyqtSignal(object)
+    load_scandir_success = Signal(object, object)
+    load_scan_dir_info_success = Signal(object)
+    load_images_success = Signal(object)
 
     batch_size = 50
 
@@ -30,7 +30,7 @@ class ImageLoader(QObject):
         self._meta_files_mgr = MetaFilesManager()
         self._img_ext_filter = settings.get_allowed_image_formats()
 
-    @pyqtSlot(object)
+    @Slot(object)
     def load_scandir(self, sd_id):
         """
         <TODO>
@@ -55,7 +55,8 @@ class ImageLoader(QObject):
                 print(batch_start_index)
                 curr_img_count += 1
                 if curr_img_count % 50 == 0 or curr_img_count == total_img_count:
-                    self.load_images_success.emit(images[batch_start_index:curr_img_count])
+                    self.load_images_success.emit(
+                        images[batch_start_index:curr_img_count])
                     batch_start_index = curr_img_count
 
         elapsed = round(time.time() - start_time, 2)
@@ -63,10 +64,11 @@ class ImageLoader(QObject):
         if elapsed > 60:
             elapsed /= 60
             suffix = 'minutes'
-        LOGGER.debug('Loading Scan Dir completed in %.2f %s.' % (elapsed, suffix))
+        LOGGER.debug('Loading Scan Dir completed in %.2f %s.' %
+                     (elapsed, suffix))
 
         self.load_scandir_success.emit(elapsed, suffix)
 
-    @pyqtSlot()
+    @Slot()
     def free_resources(self):
         self._meta_files_mgr.disconnect()

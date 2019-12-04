@@ -4,16 +4,16 @@ author: Julien Dcruz
 """
 
 import sys
-from PyQt5 import QtCore
-from PyQt5 import QtGui
-from PyQt5 import QtWidgets
+from PySide2 import QtCore
+from PySide2 import QtGui
+from PySide2 import QtWidgets
 
 from log import LOGGER
 
 
 class SlideshowGraphicsView(QtWidgets.QGraphicsView):
 
-    mouse_moved = QtCore.pyqtSignal(object)
+    mouse_moved = QtCore.Signal(object)
 
     def __init__(self, parent=None):
         super(QtWidgets.QGraphicsView, self).__init__(parent)

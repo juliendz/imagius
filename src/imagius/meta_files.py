@@ -6,10 +6,10 @@ __copyright__ = '2017, Julien Dcurz <juliendcruz at gmail.com>'
 
 import io
 import os
-from PyQt5 import QtCore
+from PySide2 import QtCore
 from PIL import Image
 import PIL.ExifTags
-from iptcinfo import IPTCInfo
+from iptcinfo3 import IPTCInfo
 from db import dbmgr
 from log import LOGGER
 import settings
@@ -163,7 +163,8 @@ class MetaFilesManager():
         properties = {}
         properties['img_count'] = dr_dir['img_count']
         properties['modified'] = dir_info.lastModified()
-        properties['size'] = self.format_size(self.get_dir_size(dr_dir['abspath']))
+        properties['size'] = self.format_size(
+            self.get_dir_size(dr_dir['abspath']))
 
         return properties
 
@@ -177,7 +178,8 @@ class MetaFilesManager():
         properties = {}
         properties['abspath'] = dr_img['abspath']
         properties['filename'] = dr_img['name']
-        properties['filesize'] = self.format_size(QtCore.QFileInfo(dr_img['abspath']).size())
+        properties['filesize'] = self.format_size(
+            QtCore.QFileInfo(dr_img['abspath']).size())
         properties['dimensions'] = ''
         if exif:
             if 'DateTime' in exif:
@@ -216,9 +218,11 @@ class MetaFilesManager():
                 properties['YResolution'] = exif['YResolution']
 
             if 'ImageWidth' in exif:
-                properties['dimensions'] = "%sx%s" % (properties['ImageWidth'], properties['ImageLength'])
+                properties['dimensions'] = "%sx%s" % (
+                    properties['ImageWidth'], properties['ImageLength'])
             elif 'ExifImageWidth' in exif:
-                properties['dimensions'] = "%sx%s" % (properties['ExifImageWidth'], properties['ExifImageHeight'])
+                properties['dimensions'] = "%sx%s" % (
+                    properties['ExifImageWidth'], properties['ExifImageHeight'])
         else:
             LOGGER.debug("EXIF data for %s not found." % dr_img['abspath'])
 
@@ -233,7 +237,8 @@ class MetaFilesManager():
 
     def _add_image_db(self, sdid, abspath, name, blob, mtime, int_check, serial):
         query = "INSERT INTO scan_img (sdid, abspath, name, thumb, mtime, integrity_check, serial) VALUES (?, ?, ?, ?, ?, ?, ?)"
-        params = (sdid, abspath, name, blob.getvalue(), mtime, int_check, serial)
+        params = (sdid, abspath, name, blob.getvalue(),
+                  mtime, int_check, serial)
         si_id = self._meta_db.run_insert_query(query, params, False)
         return si_id
 
@@ -328,7 +333,7 @@ class MetaFilesManager():
                 return "%3.1f %s%s" % (num, unit, suffix)
             num /= 1024.0
         return "%.1f %s%s" % (num, 'Gi', suffix)
-    
+
     def get_dir_size(self, abspath):
         start_path = abspath
         total_size = 0

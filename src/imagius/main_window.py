@@ -5,15 +5,15 @@ last edited: 7th December 2016
 """
 
 import sys
-from PyQt5 import QtCore, QtWidgets, QtGui
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSize, QThread, QModelIndex
-from PyQt5.QtCore import QItemSelectionModel, QItemSelection, QSize, QPointF
-from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont, QIcon
-from PyQt5.QtGui import QPixmap, QImage, QColor, QIcon
-from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
-from PyQt5.QtWidgets import QGridLayout, QLabel, QWidget, QPushButton
-from PyQt5.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QListView
-from PyQt5.QtWidgets import QGraphicsDropShadowEffect, QGraphicsGridLayout, QScroller
+from PySide2 import QtCore, QtWidgets, QtGui
+from PySide2.QtCore import Signal, Slot, QSize, QThread, QModelIndex
+from PySide2.QtCore import QItemSelectionModel, QItemSelection, QSize, QPointF
+from PySide2.QtGui import QStandardItemModel, QStandardItem, QFont, QIcon
+from PySide2.QtGui import QPixmap, QImage, QColor, QIcon
+from PySide2.QtWidgets import QMainWindow, QApplication, QFileDialog
+from PySide2.QtWidgets import QGridLayout, QLabel, QWidget, QPushButton
+from PySide2.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QListView
+from PySide2.QtWidgets import QGraphicsDropShadowEffect, QGraphicsGridLayout, QScroller
 from meta_files import MetaFilesManager
 from ui.ui_mainwindow import Ui_MainWindow
 from foldermanager_window import FolderManagerWindow
@@ -37,10 +37,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     _TV_FOLDERS_ITEM_MAP = {}
 
     # signals
-    _dir_load_start = pyqtSignal(object)
-    _dir_watcher_start = pyqtSignal()
+    _dir_load_start = Signal(object)
+    _dir_watcher_start = Signal()
 
-    _loader_load_scandir = pyqtSignal(object)
+    _loader_load_scandir = Signal(object)
 
     _is_watcher_running = False
     _update_mgr = None
@@ -78,18 +78,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._setup_scan_dir_list_model()
 
         # Properties widget
-        self.vlayout_properties = QtWidgets.QVBoxLayout(self.toolbox_metadata_properties)
+        self.vlayout_properties = QtWidgets.QVBoxLayout(
+            self.toolbox_metadata_properties)
         self.vlayout_properties.setContentsMargins(0, 0, 0, 0)
         self.vlayout_properties.setSpacing(0)
-        self.properties_widget = PropertiesWidget(self.toolbox_metadata_properties)
+        self.properties_widget = PropertiesWidget(
+            self.toolbox_metadata_properties)
         self.vlayout_properties.addWidget(self.properties_widget)
 
         self.statusBar().showMessage("Ready")
 
         # settings
-        self.hslider_thumb_size.setValue(settings.get(SettingType.UI_THUMBS_SIZE, 128, 'int'))
+        self.hslider_thumb_size.setValue(settings.get(
+            SettingType.UI_THUMBS_SIZE, 128, 'int'))
 
-        thumb_caption_type = settings.get(SettingType.UI_THUMBS_CAPTION_DISPLAY_MODE, Thumb_Caption_Type.NoCaption.name)
+        thumb_caption_type = settings.get(
+            SettingType.UI_THUMBS_CAPTION_DISPLAY_MODE, Thumb_Caption_Type.NoCaption.name)
         if thumb_caption_type == Thumb_Caption_Type.FileName.name:
             self.action_caption_filename.setChecked(True)
 
@@ -126,7 +130,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.init_loader_thread()
 
     def _make_default_dir_list_selection(self):
-        folders_index = self._dirs_list_model.indexFromItem(self._TV_FOLDERS_ITEM_MAP[0])
+        folders_index = self._dirs_list_model.indexFromItem(
+            self._TV_FOLDERS_ITEM_MAP[0])
         if self._dirs_list_model.rowCount(folders_index) > 0:
             self._dirs_list_selection_model.select(
                 self._dirs_list_model.index(0, 0).child(0, 0),
@@ -136,32 +141,45 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def _setup_connections(self):
         # Menu
         # File
-        self.action_add_folder.triggered.connect(self.action_folder_manager_clicked)
+        self.action_add_folder.triggered.connect(
+            self.action_folder_manager_clicked)
         self.action_rescan.triggered.connect(self._run_watcher)
-        self.action_file_locate.triggered.connect(self.handle_action_file_locate_triggered)
+        self.action_file_locate.triggered.connect(
+            self.handle_action_file_locate_triggered)
         self.action_exit.triggered.connect(self.action_exit_clicked)
         # View
-        self.action_small_thumbs.triggered.connect(self.handle_action_small_thumbs_triggered)
-        self.action_normal_thumbs.triggered.connect(self.handle_action_normal_thumbs_triggered)
-        self.action_properties.triggered.connect(self.action_properties_clicked)
+        self.action_small_thumbs.triggered.connect(
+            self.handle_action_small_thumbs_triggered)
+        self.action_normal_thumbs.triggered.connect(
+            self.handle_action_normal_thumbs_triggered)
+        self.action_properties.triggered.connect(
+            self.action_properties_clicked)
         self.action_tags.triggered.connect(self.action_tags_clicked)
         self.action_slideshow.triggered.connect(self.start_slideshow)
-        self.action_caption_none.triggered.connect(self.handle_action_thumbnail_caption_none_triggered)
-        self.action_caption_filename.triggered.connect(self.handle_action_thumbnail_caption_filename_triggered)
+        self.action_caption_none.triggered.connect(
+            self.handle_action_thumbnail_caption_none_triggered)
+        self.action_caption_filename.triggered.connect(
+            self.handle_action_thumbnail_caption_filename_triggered)
         # Folder
         self.action_folder_slideshow.triggered.connect(self.start_slideshow)
-        self.action_folder_locate.triggered.connect(self.handle_action_folder_locate_triggered)
+        self.action_folder_locate.triggered.connect(
+            self.handle_action_folder_locate_triggered)
         # Picture
-        self.action_picture_properties.triggered.connect(self.show_image_properties)
+        self.action_picture_properties.triggered.connect(
+            self.show_image_properties)
         # Tools
-        self.action_settings.triggered.connect(self.handle_action_settings_triggered)
-        self.action_folder_manager.triggered.connect(self.action_folder_manager_clicked)
+        self.action_settings.triggered.connect(
+            self.handle_action_settings_triggered)
+        self.action_folder_manager.triggered.connect(
+            self.action_folder_manager_clicked)
         # Help
-        self.action_check_updates.triggered.connect(self._handle_check_for_updates_clicked)
+        self.action_check_updates.triggered.connect(
+            self._handle_check_for_updates_clicked)
 
         # Btns
         self.btn_slideshow.clicked.connect(self.start_slideshow)
-        self.hslider_thumb_size.valueChanged.connect(self.on_hslider_thumb_size_value_changed)
+        self.hslider_thumb_size.valueChanged.connect(
+            self.on_hslider_thumb_size_value_changed)
 
         # Watcher
         self._dir_watcher_start.connect(self._watch.watch_all)
@@ -169,21 +187,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._watch.watch_all_done.connect(self.on_watch_all_done)
         self._watch.dir_added_or_updated.connect(self.on_dir_added_or_updated)
         self._watch.dir_empty_or_deleted.connect(self.on_dir_empty_deleted)
-        self._watch.watch_empty_or_deleted_done.connect(self.on_watch_dir_empty_deleted_done)
+        self._watch.watch_empty_or_deleted_done.connect(
+            self.on_watch_dir_empty_deleted_done)
 
         # Loader
         self._loader_load_scandir.connect(self._img_loader.load_scandir)
-        self._img_loader.load_scan_dir_info_success.connect(self._handle_load_scan_dir_info_success)
-        self._img_loader.load_images_success.connect(self._handle_load_images_sucess)
+        self._img_loader.load_scan_dir_info_success.connect(
+            self._handle_load_scan_dir_info_success)
+        self._img_loader.load_images_success.connect(
+            self._handle_load_images_sucess)
 
         # Tree View
-        self.treeView_scandirs.clicked.connect(self.on_scan_dir_treeView_clicked)
+        self.treeView_scandirs.clicked.connect(
+            self.on_scan_dir_treeView_clicked)
 
         # Thumbs view
         self.listView_thumbs.clicked.connect(self.on_thumb_clicked)
-        self.listView_thumbs.empty_area_clicked.connect(self.on_thumb_listview_empty_area_clicked)
+        self.listView_thumbs.empty_area_clicked.connect(
+            self.on_thumb_listview_empty_area_clicked)
 
-        self.buttonGroup_metadata.buttonClicked.connect(self.on_buttongroup_metadata_clicked)
+        self.buttonGroup_metadata.buttonClicked.connect(
+            self.on_buttongroup_metadata_clicked)
 
         self.txtbox_search.textEdited.connect(self.handle_search)
 
@@ -219,9 +243,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _setup_scan_dir_list_model(self):
         self._dirs_list_model = QStandardItemModel()
-        self._dirs_list_selection_model = QItemSelectionModel(self._dirs_list_model)
+        self._dirs_list_selection_model = QItemSelectionModel(
+            self._dirs_list_model)
         self._thumbs_view_model = QStandardItemModel()
-        self._thumbs_selection_model = QItemSelectionModel(self._thumbs_view_model)
+        self._thumbs_selection_model = QItemSelectionModel(
+            self._thumbs_view_model)
 
         self._dirs_list_model.setColumnCount(1)
         # self._dirs_list_model.setRowCount(len(scan_dirs))
@@ -237,7 +263,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._TV_FOLDERS_ITEM_MAP[0] = folder_item
 
         self.treeView_scandirs.setModel(self._dirs_list_model)
-        self.treeView_scandirs.setSelectionModel(self._dirs_list_selection_model)
+        self.treeView_scandirs.setSelectionModel(
+            self._dirs_list_selection_model)
         # self.treeView_scandirs.setRootIsDecorated(False)
 
         self.listView_thumbs.setModel(self._thumbs_view_model)
@@ -267,7 +294,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def eventFilter(self, widget, event):
         if widget.objectName() == 'btn_slideshow':
             if event.type() == QtCore.QEvent.Enter:
-                self.label_thumbs_toolbar_tooltip.setText("Play Fullscreen Slideshow")
+                self.label_thumbs_toolbar_tooltip.setText(
+                    "Play Fullscreen Slideshow")
             elif event.type() == QtCore.QEvent.Leave:
                 self.label_thumbs_toolbar_tooltip.setText("")
         return QtWidgets.QWidget.eventFilter(self, widget, event)
@@ -283,10 +311,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def handle_action_file_locate_triggered(self):
         curr_sel_ids = self.get_current_selection_ids()
         if 'sd_id' in curr_sel_ids and 'si_id' in curr_sel_ids:
-            dr_img = self._meta_files_mgr.get_image_from_id(curr_sel_ids['si_id'], curr_sel_ids['sd_id'])
+            dr_img = self._meta_files_mgr.get_image_from_id(
+                curr_sel_ids['si_id'], curr_sel_ids['sd_id'])
             explorer_process = QtCore.QProcess()
             explorer_process.setProgram('explorer.exe')
-            explorer_process.setArguments(['/select,%s' % QtCore.QDir.toNativeSeparators(dr_img['abspath'])])
+            explorer_process.setArguments(
+                ['/select,%s' % QtCore.QDir.toNativeSeparators(dr_img['abspath'])])
             explorer_process.startDetached()
 
     def handle_action_folder_locate_triggered(self):
@@ -295,41 +325,50 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             dr_sd = self._meta_files_mgr.get_scan_dir(curr_sel_ids['sd_id'])
             explorer_process = QtCore.QProcess()
             explorer_process.setProgram('explorer.exe')
-            explorer_process.setArguments(['/select,%s' % QtCore.QDir.toNativeSeparators(dr_sd['abspath'])])
+            explorer_process.setArguments(
+                ['/select,%s' % QtCore.QDir.toNativeSeparators(dr_sd['abspath'])])
             explorer_process.startDetached()
 
     def handle_action_small_thumbs_triggered(self):
         if self.action_small_thumbs.isChecked():
-            self.hslider_thumb_size.triggerAction(self.hslider_thumb_size.SliderToMinimum)
+            self.hslider_thumb_size.triggerAction(
+                self.hslider_thumb_size.SliderToMinimum)
 
     def handle_action_normal_thumbs_triggered(self):
         if self.action_normal_thumbs.isChecked():
             slider_value = self.hslider_thumb_size.value()
             if slider_value < 128:
-                self.hslider_thumb_size.triggerAction(self.hslider_thumb_size.SliderPageStepAdd)
+                self.hslider_thumb_size.triggerAction(
+                    self.hslider_thumb_size.SliderPageStepAdd)
             elif slider_value > 128 and slider_value <= 192:
-                self.hslider_thumb_size.triggerAction(self.hslider_thumb_size.SliderPageStepSub)
+                self.hslider_thumb_size.triggerAction(
+                    self.hslider_thumb_size.SliderPageStepSub)
             elif slider_value > 192 and slider_value <= 256:
-                self.hslider_thumb_size.triggerAction(self.hslider_thumb_size.SliderPageStepSub)
-                self.hslider_thumb_size.triggerAction(self.hslider_thumb_size.SliderPageStepSub)
+                self.hslider_thumb_size.triggerAction(
+                    self.hslider_thumb_size.SliderPageStepSub)
+                self.hslider_thumb_size.triggerAction(
+                    self.hslider_thumb_size.SliderPageStepSub)
 
     def handle_action_thumbnail_caption_none_triggered(self):
         if self.action_caption_none.isChecked():
-            settings.save(SettingType.UI_THUMBS_CAPTION_DISPLAY_MODE, Thumb_Caption_Type.NoCaption.name)
+            settings.save(SettingType.UI_THUMBS_CAPTION_DISPLAY_MODE,
+                          Thumb_Caption_Type.NoCaption.name)
             curr_sel_ids = self.get_current_selection_ids()
             if 'sd_id' in curr_sel_ids:
                 self._load_dir_images(curr_sel_ids['sd_id'])
 
     def handle_action_thumbnail_caption_filename_triggered(self):
         if self.action_caption_filename.isChecked():
-            settings.save(SettingType.UI_THUMBS_CAPTION_DISPLAY_MODE, Thumb_Caption_Type.FileName.name)
+            settings.save(SettingType.UI_THUMBS_CAPTION_DISPLAY_MODE,
+                          Thumb_Caption_Type.FileName.name)
             curr_sel_ids = self.get_current_selection_ids()
             if 'sd_id' in curr_sel_ids:
                 self._load_dir_images(curr_sel_ids['sd_id'])
 
     def action_folder_manager_clicked(self):
         self.folder_mgr_window = FolderManagerWindow(self)
-        self.folder_mgr_window.accepted.connect(self._on_folder_manager_window_accepted)
+        self.folder_mgr_window.accepted.connect(
+            self._on_folder_manager_window_accepted)
         self.folder_mgr_window.setModal(True)
         self.folder_mgr_window.show()
 
@@ -341,7 +380,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.action_properties.isChecked():
             curr_sel_ids = self.get_current_selection_ids()
             if 'sd_id' in curr_sel_ids and 'si_id' in curr_sel_ids:
-                img_props = self._meta_files_mgr.get_img_properties(curr_sel_ids['si_id'], curr_sel_ids['sd_id'])
+                img_props = self._meta_files_mgr.get_img_properties(
+                    curr_sel_ids['si_id'], curr_sel_ids['sd_id'])
                 self.properties_widget.setup_properties(img_props)
 
             self.toolBox_metadata.setCurrentIndex(0)
@@ -379,7 +419,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def show_image_properties(self):
         curr_sel_ids = self.get_current_selection_ids()
         if 'sd_id' in curr_sel_ids and 'si_id' in curr_sel_ids:
-            img_props = self._meta_files_mgr.get_img_properties(curr_sel_ids['si_id'], curr_sel_ids['sd_id'])
+            img_props = self._meta_files_mgr.get_img_properties(
+                curr_sel_ids['si_id'], curr_sel_ids['sd_id'])
             self.properties_widget.setup_properties(img_props)
 
         self.toolBox_metadata.setCurrentIndex(0)
@@ -434,7 +475,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             img['thumb'] = QImage.fromData(img['thumb'])
             item = QStandardItem()
 
-            thumb_caption_type = settings.get(SettingType.UI_THUMBS_CAPTION_DISPLAY_MODE, Thumb_Caption_Type.NoCaption.name)
+            thumb_caption_type = settings.get(
+                SettingType.UI_THUMBS_CAPTION_DISPLAY_MODE, Thumb_Caption_Type.NoCaption.name)
             if thumb_caption_type == Thumb_Caption_Type.FileName.name:
                 item.setText(img['name'])
 
@@ -461,7 +503,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         folder_item.appendRow(item)
         self._TV_FOLDERS_ITEM_MAP[dir_info['id']] = item
 
-    @pyqtSlot()
+    @Slot()
     def start_slideshow(self):
         selected = self.treeView_scandirs.selectedIndexes()
         sd_id = selected[0].data(QtCore.Qt.UserRole + 1)
@@ -473,21 +515,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if sd_id > 0:
             self._slideshow = SlideshowWindow(sd_id, img_serial)
-            self._slideshow.setWindowFlags(QtCore.Qt.CustomizeWindowHint | QtCore.Qt.FramelessWindowHint)
+            self._slideshow.setWindowFlags(
+                QtCore.Qt.CustomizeWindowHint | QtCore.Qt.FramelessWindowHint)
             self._slideshow.showFullScreen()
 
-    @pyqtSlot(QModelIndex)
+    @Slot(QModelIndex)
     def on_thumb_clicked(self, mindex):
         selected = self.treeView_scandirs.selectedIndexes()
         sd_id = selected[0].data(QtCore.Qt.UserRole + 1)
         si_id = mindex.data(QtCore.Qt.UserRole + 1)
         img_props = self._meta_files_mgr.get_img_properties(si_id, sd_id)
-        self.lbl_selection_summary.setText(self.get_thumb_selection_summary(img_props))
+        self.lbl_selection_summary.setText(
+            self.get_thumb_selection_summary(img_props))
 
         if self.action_properties.isChecked():
             self.properties_widget.setup_properties(img_props)
 
-    @pyqtSlot()
+    @Slot()
     def on_thumb_listview_empty_area_clicked(self):
         selected_thumb = self.listView_thumbs.selectedIndexes()
         if len(selected_thumb) == 0:
@@ -495,7 +539,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             sd_id = selected[0].data(QtCore.Qt.UserRole + 1)
             if sd_id:
                 props = self._meta_files_mgr.get_dir_properties(sd_id)
-                self.lbl_selection_summary.setText(self.get_dir_selection_summary(props))
+                self.lbl_selection_summary.setText(
+                    self.get_dir_selection_summary(props))
 
     def get_dir_selection_summary(self, props):
         img_count = props['img_count']
@@ -510,7 +555,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         filesize = props['filesize']
         return "%s        %s        %s        %s" % (filename, modified, dimensions, filesize)
 
-    @pyqtSlot(QModelIndex)
+    @Slot(QModelIndex)
     def on_scan_dir_treeView_clicked(self, index):
         sd_id = index.data(QtCore.Qt.UserRole + 1)
         # Categories tree nodes will not contain 'data'
@@ -520,16 +565,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             bold_font.setBold(False)
             item.setFont(bold_font)
             props = self._meta_files_mgr.get_dir_properties(sd_id)
-            self.lbl_selection_summary.setText(self.get_dir_selection_summary(props))
+            self.lbl_selection_summary.setText(
+                self.get_dir_selection_summary(props))
             self._load_dir_images(sd_id)
 
-    @pyqtSlot(object)
+    @Slot(object)
     def on_new_img_found(self, img_info):
         self.statusBar().showMessage("Found new image: %s - %s" %
                                      (img_info['dir'],
                                       img_info['filename']))
 
-    @pyqtSlot(object)
+    @Slot(object)
     def on_dir_added_or_updated(self, dir_info):
         if dir_info['id'] in self._TV_FOLDERS_ITEM_MAP:
             item = self._TV_FOLDERS_ITEM_MAP[dir_info['id']]
@@ -541,16 +587,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self._tv_add_scan_dir(dir_info, True)
 
-    @pyqtSlot(object)
+    @Slot(object)
     def on_dir_empty_deleted(self, dir_info):
         if dir_info['id'] in self._TV_FOLDERS_ITEM_MAP:
             item = self._TV_FOLDERS_ITEM_MAP[dir_info['id']]
             item_index = self._dirs_list_model.indexFromItem(item)
-            parent_index = self._dirs_list_model.indexFromItem(self._TV_FOLDERS_ITEM_MAP[0])
+            parent_index = self._dirs_list_model.indexFromItem(
+                self._TV_FOLDERS_ITEM_MAP[0])
             self._dirs_list_model.removeRow(item_index.row(), parent_index)
             self._TV_FOLDERS_ITEM_MAP.pop(dir_info['id'])
 
-    @pyqtSlot()
+    @Slot()
     def on_watch_dir_empty_deleted_done(self):
         # Here we make sure a folder is always selected if one more folders
         # ever get deleted by the watcher thread. If no folders exits, just
@@ -565,7 +612,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             else:
                 self._clear_thumbs()
 
-    @pyqtSlot(object, object)
+    @Slot(object, object)
     def on_watch_all_done(self, elapsed, suffix):
         self.statusBar().clearMessage()
         self._is_watcher_running = False

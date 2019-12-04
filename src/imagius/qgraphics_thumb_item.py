@@ -4,11 +4,11 @@ author: Julien Dcruz
 """
 
 import sys
-from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSize, QThread, QModelIndex
-from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QGraphicsPixmapItem, QGraphicsItem
+from PySide2 import QtCore
+from PySide2.QtCore import Signal, pyqtSlot, QSize, QThread, QModelIndex
+from PySide2.QtGui import QStandardItemModel, QStandardItem, QFont
+from PySide2.QtGui import QPixmap
+from PySide2.QtWidgets import QGraphicsPixmapItem, QGraphicsItem
 from log import LOGGER
 
 
@@ -23,8 +23,6 @@ class QGraphicsThumbnailItem(QGraphicsPixmapItem):
     def hoverEnterEvent(self, event):
         super(QGraphicsPixmapItem, self).hoverEnterEvent(event)
 
-    
     # def paint(self, painter, option, widget):
     #     super(QGraphicsPixmapItem, self).paint(painter, option, widget)
     #     painter.setText
-

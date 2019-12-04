@@ -5,8 +5,8 @@ author: Julien Dcruz
 
 import os
 import time
-from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QDirIterator
-from PyQt5.QtCore import QDir, QFileInfo, qDebug
+from PySide2.QtCore import QObject, Signal, Slot, QDirIterator
+from PySide2.QtCore import QDir, QFileInfo, qDebug
 
 import settings
 from log import LOGGER
@@ -18,11 +18,11 @@ class Watcher(QObject):
     """
     <TODO>
     """
-    watch_all_done = pyqtSignal(object, object)
-    new_img_found = pyqtSignal(object)
-    dir_added_or_updated = pyqtSignal(object)
-    dir_empty_or_deleted = pyqtSignal(object)
-    watch_empty_or_deleted_done = pyqtSignal()
+    watch_all_done = Signal(object, object)
+    new_img_found = Signal(object)
+    dir_added_or_updated = Signal(object)
+    dir_empty_or_deleted = Signal(object)
+    watch_empty_or_deleted_done = Signal()
 
     def __init__(self):
         super(Watcher, self).__init__()
@@ -33,7 +33,7 @@ class Watcher(QObject):
 
         print(self._img_ext_filter)
 
-    @pyqtSlot()
+    @Slot()
     def watch_all(self):
         """
         <TODO>
@@ -55,7 +55,8 @@ class Watcher(QObject):
 
         self.watch_all_done.emit(elapsed, suffix)
 
-        orphaned_scan_dirs = self._meta_files_mgr.get_orphaned_scan_dirs(self._img_integrity_ts)
+        orphaned_scan_dirs = self._meta_files_mgr.get_orphaned_scan_dirs(
+            self._img_integrity_ts)
         for dir in orphaned_scan_dirs:
             self.dir_empty_or_deleted.emit({'id': dir['id']})
             self._meta_files_mgr.prune_scan_dir(dir['id'])
@@ -89,12 +90,14 @@ class Watcher(QObject):
         sd_id = 0
         sd_info = self._meta_files_mgr.get_scan_dir_id(abs_path)
         if not sd_info or sd_info['id'] <= 0:
-            sd_id = self._meta_files_mgr.add_scan_dir(parent_id, abs_path, dir_name, self._img_integrity_ts)
+            sd_id = self._meta_files_mgr.add_scan_dir(
+                parent_id, abs_path, dir_name, self._img_integrity_ts)
             sd_info = self._meta_files_mgr.get_scan_dir_id(abs_path)
             is_new_or_modified = True
         else:
             sd_id = sd_info['id']
-            self._meta_files_mgr.update_scan_dir_integrity_check(sd_id, self._img_integrity_ts)
+            self._meta_files_mgr.update_scan_dir_integrity_check(
+                sd_id, self._img_integrity_ts)
             if not sd_info['mtime'] or (modified_time > sd_info['mtime']):
                 LOGGER.debug("Folder(%s):(%s) has changed since last scan." %
                              (sd_id, sd_info['abspath']))
@@ -146,8 +149,10 @@ class Watcher(QObject):
 
                 # new file to add
                 elif not si_info:
-                    LOGGER.debug("Found New image: %s" % file_info.absoluteFilePath())
-                    self.new_img_found.emit({'dir': dir_name, 'filename': file_info.fileName()})
+                    LOGGER.debug("Found New image: %s" %
+                                 file_info.absoluteFilePath())
+                    self.new_img_found.emit(
+                        {'dir': dir_name, 'filename': file_info.fileName()})
                     self._meta_files_mgr.add_image(
                         sd_id,
                         file_info.absoluteFilePath(),
@@ -160,14 +165,17 @@ class Watcher(QObject):
         self._meta_files_mgr.commit()
 
         if is_new_or_modified is True:
-            img_del_count = self._meta_files_mgr.prune_scan_img(sd_id, self._img_integrity_ts)
+            img_del_count = self._meta_files_mgr.prune_scan_img(
+                sd_id, self._img_integrity_ts)
             img_count = self._meta_files_mgr.get_scan_dir_img_count(sd_id)
             self._meta_files_mgr.update_scan_dir_img_count(sd_id, img_count)
             if has_new_images or img_del_count > 0:
-                self.dir_added_or_updated.emit({'id': sd_id, 'name': dir_name, 'img_count': img_count})
+                self.dir_added_or_updated.emit(
+                    {'id': sd_id, 'name': dir_name, 'img_count': img_count})
             # Only update `mtime` if the scan_dir is new or modified
             if img_count > 0:
-                self._meta_files_mgr.update_scan_dir_mtime(sd_id, modified_time)
+                self._meta_files_mgr.update_scan_dir_mtime(
+                    sd_id, modified_time)
             else:
                 self._meta_files_mgr.remove_scan_dir(sd_id)
                 self.dir_empty_or_deleted.emit({'id': sd_id})

@@ -1,64 +1,38 @@
 # -*- coding: utf-8 -*-
+__license__ = 'GPL v3'
+__copyright__ = '2019, Julien Dcruz juliendcruz@gmail.com'
+__docformat__ = 'restructuredtext en'
 
 """
 application settings module
 author: Julien Dcruz
 """
 
-from PyQt5 import QtCore
+from PySide2 import QtCore
 from db import dbmgr
 from imagius_types import SettingType, IMAGE_FILETYPES
 from packaging.version import Version
 from upgrade import upgrade_from_previous_versions
+from constants import USER_APPDATA_DIR, APP_NAME, DB_SETTINGS, DB_META, APP_VERSION
 
-app_name = 'imagius'
-app_version = '0.8.1'
-settings_db_name = 'settings.db'
-meta_db_name = 'meta.db'
-log_name = 'imagius.log'
-roaming_dir_path = QtCore.QStandardPaths.writableLocation(QtCore.QStandardPaths.AppDataLocation)
 SETTINGS = {}
 
 
-def init_app_data():
-    data_dir_path = '%s/%s' % (roaming_dir_path, app_name)
-    dir = QtCore.QDir(data_dir_path)
-    if not dir.exists(data_dir_path):
-        roaming_dir = QtCore.QDir(roaming_dir_path)
-        if not roaming_dir.mkdir(app_name):
-            LOGGER.critical('Unable to access or create application data location: %s' % data_dir_path)
-
-    settings_db_file = QtCore.QFileInfo("%s/%s/%s" % (roaming_dir_path, app_name, settings_db_name))
-    if not settings_db_file.exists():
-        db = dbmgr(settings_db_file.absoluteFilePath())
-        db.create_settings_db_from_schema()
-
-        # Add the current version info
-        db = dbmgr(settings_db_file.absoluteFilePath())
-        db.connect()
-        query = 'INSERT INTO settings (key, value) VALUES (?, ?)'
-        params = ('VERSION', app_version)
-        db.run_insert_query(query, params)
-        db.disconnect()
-
-    meta_db_file = QtCore.QFileInfo("%s/%s/%s" % (roaming_dir_path, app_name, meta_db_name))
-    if not meta_db_file.exists():
-        db = dbmgr(meta_db_file.absoluteFilePath())
-        db.create_meta_db_from_schema()
-
-
 def get_settings_db_path():
-    settings_db_file = QtCore.QFileInfo("%s/%s/%s" % (roaming_dir_path, app_name, settings_db_name))
+    settings_db_file = QtCore.QFileInfo(
+        "%s/%s/%s" % (USER_APPDATA_DIR, APP_NAME, DB_SETTINGS))
     return settings_db_file.absoluteFilePath()
 
 
 def get_meta_db_path():
-    meta_db_file = QtCore.QFileInfo("%s/%s/%s" % (roaming_dir_path, app_name, meta_db_name))
+    meta_db_file = QtCore.QFileInfo(
+        "%s/%s/%s" % (USER_APPDATA_DIR, APP_NAME, DB_META))
     return meta_db_file.absoluteFilePath()
 
 
 def load_settings():
-    settings_db_file = QtCore.QFileInfo("%s/%s/%s" % (roaming_dir_path, app_name, settings_db_name))
+    settings_db_file = QtCore.QFileInfo(
+        "%s/%s/%s" % (USER_APPDATA_DIR, APP_NAME, DB_SETTINGS))
     db = dbmgr(settings_db_file.absoluteFilePath())
     db.connect()
     query = 'SELECT * FROM settings'
@@ -71,9 +45,10 @@ def load_settings():
     # If the version in the db is lesser than the in-code version,
     # that means a new version was installed.
     # So run any version specific upgrade code
-    if Version(SETTINGS['VERSION']) < Version(app_version):
-        upgrade_from_previous_versions(Version(SETTINGS['VERSION']), get_meta_db_path())
-    SETTINGS['VERSION'] = app_version
+    if Version(SETTINGS['VERSION']) < Version(APP_VERSION):
+        upgrade_from_previous_versions(
+            Version(SETTINGS['VERSION']), get_meta_db_path())
+    SETTINGS['VERSION'] = APP_VERSION
 
 
 def get(setting_type, default='', type='str'):
@@ -105,7 +80,8 @@ def get_allowed_image_formats():
 
 
 def persist_to_disk():
-    settings_db_file = QtCore.QFileInfo("%s/%s/%s" % (roaming_dir_path, app_name, settings_db_name))
+    settings_db_file = QtCore.QFileInfo(
+        "%s/%s/%s" % (USER_APPDATA_DIR, APP_NAME, settings_db_name))
     db = dbmgr(settings_db_file.absoluteFilePath())
     db.connect()
     print(SETTINGS)

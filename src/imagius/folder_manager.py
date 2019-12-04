@@ -2,7 +2,7 @@
 Folder Manager module
 author: Julien Dcruz
 """
-from PyQt5.QtCore import QObject, QThread, pyqtSignal, pyqtSlot
+from PySide2.QtCore import QObject, QThread, Signal, Slot
 from db import dbmgr
 import settings
 from log import LOGGER
@@ -45,7 +45,8 @@ class FolderManager(QObject):
         self._db.disconnect()
 
         self._meta_db.connect()
-        scan_dirs = self._meta_db.run_select_query('SELECT * FROM scan_dir WHERE parent_dir_id = ?', (fid,))
+        scan_dirs = self._meta_db.run_select_query(
+            'SELECT * FROM scan_dir WHERE parent_dir_id = ?', (fid,))
         sd_query = "DELETE FROM scan_dir WHERE id = ?"
         for scan_dir in scan_dirs:
             self._meta_db.run_query(sd_query, (scan_dir['id'],))
