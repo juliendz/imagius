@@ -81,7 +81,7 @@ def get_allowed_image_formats():
 
 def persist_to_disk():
     settings_db_file = QtCore.QFileInfo(
-        "%s/%s/%s" % (USER_APPDATA_DIR, APP_NAME, settings_db_name))
+        "%s/%s/%s" % (USER_APPDATA_DIR, APP_NAME, DB_SETTINGS))
     db = dbmgr(settings_db_file.absoluteFilePath())
     db.connect()
     print(SETTINGS)

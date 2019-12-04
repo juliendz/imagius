@@ -16,7 +16,7 @@ class SlideshowGraphicsView(QtWidgets.QGraphicsView):
     mouse_moved = QtCore.Signal(object)
 
     def __init__(self, parent=None):
-        super(QtWidgets.QGraphicsView, self).__init__(parent)
+        super(SlideshowGraphicsView, self).__init__(parent)
 
         self.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.setLineWidth(0)
