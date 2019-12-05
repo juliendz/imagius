@@ -7,8 +7,8 @@ __docformat__ = 'restructuredtext en'
 Application Data Initialization 
 """
 from PySide2 import QtCore
-from constants import USER_APPDATA_DIR, APP_NAME, DB_SETTINGS, DB_META, APP_VERSION
-from exceptions import AppDataDirReadWriteFailed
+from imagius.constants import USER_APPDATA_DIR, APP_NAME, DB_SETTINGS, DB_META, APP_VERSION
+from imagius.exceptions import AppDataDirReadWriteFailed
 
 
 def init_app_data_dir():
@@ -23,7 +23,7 @@ def init_app_data_dir():
 
 
 def init_app_db():
-    from db import dbmgr
+    from imagius.db import dbmgr
     settings_db_file = QtCore.QFileInfo(
         "%s/%s/%s" % (USER_APPDATA_DIR, APP_NAME, DB_SETTINGS))
     if not settings_db_file.exists():

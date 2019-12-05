@@ -13,7 +13,7 @@
 
 4.  Drag and drop manual reordering of thumbs within a folder
 
-5. sort by: date
+[CURRENT]5. sort by: date
             recent changes
             size
             name

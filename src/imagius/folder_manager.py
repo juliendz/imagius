@@ -3,9 +3,9 @@ Folder Manager module
 author: Julien Dcruz
 """
 from PySide2.QtCore import QObject, QThread, Signal, Slot
-from db import dbmgr
-import settings
-from log import LOGGER
+from imagius.db import dbmgr
+from imagius import settings
+from imagius.log import LOGGER
 
 
 class FolderManager(QObject):

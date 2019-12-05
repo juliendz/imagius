@@ -8,7 +8,7 @@ from PySide2 import QtCore
 from PySide2 import QtGui
 from PySide2 import QtWidgets
 
-from log import LOGGER
+from imagius.log import LOGGER
 
 
 class ThumbsListView(QtWidgets.QListView):

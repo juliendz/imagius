@@ -9,7 +9,7 @@ Static and runtime constants
 
 from PySide2 import QtCore
 from enum import Enum
-import exceptions
+from .exceptions import OsNotDetectedError
 import platform
 
 APP_NAME = 'imagius'
@@ -32,4 +32,4 @@ def get_appdata_dir() -> OSType:
         return OSType.OS_WINDOWS
     if platform.system() == 'Linux':
         return OSType.OS_LINUX
-    raise exceptions.OsNotDetectedError
+    raise OsNotDetectedError

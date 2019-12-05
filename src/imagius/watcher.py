@@ -8,10 +8,10 @@ import time
 from PySide2.QtCore import QObject, Signal, Slot, QDirIterator
 from PySide2.QtCore import QDir, QFileInfo, qDebug
 
-import settings
-from log import LOGGER
-from meta_files import MetaFilesManager
-from imagius_types import SettingType, IMAGE_FILETYPES
+from imagius import settings
+from imagius.log import LOGGER
+from imagius.meta_files import MetaFilesManager
+from imagius.imagius_types import SettingType, IMAGE_FILETYPES
 
 
 class Watcher(QObject):

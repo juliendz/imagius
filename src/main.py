@@ -1,15 +1,16 @@
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 __license__ = 'GPL v3'
 __copyright__ = '2019, Julien Dcruz juliendcruz@gmail.com'
 __docformat__ = 'restructuredtext en'
 
 """
-Test modules for constants
+Application entry
 """
 
-import os
-from imagius import constants
 
+import sys
+import imagius
 
-def test__get_appdata_dir():
-    print(constants.get_appdata_dir())
+if __name__ == '__main__':
+    sys.exit(imagius.run(sys.argv))

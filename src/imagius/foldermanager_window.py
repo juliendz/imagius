@@ -10,9 +10,9 @@ from PySide2.QtGui import QStandardItemModel, QStandardItem
 from PySide2.QtWidgets import QDialog, QFileDialog, QMessageBox
 from PySide2 import QtCore
 from PySide2.QtCore import QDir, QStandardPaths
-from folder_manager import FolderManager
-from ui.ui_foldermanager import Ui_FolderManagerWindow
-from log import LOGGER
+from imagius.folder_manager import FolderManager
+from imagius.ui.ui_foldermanager import Ui_FolderManagerWindow
+from imagius.log import LOGGER
 
 
 class FolderManagerWindow(QDialog, Ui_FolderManagerWindow):

@@ -8,7 +8,7 @@ Logging setup
 """
 
 from PySide2 import QtCore
-from constants import USER_APPDATA_DIR, APP_NAME, LOG_FILE
+from .constants import USER_APPDATA_DIR, APP_NAME, LOG_FILE
 import logging
 
 LOGGER = logging.getLogger(APP_NAME)

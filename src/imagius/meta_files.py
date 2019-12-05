@@ -10,9 +10,9 @@ from PySide2 import QtCore
 from PIL import Image
 import PIL.ExifTags
 from iptcinfo3 import IPTCInfo
-from db import dbmgr
-from log import LOGGER
-import settings
+from imagius.db import dbmgr
+from imagius.log import LOGGER
+from imagius import settings
 import exifread
 
 

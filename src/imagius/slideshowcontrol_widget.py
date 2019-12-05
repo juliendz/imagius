@@ -10,9 +10,9 @@ from PySide2.QtWidgets import QWidget
 from PySide2 import QtCore
 from PySide2.QtCore import QDir, QStandardPaths
 
-from folder_manager import FolderManager
-from ui.ui_slideshowcontrolwidget import Ui_SlideshowControlWidget
-from log import LOGGER
+from imagius.folder_manager import FolderManager
+from imagius.ui.ui_slideshowcontrolwidget import Ui_SlideshowControlWidget
+from imagius.log import LOGGER
 
 
 class SlideshowControlWidget(QWidget, Ui_SlideshowControlWidget):

@@ -4,8 +4,8 @@ author: Julien Dcruz
 """
 
 from PySide2 import QtCore, QtGui, QtWidgets
-from ui.ui_propertieswidget import Ui_PropertiesWidget
-from propertiesitem_widget import PropertiesItemWidget
+from imagius.ui.ui_propertieswidget import Ui_PropertiesWidget
+from imagius.propertiesitem_widget import PropertiesItemWidget
 
 
 class PropertiesWidget(QtWidgets.QWidget, Ui_PropertiesWidget):

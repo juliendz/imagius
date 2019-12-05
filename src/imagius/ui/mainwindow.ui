@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1002</width>
-    <height>626</height>
+    <width>1183</width>
+    <height>816</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -464,7 +464,7 @@
                     <x>0</x>
                     <y>0</y>
                     <width>288</width>
-                    <height>386</height>
+                    <height>576</height>
                    </rect>
                   </property>
                   <attribute name="icon">
@@ -480,8 +480,8 @@
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>98</width>
-                    <height>28</height>
+                    <width>288</width>
+                    <height>576</height>
                    </rect>
                   </property>
                   <attribute name="icon">
@@ -783,7 +783,7 @@ font-weight: bold</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1002</width>
+     <width>1183</width>
      <height>21</height>
     </rect>
    </property>
@@ -827,6 +827,16 @@ font-weight: bold</string>
      <addaction name="action_caption_none"/>
      <addaction name="action_caption_filename"/>
     </widget>
+    <widget class="QMenu" name="menuFolder_View_2">
+     <property name="title">
+      <string>Folder View</string>
+     </property>
+     <addaction name="action_Sort_CreationDate"/>
+     <addaction name="actionSort_by_Recent_Changes"/>
+     <addaction name="actionSory_by_Size"/>
+     <addaction name="actionSort_by_Name"/>
+     <addaction name="actionReverse_sort"/>
+    </widget>
     <addaction name="action_small_thumbs"/>
     <addaction name="action_normal_thumbs"/>
     <addaction name="separator"/>
@@ -836,6 +846,7 @@ font-weight: bold</string>
     <addaction name="action_slideshow"/>
     <addaction name="separator"/>
     <addaction name="menuThumbnail_Captions"/>
+    <addaction name="menuFolder_View_2"/>
    </widget>
    <widget class="QMenu" name="menuFolder">
     <property name="title">
@@ -983,9 +994,33 @@ font-weight: bold</string>
     <string>Rescan Added Folders</string>
    </property>
   </action>
+  <action name="action_Sort_CreationDate">
+   <property name="text">
+    <string>Sort by Creation Date</string>
+   </property>
+  </action>
+  <action name="actionSort_by_Recent_Changes">
+   <property name="text">
+    <string>Sort by Recent Changes</string>
+   </property>
+  </action>
+  <action name="actionSory_by_Size">
+   <property name="text">
+    <string>Sory by Size</string>
+   </property>
+  </action>
+  <action name="actionSort_by_Name">
+   <property name="text">
+    <string>Sort by Name</string>
+   </property>
+  </action>
+  <action name="actionReverse_sort">
+   <property name="text">
+    <string>Reverse sort</string>
+   </property>
+  </action>
  </widget>
  <resources>
-  <include location="../imagius.qrc"/>
   <include location="../imagius.qrc"/>
  </resources>
  <connections/>

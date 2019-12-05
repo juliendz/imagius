@@ -14,22 +14,22 @@ from PySide2.QtWidgets import QMainWindow, QApplication, QFileDialog
 from PySide2.QtWidgets import QGridLayout, QLabel, QWidget, QPushButton
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QListView
 from PySide2.QtWidgets import QGraphicsDropShadowEffect, QGraphicsGridLayout, QScroller
-from meta_files import MetaFilesManager
-from ui.ui_mainwindow import Ui_MainWindow
-from foldermanager_window import FolderManagerWindow
-from settings_window import SettingsWindow
-from slideshow_window import SlideshowWindow
-from properties_widget import PropertiesWidget
+from imagius.meta_files import MetaFilesManager
+from imagius.ui.ui_mainwindow import Ui_MainWindow
+from imagius.foldermanager_window import FolderManagerWindow
+from imagius.settings_window import SettingsWindow
+from imagius.slideshow_window import SlideshowWindow
+from imagius.properties_widget import PropertiesWidget
 # from qgraphics_thumb_item import QGraphicsThumbnailItem
-from thumbs_listview import ThumbsListView
+from imagius.thumbs_listview import ThumbsListView
 
-from imagius_types import Thumb_Caption_Type
-from watcher import Watcher
-from loader import ImageLoader
-from log import LOGGER
-from update_manager import UpdateManager
-import settings
-from settings import SettingType
+from imagius.imagius_types import Thumb_Caption_Type
+from imagius.watcher import Watcher
+from imagius.loader import ImageLoader
+from imagius.log import LOGGER
+from imagius.update_manager import UpdateManager
+from imagius import settings
+from imagius.settings import SettingType
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -75,6 +75,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # connections
         self._setup_connections()
 
+        # Populates the folder list
         self._setup_scan_dir_list_model()
 
         # Properties widget

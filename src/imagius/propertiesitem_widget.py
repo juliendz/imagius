@@ -9,9 +9,9 @@ from PySide2 import QtCore, QtGui
 from PySide2.QtWidgets import QWidget
 from PySide2.QtCore import QDir, QStandardPaths
 
-from folder_manager import FolderManager
-from ui.ui_propertiesitemwidget import Ui_PropertiesItemWidget
-from log import LOGGER
+from imagius.folder_manager import FolderManager
+from imagius.ui.ui_propertiesitemwidget import Ui_PropertiesItemWidget
+from imagius.log import LOGGER
 
 
 class PropertiesItemWidget(QWidget, Ui_PropertiesItemWidget):

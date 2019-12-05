@@ -6,9 +6,9 @@ from PySide2 import QtCore, QtNetwork, QtGui, QtWidgets
 from PySide2.QtCore import Slot
 from packaging.version import Version
 
-from imagius_types import SettingType
-import settings
-from log import LOGGER
+from imagius.imagius_types import SettingType
+from imagius import settings
+from imagius.log import LOGGER
 
 
 class UpdateManager(QtCore.QObject):

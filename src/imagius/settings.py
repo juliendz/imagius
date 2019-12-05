@@ -9,11 +9,11 @@ author: Julien Dcruz
 """
 
 from PySide2 import QtCore
-from db import dbmgr
-from imagius_types import SettingType, IMAGE_FILETYPES
+from imagius.db import dbmgr
+from imagius.imagius_types import SettingType, IMAGE_FILETYPES
 from packaging.version import Version
-from upgrade import upgrade_from_previous_versions
-from constants import USER_APPDATA_DIR, APP_NAME, DB_SETTINGS, DB_META, APP_VERSION
+from imagius.upgrade import upgrade_from_previous_versions
+from imagius.constants import USER_APPDATA_DIR, APP_NAME, DB_SETTINGS, DB_META, APP_VERSION
 
 SETTINGS = {}
 

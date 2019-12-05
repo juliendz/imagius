@@ -14,13 +14,13 @@ from PySide2.QtGui import QKeySequence, QPixmap, QImage, QBrush
 from PySide2.QtWidgets import QWidget, QShortcut
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QGraphicsItem
 
-from ui.ui_slideshowwindow import Ui_SlideshowWindow
-from meta_files import MetaFilesManager
-from slideshow_graphicsview import SlideshowGraphicsView
-from slideshowcontrol_widget import SlideshowControlWidget
-from log import LOGGER
-import settings
-from settings import SettingType
+from imagius.ui.ui_slideshowwindow import Ui_SlideshowWindow
+from imagius.meta_files import MetaFilesManager
+from imagius.slideshow_graphicsview import SlideshowGraphicsView
+from imagius.slideshowcontrol_widget import SlideshowControlWidget
+from imagius.log import LOGGER
+from imagius import settings
+from imagius.settings import SettingType
 
 
 class SlideshowWindow(QWidget, Ui_SlideshowWindow):
