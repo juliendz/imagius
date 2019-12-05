@@ -40,7 +40,7 @@ class MetaFilesManager():
         self._settings_db.disconnect()
         return res
 
-    def get_scan_dirs(self, sort: SortMode = SortMode.Name, reverseSort=True):
+    def get_scan_dirs(self, sort: SortMode = SortMode.Name, reverseSort=False):
         predicate = ""
 
         if sort == SortMode.Name:
