@@ -130,6 +130,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Start the loader thread
             self.init_loader_thread()
 
+    def closeEvent(self, event):
+        LOGGER.debug('Shutting down gracefully....')
+        self._meta_files_mgr.disconnect()
+        settings.persist_to_disk()
+
+        self._dir_watcher_thread.quit()
+        self._dir_watcher_thread.wait()
+
+        self._img_loader_thread.quit()
+        self._img_loader_thread.wait()
+
     def _make_default_dir_list_selection(self):
         folders_index = self._dirs_list_model.indexFromItem(
             self._TV_FOLDERS_ITEM_MAP[0])
@@ -634,10 +645,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def action_exit_clicked(self):
         self.close()
-
-    def closeEvent(self, event):
-        self._meta_files_mgr.disconnect()
-        settings.persist_to_disk()
 
     def _clear_search(self):
         if 'search' in self._TV_FOLDERS_ITEM_MAP:
