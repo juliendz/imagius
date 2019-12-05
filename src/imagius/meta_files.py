@@ -13,6 +13,7 @@ from iptcinfo3 import IPTCInfo
 from imagius.db import dbmgr
 from imagius.log import LOGGER
 from imagius import settings
+from imagius.constants import SortMode
 import exifread
 
 
@@ -39,8 +40,17 @@ class MetaFilesManager():
         self._settings_db.disconnect()
         return res
 
-    def get_scan_dirs(self):
-        query = "SELECT * FROM scan_dir"
+    def get_scan_dirs(self, sort: SortMode = SortMode.Name, reverseSort=True):
+        predicate = ""
+
+        if sort == SortMode.Name:
+            if reverseSort:
+                predicate = "ORDER BY name DESC"
+            else:
+                predicate = "ORDER BY name ASC"
+
+        query = "SELECT * FROM scan_dir %s" % predicate
+
         self._meta_db.connect()
         res = self._meta_db.run_select_query(query)
         self._meta_db.disconnect()

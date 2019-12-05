@@ -22,6 +22,13 @@ USER_APPDATA_DIR = QtCore.QStandardPaths.writableLocation(
     QtCore.QStandardPaths.AppDataLocation)
 
 
+class SortMode(Enum):
+    CreationTime = 1
+    RecentChanges = 2
+    Name = 3
+    Size = 4
+
+
 class OSType(Enum):
     OS_WINDOWS = 1
     OS_LINUX = 2
