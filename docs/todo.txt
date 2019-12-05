@@ -1,0 +1,31 @@
+1. Top right bar: Shortcuts for:
+    IMPORT
+    FLAT STRUCTURE / TREE STRUCTURE
+    SORT OPTIONS
+
+
+2. Collections support (a collection of one or more folders)
+
+3. Albums support (A collection of images from one or more folders)
+    Bottom left: a. Shelf to store one more selected images thumbnails.
+                 b. Add to album
+                 
+
+4.  Drag and drop manual reordering of thumbs within a folder
+
+5. sort by: date
+            recent changes
+            size
+            name
+            Reverse sort
+
+6. FolderManager: 
+        a. Per folder settings for: Scan once
+                                    Scan always
+                                    Remove
+        b. Tree view of all directories on system with icons applied displaying one of three status as shown above.
+
+7. Folder List: 
+    a. Group by month/year
+
+8. Sqlite db splitting over fixed size threshold (to improve look up times)

@@ -32,6 +32,12 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     app.setApplicationName(HUMAN_APP_NAME)
     w = MainWindow()
+
+    # with open('styles/Aqua.qss', 'r') as stylesheet:
+    #     qss = stylesheet.read()
+
+    # w.setStyleSheet(qss)
+
     w.setWindowTitle('Imagius')
     w.showMaximized()
 
