@@ -48,7 +48,7 @@ class ThumbsListView(QtWidgets.QListView):
         self._curr_img_serial = 0
         self._last_hidden_thumb_serial = 0
 
-        self.verticalScrollBar().setSingleStep(10)
+        self.verticalScrollBar().setSingleStep(30)
 
     def setCurrImgSerial(self, serial: int):
         self._curr_img_serial = serial
@@ -67,8 +67,11 @@ class ThumbsListView(QtWidgets.QListView):
         event.ignore()
         super(type(self), self).wheelEvent(event)
 
+        # print(event.angleDelta())
+        # print(event.delta())
+
         row = 0
-        visible_items_count = 0
+        visible_items = []
         invisible_items = []
         invisible_items_count = 0
 
@@ -79,7 +82,7 @@ class ThumbsListView(QtWidgets.QListView):
 
             item_index = self.model().indexFromItem(item)
             if self.viewport().rect().intersects(self.visualRect(item_index)):
-                visible_items_count = visible_items_count + 1
+                visible_items.append(item)
             else:
                 invisible_items.append(item)
                 invisible_items_count = invisible_items_count + 1
@@ -89,8 +92,16 @@ class ThumbsListView(QtWidgets.QListView):
         # if self._curr_img_serial == 0:
         #     self._curr_img_serial = row
         # else:
-        if curr_scroll_direction != self._prev_scroll_direction:
-            self._curr_img_serial = self._last_hidden_thumb_serial
+        # if curr_scroll_direction != self._prev_scroll_direction:
+        #     serial = visible_items[0].data(QtCore.Qt.UserRole + 2)
+        #     self._curr_img_serial = visible_items[0]
+        serial = 0
+        if curr_scroll_direction == ScrollDirection.Up:
+            serial = visible_items[0].data(QtCore.Qt.UserRole + 2)
+        if curr_scroll_direction == ScrollDirection.Down:
+            serial = visible_items[len(
+                visible_items)-1].data(QtCore.Qt.UserRole + 2)
+        self._curr_img_serial = serial
 
         # Deleting hidden thumbs
         if len(invisible_items) > 0:
@@ -111,6 +122,9 @@ class ThumbsListView(QtWidgets.QListView):
         curr_thumb_display_size = settings.get(
             SettingType.UI_THUMBS_SIZE, 128, 'int')
         # Calculate the number thumbs need to load to fit the screen
+        print("visiable thumb count %d " %
+              self.get_visible_thumb_count(curr_thumb_display_size + 20))
+        print("model rowcount %d" % self.model().rowCount())
         new_thumbs_load_count = self.get_visible_thumb_count(
             curr_thumb_display_size + 20) - self.model().rowCount()
 
@@ -157,7 +171,7 @@ class ThumbsListView(QtWidgets.QListView):
         row_len = float(self.height() / thumb_size)
 
         # Add 2 to row_len to load one more row after the last visiable row to be activate scrolling functionality
-        row_len = row_len + 2
+        row_len = row_len + 0
 
         visisble_item_count = int(row_len * col_len)
         # Roundup to the nearest 10
