@@ -12,6 +12,7 @@ from imagius import settings
 from imagius.log import LOGGER
 from imagius.meta_files import MetaFilesManager
 from imagius.imagius_types import SettingType, IMAGE_FILETYPES
+from imagius.constants import ScrollDirection
 
 
 class ImageLoader(QObject):
@@ -20,7 +21,7 @@ class ImageLoader(QObject):
     """
     load_scandir_success = Signal(object, object)
     load_scan_dir_info_success = Signal(object)
-    load_images_success = Signal(object)
+    load_images_success = Signal(object, object)
 
     batch_size = 50
 
@@ -30,8 +31,8 @@ class ImageLoader(QObject):
         self._meta_files_mgr = MetaFilesManager()
         self._img_ext_filter = settings.get_allowed_image_formats()
 
-    @Slot(object)
-    def load_scandir(self, sd_id):
+    @Slot(int, int, int, object)
+    def load_scandir(self, sd_id, serial, load_count, scrollDirection):
         """
         <TODO>
         """
@@ -43,31 +44,39 @@ class ImageLoader(QObject):
         dir_info = self._meta_files_mgr.get_scan_dir(sd_id)
         self.load_scan_dir_info_success.emit(dir_info)
 
-        images = self._meta_files_mgr.get_scan_dir_images(sd_id)
+        reverse = True if scrollDirection == ScrollDirection.Up else False
+        images = self._meta_files_mgr.get_scan_dir_images_by_serial(
+            sd_id, serial, load_count, reverse)
 
-        total_img_count = len(images)
-        if total_img_count < self.batch_size:
-            self.load_images_success.emit(images)
-        else:
-            batch_start_index = 0
-            curr_img_count = 0
-            for img in images:
-                print(batch_start_index)
-                curr_img_count += 1
-                if curr_img_count % 50 == 0 or curr_img_count == total_img_count:
-                    self.load_images_success.emit(
-                        images[batch_start_index:curr_img_count])
-                    batch_start_index = curr_img_count
+        self.load_images_success.emit(images, scrollDirection)
 
-        elapsed = round(time.time() - start_time, 2)
-        suffix = 'seconds'
-        if elapsed > 60:
-            elapsed /= 60
-            suffix = 'minutes'
-        LOGGER.debug('Loading Scan Dir completed in %.2f %s.' %
-                     (elapsed, suffix))
+        # images = self._meta_files_mgr.get_scan_dir_images_by_serial(
+        #     sd_id, serial, load_count)
 
-        self.load_scandir_success.emit(elapsed, suffix)
+        # # total_img_count = len(images)
+        # if total_img_count < self.batch_size:
+        #     self.load_images_success.emit(images)
+        # else:
+        #     batch_start_index = 0
+        #     curr_img_count = 0
+        #     for img in images:
+        #         # print(batch_start_index)
+        #         curr_img_count += 1
+        #         if curr_img_count % 50 == 0 or curr_img_count == total_img_count:
+        #             self.load_images_success.emit(
+        #                 images[batch_start_index:curr_img_count])
+        #             batch_start_index = curr_img_count
+
+        # elapsed = round(time.time() - start_time, 2)
+        # suffix = 'seconds'
+        # if elapsed > 60:
+        #     elapsed /= 60
+        #     suffix = 'minutes'
+        # LOGGER.debug('Loading Scan Dir completed in %.2f %s.' %
+        #              (elapsed, suffix))
+
+        # self.load_scandir_success.emit(elapsed, suffix)
+        # self.free_resources()
 
     @Slot()
     def free_resources(self):

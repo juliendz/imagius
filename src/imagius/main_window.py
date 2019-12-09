@@ -30,6 +30,7 @@ from imagius.log import LOGGER
 from imagius.update_manager import UpdateManager
 from imagius import settings
 from imagius.settings import SettingType
+from imagius.constants import ScrollDirection
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -40,7 +41,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     _dir_load_start = Signal(object)
     _dir_watcher_start = Signal()
 
-    _loader_load_scandir = Signal(object)
+    _loader_load_scandir = Signal(int, int, int, object)
 
     _is_watcher_running = False
     _update_mgr = None
@@ -117,6 +118,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Set event filters
         self.btn_slideshow.installEventFilter(self)
+
+        self._curr_img_serial = 1
 
     def resizeEvent(self, event):
         if event.spontaneous():
@@ -204,10 +207,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Loader
         self._loader_load_scandir.connect(self._img_loader.load_scandir)
+        # self._loader_load_scanimg.connect(self._img_loader.load_scanimg)
         self._img_loader.load_scan_dir_info_success.connect(
             self._handle_load_scan_dir_info_success)
+        # self._img_loader.load_images_success.connect(
+            # self._handle_load_images_sucess)
         self._img_loader.load_images_success.connect(
-            self._handle_load_images_sucess)
+            self.listView_thumbs.render_thumbs)
 
         # Tree View
         self.treeView_scandirs.clicked.connect(
@@ -217,6 +223,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.listView_thumbs.clicked.connect(self.on_thumb_clicked)
         self.listView_thumbs.empty_area_clicked.connect(
             self.on_thumb_listview_empty_area_clicked)
+        self.listView_thumbs.load_dir_images_for_scroll_up.connect(
+            self.on_load_dir_images_for_scroll_up)
+        self.listView_thumbs.load_dir_images_for_scroll_down.connect(
+            self.on_load_dir_images_for_scroll_down)
 
         self.buttonGroup_metadata.buttonClicked.connect(
             self.on_buttongroup_metadata_clicked)
@@ -474,15 +484,57 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _load_dir_images(self, sd_id):
         self._clear_thumbs()
-        self._loader_load_scandir.emit(sd_id)
+        load_count = self.listView_thumbs.get_visible_thumb_count(
+            self.hslider_thumb_size.value() + 20)
+        print("load count %d" % load_count)
+        # Replace 0 with the value to be save in the database. This should rendering thumbs from the last selection and no just from 0
+        init_img_serial = 0 + load_count
+        self.listView_thumbs.setCurrImgSerial(init_img_serial)
+        self._loader_load_scandir.emit(
+            sd_id, 0, load_count, ScrollDirection.Down)
         QScroller.grabGesture(self.listView_thumbs.viewport(),
                               QScroller.LeftMouseButtonGesture)
+
+    def _load_dir_images_for_scroll_up(self, sd_id, serial, count):
+        # self._clear_thumbs()
+        load_count = self.listView_thumbs.get_visible_thumb_count(
+            self.hslider_thumb_size.value() + 20)
+        self._loader_load_scandir.emit(
+            sd_id, serial, count, ScrollDirection.Up)
+        QScroller.grabGesture(self.listView_thumbs.viewport(),
+                              QScroller.LeftMouseButtonGesture)
+
+    def _load_dir_images_for_scroll_down(self, sd_id, serial, count):
+        # self._clear_thumbs()
+        load_count = self.listView_thumbs.get_visible_thumb_count(
+            self.hslider_thumb_size.value() + 20)
+        self._loader_load_scandir.emit(
+            sd_id, serial, count, ScrollDirection.Down)
+        QScroller.grabGesture(self.listView_thumbs.viewport(),
+                              QScroller.LeftMouseButtonGesture)
+
+    @Slot(int, int)
+    def on_load_dir_images_for_scroll_up(self, serial, count):
+        cur_sel_ids = self.get_current_selection_ids()
+        if 'sd_id' in cur_sel_ids:
+            self._load_dir_images_for_scroll_up(
+                cur_sel_ids['sd_id'], serial, count)
+
+    @Slot(int, int)
+    def on_load_dir_images_for_scroll_down(self, serial, count):
+        cur_sel_ids = self.get_current_selection_ids()
+        if 'sd_id' in cur_sel_ids:
+            self._load_dir_images_for_scroll_down(
+                cur_sel_ids['sd_id'], serial, count)
 
     def _handle_load_scan_dir_info_success(self, dir_info):
         self.lbl_dir_name.setText(dir_info['name'])
 
-    def _handle_load_images_sucess(self, images):
-        LOGGER.debug('Recevied %s images' % len(images))
+    @Slot(object, int)
+    def _handle_load_images_sucess(self, images, scrollDirection):
+        img_count = len(images)
+        print('Recevied %s images' % img_count)
+        LOGGER.debug('Recevied %s images' % img_count)
         for img in images:
             img['thumb'] = QImage.fromData(img['thumb'])
             item = QStandardItem()
@@ -495,7 +547,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             item.setData(img['id'], QtCore.Qt.UserRole + 1)
             item.setData(img['serial'], QtCore.Qt.UserRole + 2)
             item.setIcon(QIcon(QPixmap.fromImage(img['thumb'])))
-            self._thumbs_view_model.appendRow(item)
+            item.setText(str(img['serial']))
+
+            if scrollDirection == ScrollDirection.Up:
+                self._thumbs_view_model.insertRow(0, item)
+            if scrollDirection == ScrollDirection.Down:
+                self._thumbs_view_model.appendRow(item)
 
     def _clear_thumbs(self):
         self._thumbs_view_model.clear()

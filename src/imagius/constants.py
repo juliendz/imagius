@@ -29,6 +29,11 @@ class SortMode(Enum):
     Size = 4
 
 
+class ScrollDirection(Enum):
+    Up = 1
+    Down = 2
+
+
 class OSType(Enum):
     OS_WINDOWS = 1
     OS_LINUX = 2

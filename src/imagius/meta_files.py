@@ -294,6 +294,17 @@ class MetaFilesManager():
         self._meta_db.disconnect()
         return res
 
+    def get_scan_dir_images_by_serial(self, sd_id, serial, count, reverse=False):
+        if reverse:
+            query = "SELECT * FROM scan_img WHERE sdid = ? AND serial <= ? ORDER BY serial DESC LIMIT ?"
+        else:
+            query = "SELECT * FROM scan_img WHERE sdid = ? AND serial > ? LIMIT ?"
+        params = (sd_id, serial, count)
+        self._meta_db.connect()
+        res = self._meta_db.run_select_query(query, params)
+        self._meta_db.disconnect()
+        return res
+
     def get_unclean_entries(self, int_check):
         query = "SELECT abspath FROM scan_img WHERE integrity_check < ?"
         params = (int_check,)
