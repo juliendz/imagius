@@ -286,8 +286,11 @@ class MetaFilesManager():
             return None
         return res[0]
 
-    def get_scan_dir_images(self, sd_id):
-        query = "SELECT * FROM scan_img WHERE sdid = ?"
+    def get_scan_dir_images(self, sd_id, ids_only=False):
+        if ids_only:
+            query = "SELECT id  FROM scan_img WHERE sdid = ?"
+        else:
+            query = "SELECT * FROM scan_img WHERE sdid = ?"
         params = (sd_id,)
         self._meta_db.connect()
         res = self._meta_db.run_select_query(query, params)
@@ -296,7 +299,7 @@ class MetaFilesManager():
 
     def get_scan_dir_images_by_serial(self, sd_id, serial, count, reverse=False):
         if reverse:
-            query = "SELECT * FROM scan_img WHERE sdid = ? AND serial <= ? ORDER BY serial DESC LIMIT ?"
+            query = "SELECT * FROM scan_img WHERE sdid = ? AND serial < ? ORDER BY serial DESC LIMIT ?"
         else:
             query = "SELECT * FROM scan_img WHERE sdid = ? AND serial > ? LIMIT ?"
         params = (sd_id, serial, count)
