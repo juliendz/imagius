@@ -487,9 +487,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         load_count = self.listView_thumbs.get_visible_thumb_count(
             self.hslider_thumb_size.value() + 20)
         print("load count %d" % load_count)
-        # Replace 0 with the value to be save in the database. This should rendering thumbs from the last selection and no just from 0
-        init_img_serial = 0 + load_count
-        self.listView_thumbs.setCurrImgSerial(init_img_serial)
         self._loader_load_scandir.emit(
             sd_id, 0, load_count, ScrollDirection.Down)
         QScroller.grabGesture(self.listView_thumbs.viewport(),
