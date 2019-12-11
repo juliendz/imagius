@@ -5,12 +5,12 @@ author: Julien Dcruz
 
 from imagius.log import LOGGER
 from imagius.constants import ScrollDirection
-from PySide2.QtWidgets import QListView
+from PySide2 import QtCore
 from PySide2 import QtWidgets
 from PySide2 import QtGui
-from PySide2.QtCore import QModelIndex, Signal, QPropertyAnimation, QRect, Slot
+from PySide2.QtCore import QModelIndex, Signal, QPropertyAnimation, QRect, Slot, QPointF
+from PySide2.QtWidgets import QListView, QScroller
 from PySide2.QtGui import QImage, QStandardItem, QIcon, QPixmap
-from PySide2 import QtCore
 import sys
 import math
 from collections import deque
@@ -38,19 +38,28 @@ class ThumbsListView(QtWidgets.QListView):
         self.setHorizontalScrollMode(
             QtWidgets.QAbstractItemView.ScrollPerPixel)
         self.setMovement(QtWidgets.QListView.Snap)
-        self.setLayoutMode(QtWidgets.QListView.Batched)
+
+        # Batched causes repaints every time new items are added so we have keep this at SinglePass
+        # self.setLayoutMode(QtWidgets.QListView.Batched)
+        self.setLayoutMode(QtWidgets.QListView.SinglePass)
+
         self.setViewMode(QtWidgets.QListView.IconMode)
         self.setUniformItemSizes(False)
         self.setObjectName("listView_thumbs")
+
+        # self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
         self.setIconSize(QtCore.QSize(128, 128))
         self.setGridSize(QtCore.QSize(148, 148))
         # self.listView_thumbs.setSpacing(16)
 
+        # self._scroller = QScroller.scroller(self)
+
         self._scroll_in_progress = False
 
         # self.verticalScrollBar().setSingleStep(5)
         # self.setFixedHeight(1700)
+        # self._scrollY = QPointF(0, 0)
 
     def mousePressEvent(self, event):
         self.clearSelection()
@@ -58,13 +67,22 @@ class ThumbsListView(QtWidgets.QListView):
         self.empty_area_clicked.emit()
 
     def wheelEvent(self, event):
+        # event.accept()
+        event.ignore()
+        super(type(self), self).wheelEvent(event)
+
         if event.angleDelta().y() < 0:
             curr_scroll_direction = ScrollDirection.Down
+
+            # self._scrollY.setY(self._scrollY.y() + 50)
+            # print(self._scrollY)
+            # self._scroller.scrollTo(self._scrollY)
         else:
             curr_scroll_direction = ScrollDirection.Up
 
-        event.ignore()
-        super(type(self), self).wheelEvent(event)
+            # self._scrollY.setY(self._scrollY.y() - 50)
+            # print(self._scrollY)
+            # self._scroller.scrollTo(self._scrollY)
 
         row = 0
         visible_items = []
@@ -105,7 +123,6 @@ class ThumbsListView(QtWidgets.QListView):
         if curr_scroll_direction == ScrollDirection.Up:
             new_thumbs_load_count = new_thumbs_load_count + 0
 
-            print(self.first_thumb_serial())
             if not self._scroll_in_progress:
                 self.load_dir_images_for_scroll_up.emit(
                     self.first_thumb_serial(), new_thumbs_load_count)
@@ -114,7 +131,6 @@ class ThumbsListView(QtWidgets.QListView):
             new_thumbs_load_count = new_thumbs_load_count + 0
 
             load_from_serial = self.last_thumb_serial()
-            print(load_from_serial)
             if not self._scroll_in_progress:
                 self.load_dir_images_for_scroll_down.emit(
                     load_from_serial, new_thumbs_load_count)
@@ -146,6 +162,10 @@ class ThumbsListView(QtWidgets.QListView):
             if scroll_direction == ScrollDirection.Down:
                 self.model().appendRow(item)
                 self._last_thumb_serial = images[len(images)-1]['serial']
+
+        # self._scrollY.setY(self._scrollY.y() + 10)
+        # print(self._scrollY)
+        # self._scroller.scrollTo(self._scrollY)
 
         self._scroll_in_progress = False
 
