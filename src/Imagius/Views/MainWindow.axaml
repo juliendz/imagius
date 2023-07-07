@@ -1,0 +1,46 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Imagius.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:models="clr-namespace:Imagius.Models"
+		xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Imagius.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="Imagius">
+
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:MainWindowViewModel/>
+	</Design.DataContext>
+
+	<Grid ColumnDefinitions="250, 0.5, *">
+		<Grid Grid.Column="0">
+			<TextBlock Text="Menu"></TextBlock>
+		</Grid>
+		<GridSplitter Grid.Column="1" Background="Black" ResizeDirection="Columns"/>
+		<Grid Grid.Column="2">
+
+			<ItemsControl Items="{Binding Thumbs}" HorizontalAlignment="Left" VerticalAlignment="Top">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate DataType="models:Thumb">
+						<Border BorderBrush="Black" BorderThickness="0" Padding="10">
+								<Image Height="128" asyncImageLoader:ImageLoader.Source="{Binding Path}" />
+						</Border>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<UniformGrid Columns="8" />
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+			</ItemsControl>
+
+		</Grid>
+	</Grid>
+
+</Window>

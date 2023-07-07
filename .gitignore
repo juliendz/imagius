@@ -42,3 +42,7 @@ build-*/*
 
 *.pro.user
 *.pro.user.*
+
+**/.vs/*
+src/Imagius/bin/*
+src/Imagius/obj/*
