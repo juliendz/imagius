@@ -7,5 +7,6 @@ export {
 };
 
 export type {
+    GetScanImgsRow,
     ScanDir
 } from "./models.js";

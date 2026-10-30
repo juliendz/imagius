@@ -4,6 +4,7 @@ import (
 	"context"
 	"embed"
 	"julien/imagius-go/internal"
+	"path/filepath"
 
 	"log"
 	"time"
@@ -34,8 +35,13 @@ func main() {
 	dataDir := internal.InitDataDir()
 	log.Printf("App Data Dir: %s\n", dataDir)
 
-	db := internal.NewDB(context.Background())
-	db.InitDB(dataDir)
+	appDb := internal.NewDB(context.Background())
+	appDb.InitDB(dataDir)
+
+	libDb := internal.NewDB(context.Background())
+	libDb.InitDB(dataDir)
+
+	ginEngine := NewGinEngine(filepath.Join(dataDir, "thumbs"))
 
 	// Create a new Wails application by providing the necessary options.
 	// Variables 'Name' and 'Description' are for application metadata.
@@ -46,11 +52,13 @@ func main() {
 		Name:        "imagius-go",
 		Description: "An image collection organizer",
 		Services: []application.Service{
-			application.NewService(NewAppService(dataDir, db)),
-			application.NewService(internal.NewLibraryService(db)),
+			application.NewService(NewAppService(dataDir, appDb)),
+			application.NewService(internal.NewLibraryService(libDb)),
 		},
 		Assets: application.AssetOptions{
-			Handler: application.AssetFileServerFS(assets),
+			// Handler: application.AssetFileServerFS(assets),
+			Handler:    ginEngine,
+			Middleware: GinMiddleware(ginEngine),
 		},
 		Mac: application.MacOptions{
 			ApplicationShouldTerminateAfterLastWindowClosed: true,

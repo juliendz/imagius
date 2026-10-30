@@ -12,3 +12,7 @@ import * as $models from "./models.js";
 export function GetDirs(): $CancellablePromise<$models.ScanDir[] | null> {
     return $Call.ByID(2376264409);
 }
+
+export function GetImages(): $CancellablePromise<$models.GetScanImgsRow[] | null> {
+    return $Call.ByID(1398669791);
+}

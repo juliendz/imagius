@@ -107,6 +107,27 @@ func (d *DB) GetScanImg(absPath string) (ScanImg, error) {
 	return img, err
 }
 
+type GetScanImgsRow struct {
+	ID         uint
+	ParentID   uint
+	Name       string
+	SerialNo   int64
+	ThumbPath  string
+	ParentName string
+}
+
+func (d *DB) GetScanImgs() []GetScanImgsRow {
+	var imgs []GetScanImgsRow
+	err := d.db.Model(&ScanImg{}).Select("scan_imgs.id, scan_imgs.parent_id, scan_imgs.name, scan_imgs.serial_no, scan_imgs.thumb_path, dir.name as parent_name").
+		Joins("left join scan_dirs as dir on scan_imgs.parent_id = dir.id").
+		Order("dir.modified_time desc, scan_imgs.name").
+		Scan(&imgs)
+	if err != nil {
+		// log.Printf("Failed to get scan images: %v", err)
+	}
+	return imgs
+}
+
 func (d *DB) InsertDir(parentID uint, absPath string, name string, scanTime time.Time, mtime time.Time) (ScanDir, error) {
 	sd := ScanDir{}
 	sd.ParentId = parentID
