@@ -55,7 +55,7 @@ func (s *Scanner) ScanDir(db *DB, parentId uint, absPath string, dirName string)
 	mtime := DirModTime(absPath)
 	scanDir, _ := db.GetScanDir(absPath)
 	if scanDir.ID <= 0 {
-		scanDir, _ = db.InsertDir(parentId, absPath, dirName, s.scanTime)
+		scanDir, _ = db.InsertDir(parentId, absPath, dirName, s.scanTime, mtime)
 		isNewOrModified = true
 
 	} else {

@@ -25,6 +25,7 @@ type ScanDir struct {
 	Name         string
 	ImgCount     int64
 	LastScanTime time.Time
+	ModifiedTime time.Time
 }
 
 type ScanImg struct {
@@ -76,6 +77,7 @@ func (d *DB) InitDB(dataDir string) (err error) {
 	}
 
 	d.db.AutoMigrate(&Dir{}, &ScanDir{}, &ScanImg{}, &Setting{})
+	log.Printf("Database initialized successfully")
 	return nil
 }
 
@@ -92,17 +94,26 @@ func (d *DB) GetScanDir(absPath string) (ScanDir, error) {
 	return dir, err
 }
 
+func (d *DB) GetScanDirs() []ScanDir {
+	dirs, err := gorm.G[ScanDir](d.db).Order("modified_time DESC").Find(d.ctxt)
+	if err != nil {
+		log.Printf("Failed to get scan dirs: %v", err)
+	}
+	return dirs
+}
+
 func (d *DB) GetScanImg(absPath string) (ScanImg, error) {
 	img, err := gorm.G[ScanImg](d.db).Where("abs_path = ?", absPath).First(d.ctxt)
 	return img, err
 }
 
-func (d *DB) InsertDir(parentID uint, absPath string, name string, scanTime time.Time) (ScanDir, error) {
+func (d *DB) InsertDir(parentID uint, absPath string, name string, scanTime time.Time, mtime time.Time) (ScanDir, error) {
 	sd := ScanDir{}
 	sd.ParentId = parentID
 	sd.AbsPath = absPath
 	sd.Name = name
 	sd.LastScanTime = scanTime
+	sd.ModifiedTime = mtime
 	err := gorm.G[ScanDir](d.db).Create(d.ctxt, &sd)
 	return sd, err
 }
@@ -126,7 +137,7 @@ func (d *DB) UpdateDirScanTime(ID uint, scanTime time.Time) error {
 }
 
 func (d *DB) UpdateDirModifiedTime(ID uint, mtime time.Time) error {
-	_, err := gorm.G[ScanDir](d.db).Where("id = ?", ID).Update(d.ctxt, "updated_at", mtime)
+	_, err := gorm.G[ScanDir](d.db).Where("id = ?", ID).Update(d.ctxt, "modified_time", mtime)
 	return err
 }
 

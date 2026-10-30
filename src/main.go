@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"embed"
+	"julien/imagius-go/internal"
 
 	"log"
 	"time"
@@ -29,6 +31,12 @@ func init() {
 // logs any error that might occur.
 func main() {
 
+	dataDir := internal.InitDataDir()
+	log.Printf("App Data Dir: %s\n", dataDir)
+
+	db := internal.NewDB(context.Background())
+	db.InitDB(dataDir)
+
 	// Create a new Wails application by providing the necessary options.
 	// Variables 'Name' and 'Description' are for application metadata.
 	// 'Assets' configures the asset server with the 'FS' variable pointing to the frontend files.
@@ -38,7 +46,8 @@ func main() {
 		Name:        "imagius-go",
 		Description: "An image collection organizer",
 		Services: []application.Service{
-			application.NewService(&AppService{}),
+			application.NewService(NewAppService(dataDir, db)),
+			application.NewService(internal.NewLibraryService(db)),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(assets),
