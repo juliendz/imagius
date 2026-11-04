@@ -108,6 +108,7 @@ func (d *DB) GetScanImg(absPath string) (ScanImg, error) {
 }
 
 type GetScanImgsRow struct {
+	Key        int
 	ID         uint
 	ParentID   uint
 	Name       string

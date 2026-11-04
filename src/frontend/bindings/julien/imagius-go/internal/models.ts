@@ -5,15 +5,6 @@
 // @ts-ignore: Unused imports
 import * as gorm$0 from "../../../gorm.io/gorm/models.js";
 
-export interface GetScanImgsRow {
-    "ID": number;
-    "ParentID": number;
-    "Name": string;
-    "SerialNo": number;
-    "ThumbPath": string;
-    "ParentName": string;
-}
-
 export interface ScanDir {
     "ID": number;
     "CreatedAt": string;
@@ -25,4 +16,22 @@ export interface ScanDir {
     "ImgCount": number;
     "LastScanTime": string;
     "ModifiedTime": string;
+}
+
+export interface ThumbRow {
+    "Key": number;
+    "ID": number;
+    "Type": string;
+    "ParentID": number;
+    "Name": string;
+    "Thumbs": (ThumbRowItem | null)[] | null;
+}
+
+export interface ThumbRowItem {
+    "Key": number;
+    "ID": number;
+    "ParentID": number;
+    "Name": string;
+    "SerialNo": number;
+    "ThumbPath": string;
 }
