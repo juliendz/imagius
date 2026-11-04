@@ -117,6 +117,11 @@ type GetScanImgsRow struct {
 	ParentName string
 }
 
+func (d *DB) GetScanImgByID(id int) ScanImg {
+	img, _ := gorm.G[ScanImg](d.db).Where("id = ?", id).First(d.ctxt)
+	return img
+}
+
 func (d *DB) GetScanImgs() []GetScanImgsRow {
 	var imgs []GetScanImgsRow
 	err := d.db.Model(&ScanImg{}).Select("scan_imgs.id, scan_imgs.parent_id, scan_imgs.name, scan_imgs.serial_no, scan_imgs.thumb_path, dir.name as parent_name").

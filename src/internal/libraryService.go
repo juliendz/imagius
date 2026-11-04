@@ -105,3 +105,7 @@ func (g *LibraryService) GetImages(rowCols int) []*ThumbRow {
 	}
 	return rows
 }
+
+func (g *LibraryService) GetImage(id int) ScanImg {
+	return g.db.GetScanImgByID(id)
+}

@@ -13,6 +13,10 @@ export function GetDirs(): $CancellablePromise<$models.ScanDir[] | null> {
     return $Call.ByID(2376264409);
 }
 
+export function GetImage(id: number): $CancellablePromise<$models.ScanImg> {
+    return $Call.ByID(3243138678, id);
+}
+
 export function GetImages(rowCols: number): $CancellablePromise<($models.ThumbRow | null)[] | null> {
     return $Call.ByID(1398669791, rowCols);
 }

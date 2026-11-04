@@ -21,7 +21,7 @@ func GinMiddleware(ginEngine *gin.Engine) application.Middleware {
 				return
 			}
 
-			if strings.HasPrefix(r.URL.Path, "/thumbs") {
+			if strings.HasPrefix(r.URL.Path, "/thumbs") || strings.HasPrefix(r.URL.Path, "/img") {
 				ginEngine.ServeHTTP(w, r)
 				return
 			}
@@ -42,6 +42,7 @@ func NewGinEngine(thumbDir string) *gin.Engine {
 
 	log.Printf("Serving thumbnails from: %s\n", thumbDir)
 	ginEngine.Static("/thumbs", thumbDir)
+	ginEngine.Static("/img", "/home/julien/Downloads/imagius-test")
 
 	// ginEngine.GET("/", func(c *gin.Context) {
 	// 	// Serve your main page

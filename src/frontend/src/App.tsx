@@ -1,10 +1,29 @@
 import Sidebar from "./Sidebar";
 import { AppShell, Burger } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import ThumbView from "./components/ThumbView";
+// import ThumbView from "./components/ThumbView";
+
+import './App.css';
+// import { Activity, useState } from "react";
+import ImageView from "./components/ImageView";
 
 function App() {
     const [opened, { toggle }] = useDisclosure();
+    // const [showThumbView, setShowThumbView] = useState<boolean>(false);
+    // const [showImgView, setShowImgView] = useState<boolean>(true);
+    // const [imgId, setImgId] = useState<number>(0);
+
+    // const viewImage = (id: number) => {
+    //     setImgId(id);
+    //     setShowThumbView(false);
+    //     setShowImgView(true);
+    // };
+
+    // const viewThumbs = () => {
+    //     setImgId(0)
+    //     setShowThumbView(true);
+    //     setShowImgView(false);
+    // };
 
     return (
         <AppShell
@@ -32,7 +51,13 @@ function App() {
             </AppShell.Navbar>
 
             <AppShell.Main>
-                <ThumbView />
+                {/* <Activity mode={showThumbView ? "visible" : "hidden"}>
+                    <ThumbView />
+                </Activity> */}
+                {/* {showImgView && ( */}
+                <ImageView id={20} />
+                {/* )} */}
+
             </AppShell.Main>
         </AppShell>
     );

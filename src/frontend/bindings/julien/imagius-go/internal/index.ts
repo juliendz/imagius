@@ -8,6 +8,7 @@ export {
 
 export type {
     ScanDir,
+    ScanImg,
     ThumbRow,
     ThumbRowItem
 } from "./models.js";

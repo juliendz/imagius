@@ -3,56 +3,6 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { ThumbRow } from "../../bindings/julien/imagius-go/internal";
 import { RefObject } from "react";
 
-// const ITEMS = Array.from({ length: 10000 }, (_, i) => ({
-//     id: i,
-//     title: `Thumbnail ${i + 1}`,
-//     image: `https://picsum.photos/seed/${i}/300/200`,
-// }));
-
-// const COLUMNS = 7;
-// const COLUMN_WIDTH = 180;
-// const ROW_HEIGHT = 160;
-// const HEADER_HEIGHT = 48;
-// const GAP = 12;
-
-// type GridRow =
-//     | {
-//         type: "header";
-//         id: stringconst COLUMNS = 7;
-//         title: string;
-//     }
-//     | {
-//         type: "images";
-//         id: string;
-//         items: typeof ITEMS;
-//     };
-
-// function createRows(): GridRow[] {
-//     const rows: GridRow[] = [];
-//     const sectionSize = 30;
-
-//     for (let i = 0; i < ITEMS.length; i += sectionSize) {
-//         rows.push({
-//             type: "header",
-//             id: `header-${i}`,
-//             title: `Section ${i / sectionSize + 1}`,
-//         });
-
-//         const sectionItems = ITEMS.slice(i, i + sectionSize);
-
-//         for (let j = 0; j < sectionItems.length; j += COLUMNS) {
-//             rows.push({
-//                 type: "images",
-//                 id: `images-${i}-${j}`,
-//                 items: sectionItems.slice(j, j + COLUMNS),
-//             });
-//         }
-//     }
-
-//     return rows;
-// }
-
-// const rows = createRows();
 
 export default function Grid({ rows, parentRef, colCount, colWidth, rowHeight, headerHeight, gap }:
     { rows: (ThumbRow | null)[], parentRef: RefObject<HTMLDivElement | null>, colCount: number, colWidth: number, rowHeight: number, headerHeight: number, gap: number }) {
@@ -132,6 +82,7 @@ export default function Grid({ rows, parentRef, colCount, colWidth, rowHeight, h
                                             src={item?.ThumbPath ? '/thumbs/' + item?.ThumbPath : '/missing-thumb.png'}
                                             alt={item?.Name}
                                             loading="lazy"
+                                            className="thumb-fade-effect"
                                             style={{
                                                 width: "100%",
                                                 height: rowHeight,

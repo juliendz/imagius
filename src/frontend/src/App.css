@@ -1,0 +1,10 @@
+.thumb-fade-effect {
+  width: 300px;
+  height: auto;
+  /* Smoothly transition the opacity over 0.3 seconds */
+  transition: opacity 0.3s ease;
+}
+
+.thumb-fade-effect:hover {
+  opacity: 0.7; /* Makes it slightly transparent on hover */
+}

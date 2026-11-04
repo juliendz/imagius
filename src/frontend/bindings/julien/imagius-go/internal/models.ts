@@ -18,6 +18,20 @@ export interface ScanDir {
     "ModifiedTime": string;
 }
 
+export interface ScanImg {
+    "ID": number;
+    "CreatedAt": string;
+    "UpdatedAt": string;
+    "DeletedAt": gorm$0.DeletedAt;
+    "ParentID": number;
+    "Parent": ScanDir;
+    "AbsPath": string;
+    "Name": string;
+    "ThumbPath": string;
+    "SerialNo": number;
+    "LastScanTime": string;
+}
+
 export interface ThumbRow {
     "Key": number;
     "ID": number;
