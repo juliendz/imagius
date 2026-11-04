@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { LibraryService, ScanImg } from "../../bindings/julien/imagius-go/internal";
+import { AspectRatio, Button, Group, Stack } from "@mantine/core";
+import { useAppDispatch } from "../hooks";
+import { ShowThumbsView } from "../appStore";
 
 function ImageView({ id }: { id: number }) {
+    const dispatch = useAppDispatch();
     const [img, setImg] = useState<ScanImg | null>(null);
 
     useEffect(() => {
@@ -15,18 +19,32 @@ function ImageView({ id }: { id: number }) {
         })();
     }, []);
 
+    const handleClickBack = () => {
+        dispatch(ShowThumbsView());
+    };
 
     return (
-        <img
-            src={img?.AbsPath ? '/img/' + img?.AbsPath : '/missing-thumb.png'}
-            alt={img?.Name ?? ""}
-            loading="lazy"
-            style={{
-                width: "100%",
-                height: "auto",
-                objectFit: "contain",
-            }}
-        />
+        <Stack
+            bg="var(--mantine-color-body)"
+            align="stretch"
+            justify="center"
+            gap="md"
+        >
+            <Group>
+                <Button variant="default" onClick={handleClickBack}>Back</Button>
+            </Group>
+            <AspectRatio mx="0">
+                <img
+                    src={img?.AbsPath ? '/img/' + img?.RelPath : '/missing-thumb.png'}
+                    alt={img?.Name ?? ""}
+                    loading="lazy"
+                    style={{
+                        objectFit: "contain",
+                    }}
+                />
+            </AspectRatio>
+        </Stack>
+
     );
 }
 

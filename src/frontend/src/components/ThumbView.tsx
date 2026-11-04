@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { LibraryService, ThumbRow, } from "../../bindings/julien/imagius-go/internal";
 import Grid from "./Grid";
+import { useAppDispatch } from "../hooks";
+import { ShowImageView } from "../appStore";
 
 const COLUMN_WIDTH = 160;
 const ROW_HEIGHT = 160;
@@ -9,6 +11,7 @@ const GAP = 12;
 
 
 function ThumbView() {
+    const dispatch = useAppDispatch();
     const parentRef = useRef<HTMLDivElement>(null);
     const [colCount, setColCount] = useState(1);
 
@@ -35,6 +38,10 @@ function ThumbView() {
         })();
     }, [colCount]);
 
+    const handleImageClick = (id: number) => {
+        dispatch(ShowImageView(id));
+    }
+
     return (
         <div
             ref={parentRef}
@@ -44,7 +51,7 @@ function ThumbView() {
                 overflow: "auto",
             }}
         >
-            <Grid rows={rows} colCount={colCount} parentRef={parentRef} colWidth={COLUMN_WIDTH} rowHeight={ROW_HEIGHT} headerHeight={HEADER_HEIGHT} gap={GAP} />
+            <Grid rows={rows} colCount={colCount} parentRef={parentRef} colWidth={COLUMN_WIDTH} rowHeight={ROW_HEIGHT} headerHeight={HEADER_HEIGHT} gap={GAP} onImgClick={handleImageClick} />
         </div>
     );
 }

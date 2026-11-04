@@ -4,8 +4,11 @@ import { ThumbRow } from "../../bindings/julien/imagius-go/internal";
 import { RefObject } from "react";
 
 
-export default function Grid({ rows, parentRef, colCount, colWidth, rowHeight, headerHeight, gap }:
-    { rows: (ThumbRow | null)[], parentRef: RefObject<HTMLDivElement | null>, colCount: number, colWidth: number, rowHeight: number, headerHeight: number, gap: number }) {
+export default function Grid({ rows, parentRef, colCount, colWidth, rowHeight, headerHeight, gap, onImgClick }:
+    {
+        rows: (ThumbRow | null)[], parentRef: RefObject<HTMLDivElement | null>, colCount: number, colWidth: number, rowHeight: number,
+        headerHeight: number, gap: number, onImgClick: (id: number) => void
+    }) {
 
 
     const virtualizer = useVirtualizer({
@@ -71,6 +74,7 @@ export default function Grid({ rows, parentRef, colCount, colWidth, rowHeight, h
                                 {row?.Thumbs?.map((item) => (
                                     <div
                                         key={item?.ID}
+                                        onClick={() => onImgClick(item?.ID ?? 0)}
                                         style={{
                                             height: rowHeight,
                                             background: "#eee",

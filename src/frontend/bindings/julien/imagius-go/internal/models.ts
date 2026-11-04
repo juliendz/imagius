@@ -26,6 +26,7 @@ export interface ScanImg {
     "ParentID": number;
     "Parent": ScanDir;
     "AbsPath": string;
+    "RelPath": string;
     "Name": string;
     "ThumbPath": string;
     "SerialNo": number;

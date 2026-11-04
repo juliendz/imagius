@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -42,7 +44,15 @@ func NewGinEngine(thumbDir string) *gin.Engine {
 
 	log.Printf("Serving thumbnails from: %s\n", thumbDir)
 	ginEngine.Static("/thumbs", thumbDir)
-	ginEngine.Static("/img", "/home/julien/Downloads/imagius-test")
+
+	// Define your merged filesystem
+	mergedStaticFS := &MultiDirFS{
+		Dirs: []string{
+			"/home/julien/Downloads/imagius-test",
+		},
+	}
+
+	ginEngine.StaticFS("/img", mergedStaticFS)
 
 	// ginEngine.GET("/", func(c *gin.Context) {
 	// 	// Serve your main page
@@ -75,4 +85,23 @@ func NewGinEngine(thumbDir string) *gin.Engine {
 	// })
 
 	return ginEngine
+}
+
+// MultiDirFS implements http.FileSystem to search multiple directories
+type MultiDirFS struct {
+	Dirs []string
+}
+
+// Open tries to find the file in each directory sequentially
+func (m *MultiDirFS) Open(name string) (http.File, error) {
+	for _, dir := range m.Dirs {
+		fullPath := filepath.Join(dir, name)
+
+		// Check if file exists before trying to open it
+		if _, err := os.Stat(fullPath); err == nil {
+			// Use http.Dir to open the file properly
+			return http.Dir(dir).Open(name)
+		}
+	}
+	return nil, os.ErrNotExist
 }

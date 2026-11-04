@@ -33,6 +33,7 @@ type ScanImg struct {
 	ParentID     uint
 	Parent       ScanDir `gorm:"constraint:OnDelete: CASCADE;"`
 	AbsPath      string
+	RelPath      string
 	Name         string
 	ThumbPath    string
 	SerialNo     int64
@@ -145,7 +146,7 @@ func (d *DB) InsertDir(parentID uint, absPath string, name string, scanTime time
 	return sd, err
 }
 
-func (d *DB) InsertImg(parentID uint, absPath string, name string, scanTime time.Time, serialNo int64, thumbPath string) (ScanImg, error) {
+func (d *DB) InsertImg(parentID uint, absPath string, name string, scanTime time.Time, serialNo int64, thumbPath string, relPath string) (ScanImg, error) {
 	si := ScanImg{}
 	si.ParentID = parentID
 	si.AbsPath = absPath
@@ -153,6 +154,7 @@ func (d *DB) InsertImg(parentID uint, absPath string, name string, scanTime time
 	si.LastScanTime = scanTime
 	si.SerialNo = serialNo
 	si.ThumbPath = thumbPath
+	si.RelPath = relPath
 	err := gorm.G[ScanImg](d.db).Create(d.ctxt, &si)
 	return si, err
 }

@@ -41,12 +41,12 @@ func (s *Scanner) ScanDirs(db *DB) {
 
 	db.BeginTx()
 	for _, dir := range watchedDirs {
-		s.ScanDir(db, dir.ID, dir.AbsPath, dir.Name)
+		s.ScanDir(db, dir.ID, dir.AbsPath, dir.Name, "")
 	}
 	db.CommitTx()
 }
 
-func (s *Scanner) ScanDir(db *DB, parentId uint, absPath string, dirName string) {
+func (s *Scanner) ScanDir(db *DB, parentId uint, absPath string, dirName string, relPath string) {
 	isNewOrModified := false
 	if !DirExists(absPath) {
 		return
@@ -84,7 +84,7 @@ func (s *Scanner) ScanDir(db *DB, parentId uint, absPath string, dirName string)
 
 			fullPath := filepath.Join(absPath, entry.Name())
 			log.Printf("Found directory:(%s)", fullPath)
-			s.ScanDir(db, scanDir.ID, fullPath, entry.Name())
+			s.ScanDir(db, scanDir.ID, fullPath, entry.Name(), filepath.Join(relPath, entry.Name()))
 
 		} else {
 			//image
@@ -127,13 +127,14 @@ func (s *Scanner) ScanDir(db *DB, parentId uint, absPath string, dirName string)
 				//new image to add
 				log.Printf("Found new Image:(%s)", fullPath)
 				thumbPath := filepath.Join(thumbDirPath, filepath.Base(fullPath))
+				relativeImgPath := filepath.Join(relPath, filepath.Base(fullPath))
 				relativeThumbPath := UintToStr(scanDir.ID) + "/" + filepath.Base(fullPath)
-				log.Print("thumbpath:", thumbPath, " Abspath:", fullPath)
+				log.Print("thumbpath:", thumbPath, " Abspath:", fullPath, " RelativePath:", relativeImgPath)
 				isThumbGenSuccess := GenerateThumb(fullPath, thumbPath)
 				if !isThumbGenSuccess {
 					relativeThumbPath = ""
 				}
-				db.InsertImg(scanDir.ID, fullPath, entry.Name(), s.scanTime, imgSerial, relativeThumbPath)
+				db.InsertImg(scanDir.ID, fullPath, entry.Name(), s.scanTime, imgSerial, relativeThumbPath, relativeImgPath)
 				imgSerial++
 				hasNewImages = true
 			}
