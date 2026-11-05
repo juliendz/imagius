@@ -129,23 +129,13 @@ func (d *DB) GetScanImgs() []GetScanImgsRow {
 	var imgs []GetScanImgsRow
 	err := d.db.Model(&ScanImg{}).Select("scan_imgs.id, scan_imgs.parent_id, scan_imgs.name, scan_imgs.serial_no, scan_imgs.thumb_path, dir.name as parent_name").
 		Joins("left join scan_dirs as dir on scan_imgs.parent_id = dir.id").
-		Order("dir.modified_time desc, scan_imgs.name").
+		Order("dir.modified_time desc, scan_imgs.modified_time").
 		Scan(&imgs)
 	if err != nil {
 		// log.Printf("Failed to get scan images: %v", err)
 	}
 	return imgs
 }
-
-// func (d *DB) GetNextScanImg(dirId int, offsetImgId int, sortBy string) ScanImg {
-// 	img, _ := gorm.G[ScanImg](d.db).Where("id > ? AND parent_id = ?", offsetImgId, dirId).Order(sortBy).First(d.ctxt)
-// 	return img
-// }
-
-// func (d *DB) GetPrevScanImg(dirId int, offsetImgId int, sortBy string) ScanImg {
-// 	img, _ := gorm.G[ScanImg](d.db).Where("id < ? AND parent_id = ?", offsetImgId, dirId).Order(sortBy).First(d.ctxt)
-// 	return img
-// }
 
 func (d *DB) InsertDir(parentID uint, absPath string, name string, scanTime time.Time, mtime time.Time) (ScanDir, error) {
 	sd := ScanDir{}

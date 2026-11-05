@@ -54,7 +54,7 @@ func (g *LibraryService) GetImages(rowCols int) []*ThumbRow {
 
 	imgs := g.db.GetScanImgs()
 
-	colCount := rowCols
+	// colCount := rowCols
 	rows := []*ThumbRow{}
 	key := 1
 	var currThumbow *ThumbRow
@@ -96,20 +96,20 @@ func (g *LibraryService) GetImages(rowCols int) []*ThumbRow {
 		log.Printf("Appended image %d to thumb row, current thumb count: %d", img.ID, len(currThumbow.Thumbs))
 
 		//If the column limit is reached, create a new thumb row for the same parent ID
-		if (len(currThumbow.Thumbs) == colCount) && (index+1 < len(imgs)) && (img.ParentID == imgs[index+1].ParentID) {
-			log.Printf("Column limit reached, creating new thumb row")
-			currThumbow = &ThumbRow{
-				Key:      key,
-				ID:       img.ParentID,
-				Type:     "thumb-row",
-				Name:     img.ParentName,
-				ParentID: img.ParentID,
-				Thumbs:   []*ThumbRowItem{},
-			}
-			key++
-			rows = append(rows, currThumbow)
-			key++
-		}
+		// if (len(currThumbow.Thumbs) == colCount) && (index+1 < len(imgs)) && (img.ParentID == imgs[index+1].ParentID) {
+		// 	log.Printf("Column limit reached, creating new thumb row")
+		// 	currThumbow = &ThumbRow{
+		// 		Key:      key,
+		// 		ID:       img.ParentID,
+		// 		Type:     "thumb-row",
+		// 		Name:     img.ParentName,
+		// 		ParentID: img.ParentID,
+		// 		Thumbs:   []*ThumbRowItem{},
+		// 	}
+		// 	key++
+		// 	rows = append(rows, currThumbow)
+		// 	key++
+		// }
 
 	}
 

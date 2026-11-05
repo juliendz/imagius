@@ -14,6 +14,7 @@ function App() {
     const currView = useAppSelector(state => state.appStore.currentView);
     const imgId = useAppSelector(state => state.appStore.imgId);
     const slideShowDirId = useAppSelector(state => state.appStore.slideShowDirId);
+    const slideshowStartIdx = useAppSelector(state => state.appStore.slideshowStartIdx);
     const [opened, { toggle }] = useDisclosure();
 
 
@@ -50,7 +51,7 @@ function App() {
                     <ImageView id={imgId} />
                 )}
                 {currView == 'slideshow' && (
-                    <SlideShowView dirId={slideShowDirId} sortBy="modified_time" startImgIdx={0} />
+                    <SlideShowView dirId={slideShowDirId} sortBy="modified_time" startImgIdx={slideshowStartIdx} />
                 )}
 
             </AppShell.Main>

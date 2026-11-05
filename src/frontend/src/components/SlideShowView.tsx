@@ -9,12 +9,12 @@ function SlideShowView({ dirId, sortBy, startImgIdx }: { dirId: number, sortBy: 
     const dispatch = useAppDispatch();
     const [imgs, setImgs] = useState<ImageDecorator[]>([]);
 
+    console.log(imgs, startImgIdx);
     useEffect(() => {
         (async () => {
-            let imgs = await LibraryService.GetSlideShowImages(dirId, sortBy);
-            console.log(imgs);
-            if (imgs !== null && imgs.length > 0) {
-                setImgs(imgs as ImageDecorator[])
+            let resp = await LibraryService.GetSlideShowImages(dirId, sortBy);
+            if (resp !== null && resp.length > 0) {
+                setImgs(resp as ImageDecorator[])
             }
         })();
     }, []);
@@ -29,6 +29,7 @@ function SlideShowView({ dirId, sortBy, startImgIdx }: { dirId: number, sortBy: 
             onClose={() => { handleClose() }}
             images={imgs}
             activeIndex={startImgIdx}
+            drag={false}
         />
 
     );

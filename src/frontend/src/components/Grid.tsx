@@ -12,16 +12,19 @@ export default function Grid({ rows, parentRef, colCount, colWidth, rowHeight, h
         headerHeight: number, gap: number, onImgClick: (id: number) => void, onSlideShowClick: (dirId: number, startIdx: number) => void
     }) {
 
-    const [selectedThumb, setSelectedThumb] = useState<{ row: number, col: number }>({ row: 0, col: 0 });
+    const [selectedThumbIndex, setSelectedThumbIndex] = useState<number>(0);
 
 
     const virtualizer = useVirtualizer({
         count: rows.length,
         getScrollElement: () => parentRef.current,
-        estimateSize: (index) =>
-            rows[index]?.Type === "header-row"
-                ? headerHeight + gap
-                : rowHeight + gap,
+        estimateSize: (index) => {
+            if (rows[index]?.Type === "header-row") {
+                return headerHeight + gap;
+            }
+            let rowCount = (rows[index]?.Thumbs?.length ?? 0) / colCount;
+            return rowHeight * Math.ceil(rowCount ?? 0) + gap;
+        },
         getItemKey: (index) => rows[index]?.ID ?? index,
         overscan: 3,
     });
@@ -65,7 +68,7 @@ export default function Grid({ rows, parentRef, colCount, colWidth, rowHeight, h
                                 }}
                             >
                                 {row?.Name}
-                                <ActionIcon variant="filled" aria-label="Settings" onClick={() => onSlideShowClick(row?.ID ?? 0, selectedThumb.col)}>
+                                <ActionIcon variant="filled" aria-label="Settings" onClick={() => onSlideShowClick(row?.ID ?? 0, selectedThumbIndex)}>
                                     <PlayIcon style={{ width: '70%', height: '70%' }} />
                                 </ActionIcon>
                             </div>
@@ -82,8 +85,8 @@ export default function Grid({ rows, parentRef, colCount, colWidth, rowHeight, h
                                     <div
                                         key={item?.ID}
                                         onDoubleClick={() => onImgClick(item?.ID ?? 0)}
-                                        onClick={() => setSelectedThumb({ row: virtualRow.index, col: index })}
-                                        className={selectedThumb.row === virtualRow.index && selectedThumb.col === index ? "thumb-active" : ""}
+                                        onClick={() => setSelectedThumbIndex(index)}
+                                        className={selectedThumbIndex === index ? "thumb-active" : ""}
                                         style={{
                                             height: rowHeight,
                                             background: "#eee",
