@@ -2,12 +2,14 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { ThumbRow } from "../../bindings/julien/imagius-go/internal";
 import { RefObject } from "react";
+import { ActionIcon } from "@mantine/core";
+import { PlayIcon } from "@phosphor-icons/react";
 
 
-export default function Grid({ rows, parentRef, colCount, colWidth, rowHeight, headerHeight, gap, onImgClick }:
+export default function Grid({ rows, parentRef, colCount, colWidth, rowHeight, headerHeight, gap, onImgClick, onSlideShowClick }:
     {
         rows: (ThumbRow | null)[], parentRef: RefObject<HTMLDivElement | null>, colCount: number, colWidth: number, rowHeight: number,
-        headerHeight: number, gap: number, onImgClick: (id: number) => void
+        headerHeight: number, gap: number, onImgClick: (id: number) => void, onSlideShowClick: (dirId: number) => void
     }) {
 
 
@@ -61,6 +63,9 @@ export default function Grid({ rows, parentRef, colCount, colWidth, rowHeight, h
                                 }}
                             >
                                 {row?.Name}
+                                <ActionIcon variant="filled" aria-label="Settings" onClick={() => onSlideShowClick(row?.ID ?? 0)}>
+                                    <PlayIcon style={{ width: '70%', height: '70%' }} />
+                                </ActionIcon>
                             </div>
                         ) : (
                             <div

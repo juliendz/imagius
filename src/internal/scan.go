@@ -95,12 +95,12 @@ func (s *Scanner) ScanDir(db *DB, parentId uint, absPath string, dirName string,
 			}
 
 			entryInfo, _ := entry.Info()
+			imgMtime := entryInfo.ModTime()
 			fullPath := filepath.Join(absPath, entry.Name())
 			scanImage, _ := db.GetScanImg(fullPath)
 			if scanImage.ID > 0 {
 				//image exists
 
-				imgMtime := entryInfo.ModTime()
 				thumbPath := filepath.Join(thumbDirPath, filepath.Base(scanImage.AbsPath))
 				relativeThumbPath := UintToStr(scanDir.ID) + "/" + filepath.Base(scanImage.AbsPath)
 				log.Printf("Found existing Image:(%s), thumb:(%s)", fullPath, thumbPath)
@@ -109,7 +109,7 @@ func (s *Scanner) ScanDir(db *DB, parentId uint, absPath string, dirName string,
 					if !isThumbGenSuccess {
 						relativeThumbPath = ""
 					}
-					db.UpdateImgThumb(scanImage.ID, relativeThumbPath, s.scanTime)
+					db.UpdateImgThumb(scanImage.ID, relativeThumbPath, s.scanTime, imgMtime)
 
 				} else {
 
@@ -118,7 +118,7 @@ func (s *Scanner) ScanDir(db *DB, parentId uint, absPath string, dirName string,
 						if !isThumbGenSuccess {
 							relativeThumbPath = ""
 						}
-						db.UpdateImgThumb(scanImage.ID, relativeThumbPath, s.scanTime)
+						db.UpdateImgThumb(scanImage.ID, relativeThumbPath, s.scanTime, imgMtime)
 					}
 					db.UpdateImgScanTime(scanImage.ID, s.scanTime)
 				}
@@ -134,7 +134,7 @@ func (s *Scanner) ScanDir(db *DB, parentId uint, absPath string, dirName string,
 				if !isThumbGenSuccess {
 					relativeThumbPath = ""
 				}
-				db.InsertImg(scanDir.ID, fullPath, entry.Name(), s.scanTime, imgSerial, relativeThumbPath, relativeImgPath)
+				db.InsertImg(scanDir.ID, fullPath, entry.Name(), s.scanTime, imgSerial, relativeThumbPath, relativeImgPath, imgMtime)
 				imgSerial++
 				hasNewImages = true
 			}

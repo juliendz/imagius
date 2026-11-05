@@ -1,10 +1,12 @@
 package main
 
 import (
+	"julien/imagius-go/internal"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -34,7 +36,7 @@ func GinMiddleware(ginEngine *gin.Engine) application.Middleware {
 	}
 }
 
-func NewGinEngine(thumbDir string) *gin.Engine {
+func NewGinEngine(thumbDir string, db *internal.DB) *gin.Engine {
 	// Create a new Gin router
 
 	ginEngine := gin.New() // Using New() instead of Default() to add custom middleware
@@ -46,43 +48,24 @@ func NewGinEngine(thumbDir string) *gin.Engine {
 	ginEngine.Static("/thumbs", thumbDir)
 
 	// Define your merged filesystem
-	mergedStaticFS := &MultiDirFS{
-		Dirs: []string{
-			"/home/julien/Downloads/imagius-test",
-		},
-	}
+	// mergedStaticFS := &MultiDirFS{
+	// 	Dirs: []string{
+	// 		"/home/julien/Downloads/imagius-test",
+	// 	},
+	// }
 
-	ginEngine.StaticFS("/img", mergedStaticFS)
+	// ginEngine.StaticFS("/img", mergedStaticFS)
 
 	// ginEngine.GET("/", func(c *gin.Context) {
 	// 	// Serve your main page
 	// })
 
-	// Define routes
-	// ginEngine.GET("/", func(c *gin.Context) {
-	// 	path := c.Query("p")
-	// 	imageData, err := os.ReadFile(path)
-	// 	if err != nil {
-	// 		c.String(http.StatusNotFound, "Image not found")
-	// 		return
-	// 	}
-	// 	ext := filepath.Ext(path)
-
-	// 	// Set the appropriate Content-Type (e.g., image/jpeg, image/png)
-	// 	contentType := "image/jpeg"
-	// 	switch ext {
-	// 	case ".jpg":
-	// 		contentType = "image/jpeg"
-	// 	case ".jpeg":
-	// 		contentType = "image/jpeg"
-	// 	case ".png":
-	// 		contentType = "image/png"
-	// 	case ".gif":
-	// 		contentType = "image/gif"
-	// 	}
-	// 	c.Data(http.StatusOK, contentType, imageData)
-	// 	// Serve your main page
-	// })
+	// Route for serving images by ID for the slideshow view
+	ginEngine.GET("/img", func(c *gin.Context) {
+		ID, _ := strconv.Atoi(c.Query("id"))
+		img := db.GetScanImgByID(ID)
+		c.File(img.AbsPath)
+	})
 
 	return ginEngine
 }

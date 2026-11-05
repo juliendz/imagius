@@ -7,12 +7,13 @@ import ThumbView from "./components/ThumbView";
 
 import './App.css';
 import { Activity } from "react";
+import SlideShowView from "./components/SlideShowView";
 // import { Activity, useState } from "react";
 
 function App() {
-    const showThumbView = useAppSelector(state => state.appStore.showThumbView);
-    const showImageView = useAppSelector(state => state.appStore.showImageView);
+    const currView = useAppSelector(state => state.appStore.currentView);
     const imgId = useAppSelector(state => state.appStore.imgId);
+    const slideShowDirId = useAppSelector(state => state.appStore.slideShowDirId);
     const [opened, { toggle }] = useDisclosure();
 
 
@@ -42,11 +43,14 @@ function App() {
             </AppShell.Navbar>
 
             <AppShell.Main>
-                <Activity mode={showThumbView ? "visible" : "hidden"}>
+                <Activity mode={currView == 'thumbs' ? "visible" : "hidden"}>
                     <ThumbView />
                 </Activity>
-                {showImageView && (
+                {currView == 'image' && (
                     <ImageView id={imgId} />
+                )}
+                {currView == 'slideshow' && (
+                    <SlideShowView dirId={slideShowDirId} sortBy="modified_time" startImgIdx={0} />
                 )}
 
             </AppShell.Main>

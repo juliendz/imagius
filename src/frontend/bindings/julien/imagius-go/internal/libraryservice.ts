@@ -20,3 +20,7 @@ export function GetImage(id: number): $CancellablePromise<$models.ScanImg> {
 export function GetImages(rowCols: number): $CancellablePromise<($models.ThumbRow | null)[] | null> {
     return $Call.ByID(1398669791, rowCols);
 }
+
+export function GetSlideShowImages(dirID: number, sortBy: string): $CancellablePromise<$models.SlideshowImg[] | null> {
+    return $Call.ByID(1038379373, dirID, sortBy);
+}

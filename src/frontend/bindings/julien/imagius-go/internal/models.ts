@@ -31,6 +31,16 @@ export interface ScanImg {
     "ThumbPath": string;
     "SerialNo": number;
     "LastScanTime": string;
+    "ModifiedTime": string;
+}
+
+/**
+ *  --------------------------------------------------------------------------------
+ *  Slide show db functions
+ *  --------------------------------------------------------------------------------
+ */
+export interface SlideshowImg {
+    "src": string;
 }
 
 export interface ThumbRow {

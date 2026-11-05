@@ -1,15 +1,15 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 export interface AppState {
-  showThumbView: boolean;
-  showImageView: boolean;
+  currentView: "thumbs" | "image" | "slideshow";
   imgId: number;
+  slideShowDirId: number;
 }
 
 const initialState: AppState = {
-  showThumbView: true,
-  showImageView: false,
+  currentView: "thumbs",
   imgId: 0,
+  slideShowDirId: 0,
 };
 
 export const AppStore = createSlice({
@@ -17,14 +17,16 @@ export const AppStore = createSlice({
   initialState,
   reducers: {
     ShowThumbsView: (state) => {
-      state.showThumbView = true;
-      state.showImageView = false;
+      state.currentView = "thumbs";
       state.imgId = 0;
     },
     ShowImageView: (state, action: PayloadAction<number>) => {
-      state.showThumbView = false;
-      state.showImageView = true;
+      state.currentView = "image";
       state.imgId = action.payload;
+    },
+    ShowSlideshowView: (state, action: PayloadAction<number>) => {
+      state.currentView = "slideshow";
+      state.slideShowDirId = action.payload;
     },
     SetImgId: (state, action: PayloadAction<number>) => {
       state.imgId = action.payload;
@@ -32,6 +34,7 @@ export const AppStore = createSlice({
   },
 });
 
-export const { ShowImageView, ShowThumbsView, SetImgId } = AppStore.actions;
+export const { ShowImageView, ShowThumbsView, ShowSlideshowView, SetImgId } =
+  AppStore.actions;
 
 export default AppStore.reducer;

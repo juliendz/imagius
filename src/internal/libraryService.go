@@ -1,9 +1,15 @@
 package internal
 
-import "log"
+import (
+	"context"
+	"log"
+
+	"github.com/wailsapp/wails/v3/pkg/application"
+)
 
 type LibraryService struct {
-	db *DB
+	app *application.App
+	db  *DB
 }
 
 func NewLibraryService(db *DB) *LibraryService {
@@ -34,6 +40,13 @@ type ThumbRowItem struct {
 	SerialNo  int64
 	ThumbPath string
 }
+
+func (s *LibraryService) ServiceStartup(ctx context.Context, options application.ServiceOptions) error {
+	s.app = application.Get()
+	return nil
+}
+
+func (s *LibraryService) ServiceShutdown() {}
 
 func (g *LibraryService) GetImages(rowCols int) []*ThumbRow {
 	log.Printf("Getting scanned images")
@@ -108,4 +121,8 @@ func (g *LibraryService) GetImages(rowCols int) []*ThumbRow {
 
 func (g *LibraryService) GetImage(id int) ScanImg {
 	return g.db.GetScanImgByID(id)
+}
+
+func (g *LibraryService) GetSlideShowImages(dirID int, sortBy string) []SlideshowImg {
+	return g.db.GetScanImgsforSlideshow(dirID, sortBy)
 }

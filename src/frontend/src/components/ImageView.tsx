@@ -35,7 +35,7 @@ function ImageView({ id }: { id: number }) {
             </Group>
             <AspectRatio mx="0">
                 <img
-                    src={img?.AbsPath ? '/img/' + img?.RelPath : '/missing-thumb.png'}
+                    src={img?.AbsPath ? '/img?id=' + img?.ID : '/missing-thumb.png'}
                     alt={img?.Name ?? ""}
                     loading="lazy"
                     style={{

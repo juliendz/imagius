@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 
 	"log"
-	"time"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 )
@@ -41,7 +40,7 @@ func main() {
 	libDb := internal.NewDB(context.Background())
 	libDb.InitDB(dataDir)
 
-	ginEngine := NewGinEngine(filepath.Join(dataDir, "thumbs"))
+	ginEngine := NewGinEngine(filepath.Join(dataDir, "thumbs"), libDb)
 
 	// Create a new Wails application by providing the necessary options.
 	// Variables 'Name' and 'Description' are for application metadata.
@@ -83,16 +82,6 @@ func main() {
 		BackgroundColour: application.NewRGB(6, 7, 15),
 		URL:              "/",
 	}).Maximise()
-
-	// Create a goroutine that emits an event containing the current time every second.
-	// The frontend can listen to this event and update the UI accordingly.
-	go func() {
-		for {
-			now := time.Now().Format(time.RFC1123)
-			app.Event.Emit("time", now)
-			time.Sleep(time.Second)
-		}
-	}()
 
 	// Run the application. This blocks until the application has been exited.
 	err := app.Run()
