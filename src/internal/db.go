@@ -40,6 +40,8 @@ type ScanImg struct {
 	SerialNo     int64
 	LastScanTime time.Time
 	ModifiedTime time.Time
+	Width        int
+	Height       int
 }
 
 type Setting struct {
@@ -127,7 +129,7 @@ func (d *DB) GetScanImgByID(id int) ScanImg {
 
 func (d *DB) GetScanImgs() []GetScanImgsRow {
 	var imgs []GetScanImgsRow
-	err := d.db.Model(&ScanImg{}).Select("scan_imgs.id, scan_imgs.parent_id, scan_imgs.name, scan_imgs.serial_no, scan_imgs.thumb_path, dir.name as parent_name").
+	err := d.db.Model(&ScanImg{}).Select("scan_imgs.id, scan_imgs.parent_id, scan_imgs.name, scan_imgs.serial_no, scan_imgs.thumb_path, dir.name as parent_name, scan_imgs.width, scan_imgs.height").
 		Joins("left join scan_dirs as dir on scan_imgs.parent_id = dir.id").
 		Order("dir.modified_time desc, scan_imgs.modified_time").
 		Scan(&imgs)
@@ -148,7 +150,8 @@ func (d *DB) InsertDir(parentID uint, absPath string, name string, scanTime time
 	return sd, err
 }
 
-func (d *DB) InsertImg(parentID uint, absPath string, name string, scanTime time.Time, serialNo int64, thumbPath string, relPath string, mtime time.Time) (ScanImg, error) {
+func (d *DB) InsertImg(parentID uint, absPath string, name string, scanTime time.Time, serialNo int64, thumbPath string, relPath string, mtime time.Time,
+	width int, height int) (ScanImg, error) {
 	si := ScanImg{}
 	si.ParentID = parentID
 	si.AbsPath = absPath
@@ -158,6 +161,8 @@ func (d *DB) InsertImg(parentID uint, absPath string, name string, scanTime time
 	si.ThumbPath = thumbPath
 	si.RelPath = relPath
 	si.ModifiedTime = mtime
+	si.Width = width
+	si.Height = height
 	err := gorm.G[ScanImg](d.db).Create(d.ctxt, &si)
 	return si, err
 }
@@ -173,9 +178,9 @@ func (d *DB) UpdateDirModifiedTime(ID uint, mtime time.Time) error {
 	return err
 }
 
-func (d *DB) UpdateImgThumb(ID uint, thumbPath string, scanTime time.Time, mtime time.Time) error {
+func (d *DB) UpdateImgThumb(ID uint, thumbPath string, scanTime time.Time, mtime time.Time, width int, height int) error {
 	//UpdatedAt is automatically updated by gorm
-	_, err := gorm.G[ScanImg](d.db).Where("id = ?", ID).Updates(d.ctxt, ScanImg{ThumbPath: thumbPath, LastScanTime: scanTime, ModifiedTime: mtime})
+	_, err := gorm.G[ScanImg](d.db).Where("id = ?", ID).Updates(d.ctxt, ScanImg{ThumbPath: thumbPath, LastScanTime: scanTime, ModifiedTime: mtime, Width: width, Height: height})
 	return err
 }
 
@@ -230,7 +235,9 @@ func (d *DB) DeleteSoftDeletedScanImg() {
 /* Slide show db functions */
 /* -------------------------------------------------------------------------------- */
 type SlideshowImg struct {
-	Src string `json:"src"`
+	Src    string `json:"src"`
+	Width  int    `json:"width"`
+	Height int    `json:"height"`
 }
 
 func (d *DB) GetScanImgsforSlideshow(dirId int, sortBy string) []SlideshowImg {
@@ -239,7 +246,9 @@ func (d *DB) GetScanImgsforSlideshow(dirId int, sortBy string) []SlideshowImg {
 	slideshowImgs := make([]SlideshowImg, len(imgs))
 	for i, img := range imgs {
 		slideshowImgs[i] = SlideshowImg{
-			Src: fmt.Sprintf("/img?id=%d", img.ID),
+			Src:    fmt.Sprintf("/img?id=%d", img.ID),
+			Width:  img.Width,
+			Height: img.Height,
 		}
 	}
 	return slideshowImgs

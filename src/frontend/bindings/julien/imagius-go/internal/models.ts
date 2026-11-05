@@ -32,6 +32,8 @@ export interface ScanImg {
     "SerialNo": number;
     "LastScanTime": string;
     "ModifiedTime": string;
+    "Width": number;
+    "Height": number;
 }
 
 /**
@@ -41,6 +43,8 @@ export interface ScanImg {
  */
 export interface SlideshowImg {
     "src": string;
+    "width": number;
+    "height": number;
 }
 
 export interface ThumbRow {

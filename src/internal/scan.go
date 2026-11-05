@@ -105,20 +105,20 @@ func (s *Scanner) ScanDir(db *DB, parentId uint, absPath string, dirName string,
 				relativeThumbPath := UintToStr(scanDir.ID) + "/" + filepath.Base(scanImage.AbsPath)
 				log.Printf("Found existing Image:(%s), thumb:(%s)", fullPath, thumbPath)
 				if imgMtime.After(scanImage.UpdatedAt) {
-					isThumbGenSuccess := GenerateThumb(scanImage.AbsPath, thumbPath)
+					isThumbGenSuccess, w, h := GenerateThumb(scanImage.AbsPath, thumbPath)
 					if !isThumbGenSuccess {
 						relativeThumbPath = ""
 					}
-					db.UpdateImgThumb(scanImage.ID, relativeThumbPath, s.scanTime, imgMtime)
+					db.UpdateImgThumb(scanImage.ID, relativeThumbPath, s.scanTime, imgMtime, w, h)
 
 				} else {
 
 					if _, err := os.Stat(thumbPath); os.IsNotExist(err) {
-						isThumbGenSuccess := GenerateThumb(scanImage.AbsPath, thumbPath)
+						isThumbGenSuccess, w, h := GenerateThumb(scanImage.AbsPath, thumbPath)
 						if !isThumbGenSuccess {
 							relativeThumbPath = ""
 						}
-						db.UpdateImgThumb(scanImage.ID, relativeThumbPath, s.scanTime, imgMtime)
+						db.UpdateImgThumb(scanImage.ID, relativeThumbPath, s.scanTime, imgMtime, w, h)
 					}
 					db.UpdateImgScanTime(scanImage.ID, s.scanTime)
 				}
@@ -130,11 +130,11 @@ func (s *Scanner) ScanDir(db *DB, parentId uint, absPath string, dirName string,
 				relativeImgPath := filepath.Join(relPath, filepath.Base(fullPath))
 				relativeThumbPath := UintToStr(scanDir.ID) + "/" + filepath.Base(fullPath)
 				log.Print("thumbpath:", thumbPath, " Abspath:", fullPath, " RelativePath:", relativeImgPath)
-				isThumbGenSuccess := GenerateThumb(fullPath, thumbPath)
+				isThumbGenSuccess, w, h := GenerateThumb(fullPath, thumbPath)
 				if !isThumbGenSuccess {
 					relativeThumbPath = ""
 				}
-				db.InsertImg(scanDir.ID, fullPath, entry.Name(), s.scanTime, imgSerial, relativeThumbPath, relativeImgPath, imgMtime)
+				db.InsertImg(scanDir.ID, fullPath, entry.Name(), s.scanTime, imgSerial, relativeThumbPath, relativeImgPath, imgMtime, w, h)
 				imgSerial++
 				hasNewImages = true
 			}

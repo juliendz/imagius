@@ -54,11 +54,11 @@ func DirModTime(path string) time.Time {
 	return dirInfo.ModTime()
 }
 
-func GenerateThumb(path string, saveTo string) bool {
+func GenerateThumb(path string, saveTo string) (bool, int, int) {
 	src, err := imaging.Open(path)
 	if err != nil {
 		log.Printf("failed to open image: %v", err)
-		return false
+		return false, 0, 0
 	}
 
 	// thumbnail := imaging.Thumbnail(src, 256, 256, imaging.Lanczos)
@@ -69,9 +69,9 @@ func GenerateThumb(path string, saveTo string) bool {
 	err = imaging.Save(thumbnail, saveTo)
 	if err != nil {
 		log.Printf("failed to save thumbnail: %v", err)
-		return false
+		return false, 0, 0
 	}
-	return true
+	return true, src.Bounds().Dx(), src.Bounds().Dy()
 }
 
 func UintToStr(ID uint) string {

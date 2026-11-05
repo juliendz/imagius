@@ -43,7 +43,6 @@ function ThumbView() {
     }
 
     const handleSlideShowClick = (dirId: number, startIdx: number) => {
-        console.log("Staring slideshow with dirId:", dirId, "startIdx:", startIdx);
         dispatch(ShowSlideshowView({ dirId, startIdx }));
     }
 
