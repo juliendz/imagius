@@ -2,9 +2,11 @@ import { List, ThemeIcon } from '@mantine/core';
 import { CheckCircleIcon } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { LibraryService, ScanDir } from '../../bindings/julien/imagius-go/internal';
+import { useAppDispatch } from '../hooks';
+import { ScrollToDir } from '../appStore';
 
 function FolderList() {
-
+    const dispatch = useAppDispatch();
     const [folders, setFolders] = useState<ScanDir[]>();
 
     useEffect(() => {
@@ -14,6 +16,11 @@ function FolderList() {
             setFolders(folders!);
         })();
     }, []);
+
+    const handleDirClicked = (dirIndex: number) => {
+        console.log('Scroll to dir index:', dirIndex);
+        dispatch(ScrollToDir(dirIndex));
+    }
 
 
     return (
@@ -27,8 +34,8 @@ function FolderList() {
                 </ThemeIcon>
             }
         >
-            {folders?.map((folder) => (
-                <List.Item key={folder.ID}>{folder.Name}</List.Item>
+            {folders?.map((folder, index) => (
+                <List.Item key={folder.ID} onClick={() => handleDirClicked(index)}>{folder.Name}</List.Item>
             ))}
         </List>
     );

@@ -14,8 +14,8 @@ function ThumbView() {
     const dispatch = useAppDispatch();
     const parentRef = useRef<HTMLDivElement>(null);
     const [colCount, setColCount] = useState(1);
-
     const [rows, setRows] = useState<(ThumbRow | null)[]>([]);
+
 
     useEffect(() => {
         console.log(parentRef.current?.clientWidth);

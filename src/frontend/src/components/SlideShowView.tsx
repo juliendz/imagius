@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { LibraryService } from "../../bindings/julien/imagius-go/internal";
-import { ImageDecorator } from "react-viewer/lib/ViewerProps";
+import { LibraryService, SlideshowImg } from "../../bindings/julien/imagius-go/internal";
 import PhotoSwipe from "photoswipe";
 
 function SlideShowView({ dirId, sortBy, startImgIdx, onClose }: { dirId: number, sortBy: string, startImgIdx: number, onClose: () => void }) {
     const lightboxRef = useRef<PhotoSwipe | null>(null);
-    const [imgs, setImgs] = useState<ImageDecorator[]>([]);
+    const [imgs, setImgs] = useState<SlideshowImg[]>([]);
 
     console.log("SlideShowView with startImgIdx:", startImgIdx);
 
@@ -13,7 +12,7 @@ function SlideShowView({ dirId, sortBy, startImgIdx, onClose }: { dirId: number,
         (async () => {
             let resp = await LibraryService.GetSlideShowImages(dirId, sortBy);
             if (resp !== null && resp.length > 0) {
-                setImgs(resp as ImageDecorator[])
+                setImgs(resp)
             }
         })();
     }, []);

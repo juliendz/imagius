@@ -5,6 +5,8 @@ export interface AppState {
   imgId: number;
   slideShowDirId: number;
   slideshowStartIdx: number;
+  currDirIndex: number;
+  triggerScroll: number;
 }
 
 const initialState: AppState = {
@@ -12,6 +14,8 @@ const initialState: AppState = {
   imgId: 0,
   slideShowDirId: 0,
   slideshowStartIdx: 0,
+  currDirIndex: 0,
+  triggerScroll: 0,
 };
 
 export const AppStore = createSlice({
@@ -34,13 +38,22 @@ export const AppStore = createSlice({
       state.slideShowDirId = action.payload.dirId;
       state.slideshowStartIdx = action.payload.startIdx;
     },
+    ScrollToDir: (state, action: PayloadAction<number>) => {
+      state.currDirIndex = action.payload;
+      state.triggerScroll += 1;
+    },
     SetImgId: (state, action: PayloadAction<number>) => {
       state.imgId = action.payload;
     },
   },
 });
 
-export const { ShowImageView, ShowThumbsView, ShowSlideshowView, SetImgId } =
-  AppStore.actions;
+export const {
+  ShowImageView,
+  ShowThumbsView,
+  ShowSlideshowView,
+  SetImgId,
+  ScrollToDir,
+} = AppStore.actions;
 
 export default AppStore.reducer;

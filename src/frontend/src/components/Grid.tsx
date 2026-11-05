@@ -1,9 +1,10 @@
 
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { ThumbRow } from "../../bindings/julien/imagius-go/internal";
-import { RefObject, useState } from "react";
+import { RefObject, useEffect, useState } from "react";
 import { ActionIcon } from "@mantine/core";
 import { PlayIcon } from "@phosphor-icons/react";
+import { useAppSelector } from "../hooks";
 
 
 export default function Grid({ rows, parentRef, colCount, colWidth, rowHeight, headerHeight, gap, onImgClick, onSlideShowClick }:
@@ -11,7 +12,8 @@ export default function Grid({ rows, parentRef, colCount, colWidth, rowHeight, h
         rows: (ThumbRow | null)[], parentRef: RefObject<HTMLDivElement | null>, colCount: number, colWidth: number, rowHeight: number,
         headerHeight: number, gap: number, onImgClick: (id: number) => void, onSlideShowClick: (dirId: number, startIdx: number) => void
     }) {
-
+    const currDirIndex = useAppSelector(state => state.appStore.currDirIndex);
+    const triggerScroll = useAppSelector(state => state.appStore.triggerScroll);
     const [selectedThumbIndex, setSelectedThumbIndex] = useState<number>(0);
 
 
@@ -28,6 +30,15 @@ export default function Grid({ rows, parentRef, colCount, colWidth, rowHeight, h
         getItemKey: (index) => rows[index]?.ID ?? index,
         overscan: 3,
     });
+
+
+    useEffect(() => {
+        if (virtualizer && currDirIndex !== null) {
+            console.log('ScrollToIndex:', currDirIndex);
+            virtualizer.scrollToIndex(currDirIndex);
+        }
+    }, [currDirIndex, triggerScroll]);
+
 
     return (
         <div
