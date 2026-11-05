@@ -30,6 +30,8 @@ function SlideShowView({ dirId, sortBy, startImgIdx }: { dirId: number, sortBy: 
             images={imgs}
             activeIndex={startImgIdx}
             drag={false}
+            noImgDetails={true}
+            noFooter={true}
         />
 
     );
