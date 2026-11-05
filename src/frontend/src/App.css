@@ -8,3 +8,10 @@
 .thumb-fade-effect:hover {
   opacity: 0.7; /* Makes it slightly transparent on hover */
 }
+
+.thumb-active {
+  border-color: #3b82f6; /* Highlight color */
+  box-shadow:
+    0 0 15px rgba(59, 130, 246, 0.6),
+    0 0 5px rgba(59, 130, 246, 0.8);
+}

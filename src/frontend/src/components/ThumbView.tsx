@@ -42,8 +42,9 @@ function ThumbView() {
         dispatch(ShowImageView(id));
     }
 
-    const handleSlideShowClick = (dirId: number) => {
-        dispatch(ShowSlideshowView(dirId));
+    const handleSlideShowClick = (dirId: number, startIdx: number) => {
+        console.log("Staring slideshow with dirId:", dirId, "startIdx:", startIdx);
+        dispatch(ShowSlideshowView({ dirId, startIdx }));
     }
 
     return (

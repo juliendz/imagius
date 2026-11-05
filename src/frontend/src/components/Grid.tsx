@@ -1,7 +1,7 @@
 
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { ThumbRow } from "../../bindings/julien/imagius-go/internal";
-import { RefObject } from "react";
+import { RefObject, useState } from "react";
 import { ActionIcon } from "@mantine/core";
 import { PlayIcon } from "@phosphor-icons/react";
 
@@ -9,8 +9,10 @@ import { PlayIcon } from "@phosphor-icons/react";
 export default function Grid({ rows, parentRef, colCount, colWidth, rowHeight, headerHeight, gap, onImgClick, onSlideShowClick }:
     {
         rows: (ThumbRow | null)[], parentRef: RefObject<HTMLDivElement | null>, colCount: number, colWidth: number, rowHeight: number,
-        headerHeight: number, gap: number, onImgClick: (id: number) => void, onSlideShowClick: (dirId: number) => void
+        headerHeight: number, gap: number, onImgClick: (id: number) => void, onSlideShowClick: (dirId: number, startIdx: number) => void
     }) {
+
+    const [selectedThumb, setSelectedThumb] = useState<{ row: number, col: number }>({ row: 0, col: 0 });
 
 
     const virtualizer = useVirtualizer({
@@ -63,7 +65,7 @@ export default function Grid({ rows, parentRef, colCount, colWidth, rowHeight, h
                                 }}
                             >
                                 {row?.Name}
-                                <ActionIcon variant="filled" aria-label="Settings" onClick={() => onSlideShowClick(row?.ID ?? 0)}>
+                                <ActionIcon variant="filled" aria-label="Settings" onClick={() => onSlideShowClick(row?.ID ?? 0, selectedThumb.col)}>
                                     <PlayIcon style={{ width: '70%', height: '70%' }} />
                                 </ActionIcon>
                             </div>
@@ -76,10 +78,12 @@ export default function Grid({ rows, parentRef, colCount, colWidth, rowHeight, h
                                     gap: gap,
                                 }}
                             >
-                                {row?.Thumbs?.map((item) => (
+                                {row?.Thumbs?.map((item, index) => (
                                     <div
                                         key={item?.ID}
-                                        onClick={() => onImgClick(item?.ID ?? 0)}
+                                        onDoubleClick={() => onImgClick(item?.ID ?? 0)}
+                                        onClick={() => setSelectedThumb({ row: virtualRow.index, col: index })}
+                                        className={selectedThumb.row === virtualRow.index && selectedThumb.col === index ? "thumb-active" : ""}
                                         style={{
                                             height: rowHeight,
                                             background: "#eee",

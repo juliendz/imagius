@@ -4,12 +4,14 @@ export interface AppState {
   currentView: "thumbs" | "image" | "slideshow";
   imgId: number;
   slideShowDirId: number;
+  slideshowStartIdx: number;
 }
 
 const initialState: AppState = {
   currentView: "thumbs",
   imgId: 0,
   slideShowDirId: 0,
+  slideshowStartIdx: 0,
 };
 
 export const AppStore = createSlice({
@@ -24,9 +26,13 @@ export const AppStore = createSlice({
       state.currentView = "image";
       state.imgId = action.payload;
     },
-    ShowSlideshowView: (state, action: PayloadAction<number>) => {
+    ShowSlideshowView: (
+      state,
+      action: PayloadAction<{ dirId: number; startIdx: number }>,
+    ) => {
       state.currentView = "slideshow";
-      state.slideShowDirId = action.payload;
+      state.slideShowDirId = action.payload.dirId;
+      state.slideshowStartIdx = action.payload.startIdx;
     },
     SetImgId: (state, action: PayloadAction<number>) => {
       state.imgId = action.payload;
