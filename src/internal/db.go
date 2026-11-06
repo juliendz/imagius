@@ -221,10 +221,20 @@ func (d *DB) DeleteScanDir(ID uint) error {
 	return err
 }
 
+func (d *DB) GetSoftDeletedScanDir() []*ScanDir {
+	var softDeleted []*ScanDir
+	d.db.Unscoped().Where("deleted_at IS NOT NULL").Find(&softDeleted)
+	return softDeleted
+}
+
 func (d *DB) GetSoftDeletedScanImg() []*ScanImg {
 	var softDeleted []*ScanImg
 	d.db.Unscoped().Where("deleted_at IS NOT NULL").Find(&softDeleted)
 	return softDeleted
+}
+
+func (d *DB) DeleteSoftDeletedScanDir() {
+	d.db.Unscoped().Where("deleted_at IS NOT NULL").Delete(&ScanDir{})
 }
 
 func (d *DB) DeleteSoftDeletedScanImg() {

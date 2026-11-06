@@ -36,7 +36,7 @@ func (s *Scanner) ScanDirs(db *DB) {
 
 	watchedDirs := db.GetWatchedDirs()
 	watchedDirs = []Dir{
-		Dir{Model: gorm.Model{ID: 0}, AbsPath: "/home/julien/Downloads/imagius-test/", Name: "imagius-test"},
+		{Model: gorm.Model{ID: 0}, AbsPath: "/home/julien/Downloads/imagius-test/", Name: "imagius-test"},
 	}
 
 	db.BeginTx()
@@ -55,6 +55,7 @@ func (s *Scanner) ScanDir(db *DB, parentId uint, absPath string, dirName string,
 	mtime := DirModTime(absPath)
 	scanDir, _ := db.GetScanDir(absPath)
 	if scanDir.ID <= 0 {
+		log.Printf("Adding new directory:(%s)", absPath)
 		scanDir, _ = db.InsertDir(parentId, absPath, dirName, s.scanTime, mtime)
 		isNewOrModified = true
 
@@ -167,7 +168,15 @@ func (s *Scanner) ScanDir(db *DB, parentId uint, absPath string, dirName string,
 		log.Printf("Deleting cached thumb: %s", img.ThumbPath)
 		os.Remove(img.ThumbPath)
 	}
-	//Remove the soft deleted entry for the image
+	//Delete any the thumbnails directories for soft deleted scan dirs
+	prunedDirs := db.GetSoftDeletedScanDir()
+	for _, dir := range prunedDirs {
+		log.Printf("Deleting thumb dir for directory: %s", dir.AbsPath)
+		thumbDirPath := filepath.Join(s.thumbCacheDir, UintToStr(dir.ID))
+		os.RemoveAll(thumbDirPath)
+	}
+
 	db.DeleteSoftDeletedScanImg()
+	db.DeleteSoftDeletedScanDir()
 
 }

@@ -8,6 +8,7 @@ import { ScrollToDir } from '../appStore';
 function FolderList() {
     const dispatch = useAppDispatch();
     const [folders, setFolders] = useState<ScanDir[]>();
+    const [selectedIndex, setSelectedIndex] = useState<number | null>(0);
 
     useEffect(() => {
         (async () => {
@@ -19,13 +20,14 @@ function FolderList() {
 
     const handleDirClicked = (dirIndex: number) => {
         console.log('Scroll to dir index:', dirIndex);
+        setSelectedIndex(dirIndex);
         dispatch(ScrollToDir(dirIndex));
     }
 
 
     return (
         <List
-            spacing="xs"
+            spacing="3"
             size="sm"
             center
             icon={
@@ -35,7 +37,10 @@ function FolderList() {
             }
         >
             {folders?.map((folder, index) => (
-                <List.Item key={folder.ID} onClick={() => handleDirClicked(index)}>{folder.Name}</List.Item>
+                <List.Item key={folder.ID}
+                    style={{ padding: '0px 5px' }}
+                    className={`${selectedIndex === index ? 'dir-list-item-selected' : ''}`}
+                    onClick={() => handleDirClicked(index)}>{folder.Name}</List.Item>
             ))}
         </List>
     );
