@@ -1,0 +1,21 @@
+.chevron {
+  &[data-rotate] {
+    transform: rotate(45deg);
+  }
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+}
+
+.dir-list-item {
+  padding: 0px 5px;
+  cursor: pointer;
+}
+
+.dir-list-item-selected {
+  background-color: var(--mantine-color-blue-light);
+  color: var(--mantine-color-blue-dark);
+  font-weight: 600;
+}
