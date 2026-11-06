@@ -50,6 +50,11 @@ type Setting struct {
 	Value string
 }
 
+type RecentDir struct {
+	gorm.Model
+	DirID uint
+}
+
 type DB struct {
 	db   *gorm.DB
 	ctxt context.Context
@@ -81,7 +86,7 @@ func (d *DB) InitDB(dataDir string) (err error) {
 		return err
 	}
 
-	d.db.AutoMigrate(&Dir{}, &ScanDir{}, &ScanImg{}, &Setting{})
+	d.db.AutoMigrate(&Dir{}, &ScanDir{}, &ScanImg{}, &Setting{}, &RecentDir{})
 	log.Printf("Database initialized successfully")
 	return nil
 }
@@ -265,3 +270,32 @@ func (d *DB) GetScanImgsforSlideshow(dirId int, sortBy string) []SlideshowImg {
 }
 
 /* -------------------------------------------------------------------------------- */
+/* Recent dir db functions */
+/* -------------------------------------------------------------------------------- */
+type GetRecentDirRow struct {
+	ID    uint
+	Name  string
+	DirID uint
+}
+
+func (d *DB) GetRecentDirs() []*GetRecentDirRow {
+	var rows []*GetRecentDirRow
+	d.db.Model(&RecentDir{}).Select("recent_dir.id as id, recent_dir.dir_id as dir_id, dir.name").
+		Joins("left join scan_dirs as dir on recent_dir.dir_id = dir.id").
+		Order("dir.created_time desc").
+		Distinct("recent_dir.dir_id").
+		Scan(&rows)
+
+	return rows
+}
+
+func (d *DB) AddRecentDir(dirID uint) error {
+	recentDir := RecentDir{
+		DirID: dirID,
+	}
+	return d.db.Create(&recentDir).Error
+}
+
+func (d *DB) PruneRecentDirs(count int) error {
+	return d.db.Order("created_at desc").Offset(count).Delete(&RecentDir{}).Error
+}

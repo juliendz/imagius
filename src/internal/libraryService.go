@@ -3,6 +3,8 @@ package internal
 import (
 	"context"
 	"log"
+	"maps"
+	"slices"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 )
@@ -49,12 +51,30 @@ type ThumbRowItem struct {
 	ThumbPath string
 }
 
+type RecentDirListItem struct {
+	ID             uint
+	DirID          uint
+	Name           string
+	ThumbViewIndex int
+}
+
 type Library struct {
 	Dirs   []*DirListItem
 	Thumbs []*ThumbRow
+	Recent []*RecentDirListItem
 }
 
 func (g *LibraryService) GetLibrary() *Library {
+
+	recentDirsMap := make(map[uint]*RecentDirListItem)
+	recentDirsDb := g.db.GetRecentDirs()
+	for _, recent := range recentDirsDb {
+		recentDirsMap[recent.ID] = &RecentDirListItem{
+			ID:    recent.ID,
+			DirID: recent.DirID,
+			Name:  recent.Name,
+		}
+	}
 
 	log.Printf("Getting library")
 	imgs := g.db.GetScanImgs()
@@ -88,6 +108,9 @@ func (g *LibraryService) GetLibrary() *Library {
 			//Assign the index of the header row added above as the thumb view index for the current directory list item
 			dirListItem.ThumbViewIndex = len(rows) - 1
 			dirs = append(dirs, &dirListItem)
+			if recentDir, ok := recentDirsMap[dirListItem.ID]; ok {
+				recentDir.ThumbViewIndex = dirListItem.ThumbViewIndex
+			}
 
 			//Thumb Row after the current header
 			currThumbow = &ThumbRow{
@@ -134,9 +157,17 @@ func (g *LibraryService) GetLibrary() *Library {
 		log.Printf("Row %d: Type=%s, ID=%d, Thumbs=%d", i, rows[i].Type, rows[i].ID, len(rows[i].Thumbs))
 	}
 
+	//Sort the recent directories by their ID and create the list
+	recentDirkeys := slices.Sorted(maps.Keys(recentDirsMap))
+	recentDirs := make([]*RecentDirListItem, 0, len(recentDirkeys))
+	for _, key := range recentDirkeys {
+		recentDirs = append(recentDirs, recentDirsMap[key])
+	}
+
 	Library := &Library{
 		Dirs:   dirs,
 		Thumbs: rows,
+		Recent: recentDirs,
 	}
 	return Library
 }
@@ -147,4 +178,8 @@ func (g *LibraryService) GetImage(id int) ScanImg {
 
 func (g *LibraryService) GetSlideShowImages(dirID int, sortBy string) []SlideshowImg {
 	return g.db.GetScanImgsforSlideshow(dirID, sortBy)
+}
+
+func (g *LibraryService) AddRecentDir(dirID uint) error {
+	return g.db.AddRecentDir(dirID)
 }

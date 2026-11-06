@@ -2,8 +2,8 @@
 
 - fix empty thumb folders being crated on every startup [x]
 - fix scroll to dir in thumbs view [x]
-- convert folder list into collapsibles
-- create recent section in folderlist
+- convert folder list into collapsibles [x]
+- create recent section in folderlist [x]
   - add to this list everytime a slide show starts
   - keep a maximum of 10
 - create a settings popup

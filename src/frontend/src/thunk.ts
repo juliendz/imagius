@@ -21,3 +21,18 @@ export const getLibrary = createAsyncThunk(
     return {} as Library;
   },
 );
+
+export const addRecentDir = createAsyncThunk(
+  "library/addRecentDir",
+  async (
+    { dirID, dirIndex }: { dirID: number; dirIndex: number },
+    _thunkAPI,
+  ): Promise<{ dirIndex: number }> => {
+    try {
+      await LibraryService.AddRecentDir(dirID);
+    } catch (ex) {
+      console.debug(ex);
+    }
+    return { dirIndex };
+  },
+);

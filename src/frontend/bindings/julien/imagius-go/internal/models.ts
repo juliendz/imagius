@@ -14,6 +14,14 @@ export interface DirListItem {
 export interface Library {
     "Dirs": (DirListItem | null)[] | null;
     "Thumbs": (ThumbRow | null)[] | null;
+    "Recent": (RecentDirListItem | null)[] | null;
+}
+
+export interface RecentDirListItem {
+    "ID": number;
+    "DirID": number;
+    "Name": string;
+    "ThumbViewIndex": number;
 }
 
 export interface ScanDir {

@@ -15,14 +15,3 @@
     0 0 15px rgba(59, 130, 246, 0.6),
     0 0 5px rgba(59, 130, 246, 0.8);
 }
-
-.dir-list-item {
-  padding: 0px 5px;
-  cursor: pointer;
-}
-
-.dir-list-item-selected {
-  background-color: var(--mantine-color-blue-light);
-  color: var(--mantine-color-blue-dark);
-  font-weight: 600;
-}

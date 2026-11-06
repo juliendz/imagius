@@ -9,6 +9,10 @@ import { Call as $Call, CancellablePromise as $CancellablePromise } from "@wails
 // @ts-ignore: Unused imports
 import * as $models from "./models.js";
 
+export function AddRecentDir(dirID: number): $CancellablePromise<void> {
+    return $Call.ByID(372599352, dirID);
+}
+
 export function GetImage(id: number): $CancellablePromise<$models.ScanImg> {
     return $Call.ByID(3243138678, id);
 }

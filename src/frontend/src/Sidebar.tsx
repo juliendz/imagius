@@ -1,4 +1,4 @@
-import FolderList from "./components/FolderList";
+import FolderList from "./components/FolderList/FolderList";
 
 function Sidebar() {
     return (
