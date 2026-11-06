@@ -1,25 +1,16 @@
 import { List, ThemeIcon } from '@mantine/core';
 import { CheckCircleIcon } from '@phosphor-icons/react';
-import { useEffect, useState } from 'react';
-import { LibraryService, ScanDir } from '../../bindings/julien/imagius-go/internal';
-import { useAppDispatch } from '../hooks';
+import { useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../hooks';
 import { ScrollToDir } from '../appStore';
 
 function FolderList() {
     const dispatch = useAppDispatch();
-    const [folders, setFolders] = useState<ScanDir[]>();
     const [selectedIndex, setSelectedIndex] = useState<number | null>(0);
-
-    useEffect(() => {
-        (async () => {
-            let folders = await LibraryService.GetDirs();
-            console.log(folders);
-            setFolders(folders!);
-        })();
-    }, []);
+    const folders = useAppSelector(state => state.appStore.library.Dirs);
 
     const handleDirClicked = (dirIndex: number) => {
-        console.log('Scroll to dir index:', dirIndex);
+        // console.log('Scroll to dir index:', dirIndex);
         setSelectedIndex(dirIndex);
         dispatch(ScrollToDir(dirIndex));
     }
@@ -37,10 +28,10 @@ function FolderList() {
             }
         >
             {folders?.map((folder, index) => (
-                <List.Item key={folder.ID}
+                <List.Item key={folder?.ID}
                     style={{ padding: '0px 5px' }}
                     className={`${selectedIndex === index ? 'dir-list-item-selected' : ''}`}
-                    onClick={() => handleDirClicked(index)}>{folder.Name}</List.Item>
+                    onClick={() => handleDirClicked(folder?.ThumbViewIndex ?? 0)}>{folder?.Name}</List.Item>
             ))}
         </List>
     );

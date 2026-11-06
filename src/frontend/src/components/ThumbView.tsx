@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { LibraryService, ThumbRow, } from "../../bindings/julien/imagius-go/internal";
 import Grid from "./Grid";
-import { useAppDispatch } from "../hooks";
+import { useAppDispatch, useAppSelector } from "../hooks";
 import { ShowImageView, ShowSlideshowView } from "../appStore";
+import { getLibrary } from "../thunk";
 
 const COLUMN_WIDTH = 160;
 const ROW_HEIGHT = 160;
@@ -14,7 +14,7 @@ function ThumbView() {
     const dispatch = useAppDispatch();
     const parentRef = useRef<HTMLDivElement>(null);
     const [colCount, setColCount] = useState(1);
-    const [rows, setRows] = useState<(ThumbRow | null)[]>([]);
+    const thumbRows = useAppSelector(state => state.appStore.library.Thumbs);
 
 
     useEffect(() => {
@@ -29,12 +29,7 @@ function ThumbView() {
     useEffect(() => {
         console.log((parentRef.current?.clientWidth ?? 900) / (COLUMN_WIDTH + GAP), colCount);
         (async () => {
-
-            let imgs = await LibraryService.GetImages(colCount);
-            console.log(imgs);
-            if (imgs !== null) {
-                setRows(imgs);
-            }
+            dispatch(await getLibrary());
         })();
     }, [colCount]);
 
@@ -55,7 +50,7 @@ function ThumbView() {
                 overflow: "auto",
             }}
         >
-            <Grid rows={rows} colCount={colCount} parentRef={parentRef} colWidth={COLUMN_WIDTH} rowHeight={ROW_HEIGHT} headerHeight={HEADER_HEIGHT} gap={GAP}
+            <Grid rows={thumbRows ? thumbRows : []} colCount={colCount} parentRef={parentRef} colWidth={COLUMN_WIDTH} rowHeight={ROW_HEIGHT} headerHeight={HEADER_HEIGHT} gap={GAP}
                 onImgClick={handleImageClick} onSlideShowClick={handleSlideShowClick} />
         </div>
     );

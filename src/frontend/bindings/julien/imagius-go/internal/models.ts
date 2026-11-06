@@ -5,6 +5,17 @@
 // @ts-ignore: Unused imports
 import * as gorm$0 from "../../../gorm.io/gorm/models.js";
 
+export interface DirListItem {
+    "ID": number;
+    "Name": string;
+    "ThumbViewIndex": number;
+}
+
+export interface Library {
+    "Dirs": (DirListItem | null)[] | null;
+    "Thumbs": (ThumbRow | null)[] | null;
+}
+
 export interface ScanDir {
     "ID": number;
     "CreatedAt": string;

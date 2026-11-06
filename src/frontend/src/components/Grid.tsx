@@ -35,7 +35,7 @@ export default function Grid({ rows, parentRef, colCount, colWidth, rowHeight, h
     useEffect(() => {
         if (virtualizer && currDirIndex !== null) {
             console.log('ScrollToIndex:', currDirIndex);
-            virtualizer.scrollToIndex(currDirIndex);
+            virtualizer.scrollToIndex(currDirIndex, { align: "start", behavior: "smooth" });
         }
     }, [currDirIndex, triggerScroll]);
 
@@ -50,6 +50,7 @@ export default function Grid({ rows, parentRef, colCount, colWidth, rowHeight, h
         >
             {virtualizer.getVirtualItems().map((virtualRow) => {
                 const row = rows[virtualRow.index];
+                // console.log(virtualRow, row);
 
                 return (
                     <div

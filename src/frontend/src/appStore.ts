@@ -1,4 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { getLibrary } from "./thunk";
+import { Library } from "../bindings/julien/imagius-go/internal";
 
 export interface AppState {
   currentView: "thumbs" | "image" | "slideshow";
@@ -7,6 +9,7 @@ export interface AppState {
   slideshowStartIdx: number;
   currDirIndex: number;
   triggerScroll: number;
+  library: Library;
 }
 
 const initialState: AppState = {
@@ -16,6 +19,7 @@ const initialState: AppState = {
   slideshowStartIdx: 0,
   currDirIndex: 0,
   triggerScroll: 0,
+  library: {} as Library,
 };
 
 export const AppStore = createSlice({
@@ -45,6 +49,15 @@ export const AppStore = createSlice({
     SetImgId: (state, action: PayloadAction<number>) => {
       state.imgId = action.payload;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(
+      getLibrary.fulfilled,
+      (state, action: PayloadAction<Library>) => {
+        console.log("getLibrary.fulfilled", action);
+        state.library = action.payload;
+      },
+    );
   },
 });
 

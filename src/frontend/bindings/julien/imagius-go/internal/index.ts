@@ -7,6 +7,8 @@ export {
 };
 
 export type {
+    DirListItem,
+    Library,
     ScanDir,
     ScanImg,
     SlideshowImg,

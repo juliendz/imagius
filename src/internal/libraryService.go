@@ -18,9 +18,17 @@ func NewLibraryService(db *DB) *LibraryService {
 	}
 }
 
-func (g *LibraryService) GetDirs() []ScanDir {
-	log.Printf("Getting scanned directories")
-	return g.db.GetScanDirs()
+func (s *LibraryService) ServiceStartup(ctx context.Context, options application.ServiceOptions) error {
+	s.app = application.Get()
+	return nil
+}
+
+func (s *LibraryService) ServiceShutdown() {}
+
+type DirListItem struct {
+	ID             uint
+	Name           string
+	ThumbViewIndex int
 }
 
 type ThumbRow struct {
@@ -41,25 +49,30 @@ type ThumbRowItem struct {
 	ThumbPath string
 }
 
-func (s *LibraryService) ServiceStartup(ctx context.Context, options application.ServiceOptions) error {
-	s.app = application.Get()
-	return nil
+type Library struct {
+	Dirs   []*DirListItem
+	Thumbs []*ThumbRow
 }
 
-func (s *LibraryService) ServiceShutdown() {}
+func (g *LibraryService) GetLibrary() *Library {
 
-func (g *LibraryService) GetImages(rowCols int) []*ThumbRow {
-	log.Printf("Getting scanned images")
-	log.Printf("%d columns per row", rowCols)
-
+	log.Printf("Getting library")
 	imgs := g.db.GetScanImgs()
 
-	// colCount := rowCols
+	dirs := []*DirListItem{}
 	rows := []*ThumbRow{}
 	key := 1
 	var currThumbow *ThumbRow
 	for index, img := range imgs {
 		if index == 0 || (img.ParentID != imgs[index-1].ParentID) {
+
+			//Create a new directory list item for the current scan directory
+			log.Printf("Creating scanned directory")
+			dirListItem := DirListItem{
+				ID:   img.ParentID,
+				Name: img.ParentName,
+			}
+
 			log.Printf("Creating new header row for parent ID %d", img.ParentID)
 			//Header row
 			headerRow := ThumbRow{
@@ -71,6 +84,10 @@ func (g *LibraryService) GetImages(rowCols int) []*ThumbRow {
 			}
 			rows = append(rows, &headerRow)
 			key++
+
+			//Assign the index of the header row added above as the thumb view index for the current directory list item
+			dirListItem.ThumbViewIndex = len(rows) - 1
+			dirs = append(dirs, &dirListItem)
 
 			//Thumb Row after the current header
 			currThumbow = &ThumbRow{
@@ -116,7 +133,12 @@ func (g *LibraryService) GetImages(rowCols int) []*ThumbRow {
 	for i := range rows {
 		log.Printf("Row %d: Type=%s, ID=%d, Thumbs=%d", i, rows[i].Type, rows[i].ID, len(rows[i].Thumbs))
 	}
-	return rows
+
+	Library := &Library{
+		Dirs:   dirs,
+		Thumbs: rows,
+	}
+	return Library
 }
 
 func (g *LibraryService) GetImage(id int) ScanImg {

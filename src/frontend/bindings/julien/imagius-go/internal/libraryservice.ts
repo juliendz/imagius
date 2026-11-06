@@ -9,16 +9,12 @@ import { Call as $Call, CancellablePromise as $CancellablePromise } from "@wails
 // @ts-ignore: Unused imports
 import * as $models from "./models.js";
 
-export function GetDirs(): $CancellablePromise<$models.ScanDir[] | null> {
-    return $Call.ByID(2376264409);
-}
-
 export function GetImage(id: number): $CancellablePromise<$models.ScanImg> {
     return $Call.ByID(3243138678, id);
 }
 
-export function GetImages(rowCols: number): $CancellablePromise<($models.ThumbRow | null)[] | null> {
-    return $Call.ByID(1398669791, rowCols);
+export function GetLibrary(): $CancellablePromise<$models.Library | null> {
+    return $Call.ByID(661176300);
 }
 
 export function GetSlideShowImages(dirID: number, sortBy: string): $CancellablePromise<$models.SlideshowImg[] | null> {
